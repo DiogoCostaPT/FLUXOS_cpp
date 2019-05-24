@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/media/DATADRIVE1/MegaSync/FLUXOS/Dynawave_Cpp/main.cpp
+iostream
+-
+math.h
+-
+armadillo
+-
+string
+-
+memory
+-
+
