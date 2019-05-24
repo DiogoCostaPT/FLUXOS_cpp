@@ -905,6 +905,10 @@ void write_results(declavar& ds, int print_tag)
 
 }
     
+void ADEsolver(declavar& ds)
+{
+    
+}
 
 int main(int argc, char** argv) 
 {   
