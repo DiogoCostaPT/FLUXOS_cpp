@@ -905,11 +905,6 @@ void write_results(declavar& ds, int print_tag)
 
 }
     
-void ADEsolver(declavar& ds)
-{
-    
-}
-
 int main(int argc, char** argv) 
 {   
     unsigned int nxl = 1034, nyl = 722;
@@ -1000,10 +995,6 @@ int main(int argc, char** argv)
         if (hpall!=0) 
         {
             flow_solver(ds);
-            if (adesolv)
-            {
-                ADEsolver(ds);
-            }
         }
         
         // PRINT RESULTS
