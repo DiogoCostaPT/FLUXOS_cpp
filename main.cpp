@@ -105,7 +105,7 @@ void read_geo(declavar& ds)
 
 void read_load(declavar& ds)
 {
-    unsigned int iy,ix,a; 
+    unsigned int a; 
     int iyb,ixb;
     double tmelts,vmelt;
     
@@ -912,7 +912,6 @@ int main(int argc, char** argv)
 
     unsigned int a, ix, iy, print_step, print_next, qmelt_rowi;
     double c0,v0,u0,hp, hpall, qmelti ; 
-    bool adesolv = true;
                
 //   // input/read data
     ds.cfl = 1; // Courant condition
