@@ -6,7 +6,7 @@
 // This program, FLUXOS, is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// (at your option) an_col later version.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,44 +29,44 @@ public:
   declavar() {
 
   }
-  declavar(size_t mx, size_t my) {
-    this->mx = mx;
-    this->my = my;
+  declavar(size_t m_row, size_t m_col) {
+    this->m_row = m_row;
+    this->m_col = m_col;
 
-    z= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    zb= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    h= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    ux= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    uy= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    qx= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    qy= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    qxf= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    qyf= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    us= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    dh= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    dqx = std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    dqy= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    //sbmx= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    //sbmy= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    //cfri= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    ks= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
+    z= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    zb= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    h= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    ux= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    uy= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    qx= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    qy= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    qxf= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    qyf= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    us= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    dh= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    dqx = std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    dqy= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    //sbm_row= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    //sbm_col= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    //cfri= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    ks= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     
 //  f_1= mass flux per unit width
 //  f_2= momentum flux per unit width in x-direction
 //  f_3= momentum flux per unit width in y-direction
-    fe_1= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    fe_2= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    fe_3= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    fn_1= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    fn_2= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    fn_3= std::unique_ptr<arma::Mat<double>>( new  arma::mat(mx,my));
-    ldry= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(mx,my));
+    fe_1= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    fe_2= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    fe_3= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    fn_1= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    fn_2= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    fn_3= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    ldry= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
     
-    basinxy= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(210290,2));
+    basin_rowy= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(210290,2));
     qmelt = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(1633,2));
   }
-    size_t nx,ny;
-    size_t mx,my,dxy,arbase, 
+    size_t n_row,n_col;
+    size_t m_row,m_col,dxy,arbase, 
         ntim;                                       // maximum time step (seconds)
     float gacc = 9.80665,                           // gravitational acceleration 
         cfl,                                        // Courant condition
@@ -76,27 +76,27 @@ public:
         qx,qy,                                        // discharge at cell center: u*h [m3/s/m]
         qxf,qyf,                                      // discharges at cell face: u*h [m3/s/m]
         us,                                         // shear stress velocity 
-        dh,dqx ,dqy,                                  // changes in h[ix][iy], p[ix][iy] and q[ix][iy]
-        //sbmx,sbmy,                                  // for calc of weight of water (bed slope term) (solver_wet)
+        dh,dqx ,dqy,                                  // changes in h[irow][icol], p[irow][icol] and q[irow][icol]
+        //sbm_row,sbm_col,                                  // for calc of weight of water (bed slope term) (solver_wet)
         ks, //cfri                                  // Friction (Chezy model is not being used for now)
         fe_1,fe_2,fe_3,fn_1,fn_2,fn_3; 
-    std::unique_ptr<arma::Mat<float>> ldry,basinxy,qmelt;   
+    std::unique_ptr<arma::Mat<float>> ldry,basin_rowy,qmelt;   
     double hdry,                                    //minimum water depth
         dtfl,tim;                                   // timestep for flow computation
 };
 
 void read_geo(declavar& ds)
 {
-    unsigned int iy,ix,a;  
+    unsigned int icol,irow,a;  
     arma::mat filedata; 
     bool flstatus =  filedata.load("model_geo.fluxos",arma::csv_ascii);
    
     if(flstatus == true) {
         for(a=0;a<filedata.col(1).n_elem;a++){
-            ix = filedata(a,0);  
-            iy = filedata(a,1);  
-            (*ds.zb).at(ix,iy) = filedata(a,2);  
-            (*ds.ks).at(ix,iy) = filedata(a,3); 
+            irow = filedata(a,0);  
+            icol = filedata(a,1);  
+            (*ds.zb).at(irow,icol) = filedata(a,2);  
+            (*ds.ks).at(irow,icol) = filedata(a,3); 
         }
     } else{
             std::cout << "problem with loading 'modelgeo.fluxos'" << std::endl;
@@ -106,19 +106,19 @@ void read_geo(declavar& ds)
 void read_load(declavar& ds)
 {
     unsigned int a; 
-    int iyb,ixb;
+    int icolb,irowb;
     double tmelts,vmelt;
     
     arma::mat filedataB; 
     bool flstatusB =  filedataB.load("Basin_Info.fluxos",arma::csv_ascii);
     if(flstatusB == true) {
         for(a=0;a<filedataB.col(0).n_elem;a++){
-            ixb = filedataB(a,0);  
-            iyb = filedataB(a,1);  
-            (*ds.basinxy).at(a,0) = ixb;  
-            (*ds.basinxy).at(a,1) = iyb;  
-            //printf("%f\n",(*ds.basinxy).at(a,0));
-            //printf("%f\n",(*ds.basinxy).at(a,1));
+            irowb = filedataB(a,0);  
+            icolb = filedataB(a,1);  
+            (*ds.basin_rowy).at(a,0) = irowb;  
+            (*ds.basin_rowy).at(a,1) = icolb;  
+            //printf("%f\n",(*ds.basin_rowy).at(a,0));
+            //printf("%f\n",(*ds.basin_rowy).at(a,1));
         }
     } else{
             std::cout << "problem with loading 'Basin_Info.fluxos'" << std::endl;
@@ -142,37 +142,37 @@ void read_load(declavar& ds)
 
 void initiation(declavar& ds) {
     
-    std::unique_ptr<double[]> zbs1(new double[ds.mx]);   
+    std::unique_ptr<double[]> zbs1(new double[ds.m_row]);   
     double zbsw,zbnw,zbse,zbne,zbsum;
-    unsigned int a,iy,ix,ix1,iy1;
-    unsigned int nx1,ny1;
-    nx1=ds.nx+1;
-    ny1=ds.ny+1;
+    unsigned int a,icol,irow,irow1,icol1;
+    unsigned int n_row1,n_col1;
+    n_row1=ds.n_row+1;
+    n_col1=ds.n_col+1;
 
        // INTERPOLATE ELEVATIONS OF THE BOUNDARIES
-    for(ix=0;ix<=nx1;ix++){
-      zbs1[ix]=(*ds.zb).at(ix,1);
-      (*ds.zb).at(ix,0) = (*ds.zb).at(ix,1);
-      (*ds.zb).at(ix,ny1) = (*ds.zb).at(ix,ds.ny);
+    for(irow=0;irow<=n_row1;irow++){
+      zbs1[irow]=(*ds.zb).at(irow,1);
+      (*ds.zb).at(irow,0) = (*ds.zb).at(irow,1);
+      (*ds.zb).at(irow,n_col1) = (*ds.zb).at(irow,ds.n_col);
     }
-    for(iy=0;iy<=ny1;iy++){
-      (*ds.zb).at(0,iy) = (*ds.zb).at(1,iy);
-      (*ds.zb).at(nx1,iy) = (*ds.zb).at(ds.nx,iy); 
+    for(icol=0;icol<=n_col1;icol++){
+      (*ds.zb).at(0,icol) = (*ds.zb).at(1,icol);
+      (*ds.zb).at(n_row1,icol) = (*ds.zb).at(ds.n_row,icol); 
     }
 
-    (*ds.zb).at(0,ny1) = (*ds.zb).at(1,ds.ny);
-    (*ds.zb).at(nx1,ny1) = (*ds.zb).at(ds.nx,ds.ny);
+    (*ds.zb).at(0,n_col1) = (*ds.zb).at(1,ds.n_col);
+    (*ds.zb).at(n_row1,n_col1) = (*ds.zb).at(ds.n_row,ds.n_col);
     
     // INTERPOLATE CELL VERTICES TO CELL CENTER
-    for(iy=1;iy<=ds.ny;iy++){
+    for(icol=1;icol<=ds.n_col;icol++){
       zbsw = zbs1[1];
-      iy1  = iy+1;
-      zbnw = (*ds.zb).at(1,iy1);
+      icol1  = icol+1;
+      zbnw = (*ds.zb).at(1,icol1);
       zbs1[1]=zbnw;
-      for(ix=1;ix<=ds.nx;ix++){
-            ix1=ix+1;
-            zbse =zbs1[ix1];
-            zbne = (*ds.zb).at(ix1,iy1);
+      for(irow=1;irow<=ds.n_row;irow++){
+            irow1=irow+1;
+            zbse =zbs1[irow1];
+            zbne = (*ds.zb).at(irow1,icol1);
             a = 0;
             zbsum = 0;
             if (zbsw != 9999){
@@ -191,22 +191,22 @@ void initiation(declavar& ds) {
                 zbsum=zbsum + zbne;
                 a = a + 1;
             }
-            (*ds.zb).at(ix,iy)=(zbsum)/a;
-            zbs1[ix1]=zbne;
+            (*ds.zb).at(irow,icol)=(zbsum)/a;
+            zbs1[irow1]=zbne;
             zbsw= zbse;
             zbnw= zbne;
       }
     }
         
     // INITIAL CONDITIONS
-    for(iy=1;iy<=ds.ny;iy++)
+    for(icol=1;icol<=ds.n_col;icol++)
     {
-        for(ix=1;ix<=ds.nx;ix++)
+        for(irow=1;irow<=ds.n_row;irow++)
         {  
-            (*ds.h).at(ix,iy)=std::max((*ds.z).at(ix,iy)-(*ds.zb).at(ix,iy),0.0);
-            (*ds.z).at(ix,iy)=(*ds.zb).at(ix,iy)+(*ds.h).at(ix,iy);
-            (*ds.qx).at(ix,iy)=(*ds.ux).at(ix,iy)*(*ds.h).at(ix,iy);
-            (*ds.qy).at(ix,iy)=(*ds.uy).at(ix,iy)*(*ds.h).at(ix,iy);
+            (*ds.h).at(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
+            (*ds.z).at(irow,icol)=(*ds.zb).at(irow,icol)+(*ds.h).at(irow,icol);
+            (*ds.qx).at(irow,icol)=(*ds.ux).at(irow,icol)*(*ds.h).at(irow,icol);
+            (*ds.qy).at(irow,icol)=(*ds.uy).at(irow,icol)*(*ds.h).at(irow,icol);
         }
     }
  
@@ -217,66 +217,66 @@ void initiation(declavar& ds) {
     {
         for(a=0;a<filedata.col(1).n_elem;a++)
         {
-            ix = filedata(a,0);  
-            iy = filedata(a,1);  
-            (*ds.h).at(ix,iy) = filedata(a,3);
-            (*ds.z).at(ix,iy) = (*ds.zb).at(ix,iy) + filedata(a,3);
-            (*ds.ux).at(ix,iy) = filedata(a,4);
-            (*ds.uy).at(ix,iy) = filedata(a,5);
-            (*ds.qx).at(ix,iy) = filedata(a,6);
-            (*ds.qy).at(ix,iy) = filedata(a,7);
-            (*ds.us).at(ix,iy) = filedata(a,9);
-            (*ds.ldry).at(ix,iy) = 0.0f;
+            irow = filedata(a,0);  
+            icol = filedata(a,1);  
+            (*ds.h).at(irow,icol) = filedata(a,3);
+            (*ds.z).at(irow,icol) = (*ds.zb).at(irow,icol) + filedata(a,3);
+            (*ds.ux).at(irow,icol) = filedata(a,4);
+            (*ds.uy).at(irow,icol) = filedata(a,5);
+            (*ds.qx).at(irow,icol) = filedata(a,6);
+            (*ds.qy).at(irow,icol) = filedata(a,7);
+            (*ds.us).at(irow,icol) = filedata(a,9);
+            (*ds.ldry).at(irow,icol) = 0.0f;
         }
     } else
     {
         std::cout << "No initial conditions (file 'initial_conditions.fluxos not found). All variables set to zero.'" << std::endl;
-         for(iy=1;iy<=ds.ny;iy++)
+         for(icol=1;icol<=ds.n_col;icol++)
         {
-            for(ix=1;ix<=ds.nx;ix++)
+            for(irow=1;irow<=ds.n_row;irow++)
             {
-                (*ds.h).at(ix,iy) = 0.0f;
-                (*ds.z).at(ix,iy) = (*ds.zb).at(ix,iy);
-                (*ds.ux).at(ix,iy) = 0.0f;
-                (*ds.uy).at(ix,iy) = 0.0f;
-                (*ds.qx).at(ix,iy) = 0.0f;
-                (*ds.qy).at(ix,iy) = 0.0f;
-                (*ds.us).at(ix,iy) = 0.0f;
-                (*ds.ldry).at(ix,iy) = 1.0f;
+                (*ds.h).at(irow,icol) = 0.0f;
+                (*ds.z).at(irow,icol) = (*ds.zb).at(irow,icol);
+                (*ds.ux).at(irow,icol) = 0.0f;
+                (*ds.uy).at(irow,icol) = 0.0f;
+                (*ds.qx).at(irow,icol) = 0.0f;
+                (*ds.qy).at(irow,icol) = 0.0f;
+                (*ds.us).at(irow,icol) = 0.0f;
+                (*ds.ldry).at(irow,icol) = 1.0f;
             }
         }
     }
 
     // BOUNDARY VALUES (initial set up)
-        for(iy=0;iy<=ny1;iy++)
+        for(icol=0;icol<=n_col1;icol++)
         {
-          (*ds.zb).at(0,iy)=1.5*(*ds.zb).at(1,iy)-.5*(*ds.zb).at(2,iy);
-          (*ds.zb).at(nx1,iy)=1.5*(*ds.zb).at(ds.nx,iy)-.5*(*ds.zb).at(ds.nx-1,iy);
-          (*ds.z).at(0,iy)=1.5*(*ds.z).at(1,iy)-.5*(*ds.z).at(2,iy);
-          (*ds.z).at(nx1,iy)=1.5*(*ds.z).at(ds.nx,iy)-.5*(*ds.z).at(ds.nx-1,iy);
-          (*ds.h).at(0,iy)=std::max(0.0,(*ds.z).at(0,iy)-(*ds.zb).at(0,iy));
-          (*ds.h).at(nx1,iy)=std::max(0.0,(*ds.z).at(nx1,iy)-(*ds.zb).at(nx1,iy));
-          (*ds.qx).at(0,iy)=0.0f;
-          (*ds.qy).at(nx1,iy)=0.0f;
-          (*ds.qxf).at(0,iy)=0.0f;
+          (*ds.zb).at(0,icol)=1.5*(*ds.zb).at(1,icol)-.5*(*ds.zb).at(2,icol);
+          (*ds.zb).at(n_row1,icol)=1.5*(*ds.zb).at(ds.n_row,icol)-.5*(*ds.zb).at(ds.n_row-1,icol);
+          (*ds.z).at(0,icol)=1.5*(*ds.z).at(1,icol)-.5*(*ds.z).at(2,icol);
+          (*ds.z).at(n_row1,icol)=1.5*(*ds.z).at(ds.n_row,icol)-.5*(*ds.z).at(ds.n_row-1,icol);
+          (*ds.h).at(0,icol)=std::max(0.0,(*ds.z).at(0,icol)-(*ds.zb).at(0,icol));
+          (*ds.h).at(n_row1,icol)=std::max(0.0,(*ds.z).at(n_row1,icol)-(*ds.zb).at(n_row1,icol));
+          (*ds.qx).at(0,icol)=0.0f;
+          (*ds.qy).at(n_row1,icol)=0.0f;
+          (*ds.qxf).at(0,icol)=0.0f;
         }
-        for(ix=0;ix<=nx1;ix++)
+        for(irow=0;irow<=n_row1;irow++)
         { 
-          (*ds.zb).at(ix,0)=1.5*(*ds.zb).at(ix,1)-.5*(*ds.zb).at(ix,2);
-          (*ds.zb).at(ix,ny1)=1.5*(*ds.zb).at(ix,ds.ny)-.5*(*ds.zb).at(ix,ds.ny-1);
-          (*ds.z).at(ix,0)=1.5*(*ds.z).at(ix,1)-.5*(*ds.z).at(ix,2);
-          (*ds.z).at(ix,ny1)=1.5*(*ds.z).at(ix,ds.ny)-.5*(*ds.z).at(ix,ds.ny-1);
-          (*ds.h).at(ix,0)=std::max(0.0,(*ds.z).at(ix,0)-(*ds.zb).at(ix,0));
-          (*ds.h).at(ix,ny1)=std::max(0.0,(*ds.z).at(ix,ny1)-(*ds.zb).at(ix,ny1));
-          (*ds.qx).at(ix,0)=0.0f;
-          (*ds.qy).at(ix,ny1)=0.0f;
-          (*ds.qyf).at(ix,0)=0.0f;
+          (*ds.zb).at(irow,0)=1.5*(*ds.zb).at(irow,1)-.5*(*ds.zb).at(irow,2);
+          (*ds.zb).at(irow,n_col1)=1.5*(*ds.zb).at(irow,ds.n_col)-.5*(*ds.zb).at(irow,ds.n_col-1);
+          (*ds.z).at(irow,0)=1.5*(*ds.z).at(irow,1)-.5*(*ds.z).at(irow,2);
+          (*ds.z).at(irow,n_col1)=1.5*(*ds.z).at(irow,ds.n_col)-.5*(*ds.z).at(irow,ds.n_col-1);
+          (*ds.h).at(irow,0)=std::max(0.0,(*ds.z).at(irow,0)-(*ds.zb).at(irow,0));
+          (*ds.h).at(irow,n_col1)=std::max(0.0,(*ds.z).at(irow,n_col1)-(*ds.zb).at(irow,n_col1));
+          (*ds.qx).at(irow,0)=0.0f;
+          (*ds.qy).at(irow,n_col1)=0.0f;
+          (*ds.qyf).at(irow,0)=0.0f;
         }
 }
 
-void solver_dry(declavar& ds, unsigned int ix, unsigned int iy) {
+void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
     
-    unsigned int iw,ie,is,in, nxl, nyl;
+    unsigned int iw,ie,is,in, n_rowl, n_coll;
     double fe1,fe2,fe3,fn1,fn2,fn3,zp,ze,zn,
            he,hn,qe,qp,rp,rn;
     double dze,hme,qme,dzn;
@@ -288,20 +288,20 @@ void solver_dry(declavar& ds, unsigned int ix, unsigned int iy) {
     float ldw,ldp,lde,lds,ldn;
     double gaccl;
     
-    is=iy-1;
-    in=iy+1;
-    iw=ix-1;
-    ie=ix+1;
+    is=icol-1;
+    in=icol+1;
+    iw=irow-1;
+    ie=irow+1;
     
-    ldw = (*ds.ldry).at(iw,iy);
-    ldp = (*ds.ldry).at(ix,iy);
-    lde = (*ds.ldry).at(ie,iy);
-    lds = (*ds.ldry).at(ix,is);
-    ldn = (*ds.ldry).at(ix,in);
+    ldw = (*ds.ldry).at(iw,icol);
+    ldp = (*ds.ldry).at(irow,icol);
+    lde = (*ds.ldry).at(ie,icol);
+    lds = (*ds.ldry).at(irow,is);
+    ldn = (*ds.ldry).at(irow,in);
     
     gaccl = ds.gacc;
-    nyl = ds.ny;
-    nxl = ds.nx;
+    n_coll = ds.n_col;
+    n_rowl = ds.n_row;
 
     // CHECK IF ALL NEIGHBOUR CELLS ARE DRY
     if(ldw==1&&ldp==1&&lde==1&&lds==1&&ldn==1)
@@ -312,30 +312,30 @@ void solver_dry(declavar& ds, unsigned int ix, unsigned int iy) {
         fn1=0.0f;
         fn2=0.0f;
         fn3=0.0f;
-        (*ds.dh).at(ix,iy)=0.0f;
-        (*ds.dqx).at(ix,iy)=0.0f;
-        (*ds.dqy).at(ix,iy)=0.0f;
-        (*ds.qxf).at(ix,iy)=0.0f;
-        (*ds.qyf).at(ix,iy)=0.0f;
-    (*ds.qx).at(ix,iy)=0.0f;
-        (*ds.qy).at(ix,iy)=0.0f;   
+        (*ds.dh).at(irow,icol)=0.0f;
+        (*ds.dqx).at(irow,icol)=0.0f;
+        (*ds.dqy).at(irow,icol)=0.0f;
+        (*ds.qxf).at(irow,icol)=0.0f;
+        (*ds.qyf).at(irow,icol)=0.0f;
+    (*ds.qx).at(irow,icol)=0.0f;
+        (*ds.qy).at(irow,icol)=0.0f;   
         return;
     }
     
     // CELL CENTER VALUES
-    zbp = (*ds.zb).at(ix,iy);
-    zbe = (*ds.zb).at(ie,iy);
-    zbn = (*ds.zb).at(ix,in);
-    zp=(*ds.z).at(ix,iy);
-    ze=(*ds.z).at(ie,iy);
-    zn=(*ds.z).at(ix,in);
-    hp  = std::max(0.0,(*ds.z).at(ix,iy)-(*ds.z).at(ix,iy));
+    zbp = (*ds.zb).at(irow,icol);
+    zbe = (*ds.zb).at(ie,icol);
+    zbn = (*ds.zb).at(irow,in);
+    zp=(*ds.z).at(irow,icol);
+    ze=(*ds.z).at(ie,icol);
+    zn=(*ds.z).at(irow,in);
+    hp  = std::max(0.0,(*ds.z).at(irow,icol)-(*ds.z).at(irow,icol));
     he=std::max(0.0,ze-zbe);
     hn=std::max(0.0,zn-zbn);
-    qp=(*ds.qx).at(ix,iy);
-    qe=(*ds.qx).at(ie,iy);
-    rp=(*ds.qy).at(ix,iy);
-    rn=(*ds.qy).at(ix,in);
+    qp=(*ds.qx).at(irow,icol);
+    qe=(*ds.qx).at(ie,icol);
+    rp=(*ds.qy).at(irow,icol);
+    rn=(*ds.qy).at(irow,in);
        
     // CELL FACE VALUES  
     zbpe=.5*(zbe+zbp);
@@ -421,27 +421,27 @@ void solver_dry(declavar& ds, unsigned int ix, unsigned int iy) {
     }
     
     // BOUNDARY CONDITIONS (WEIR DISCHARGE RATE)
-    if (iy==1 || iy==nyl)
+    if (icol==1 || icol==n_coll)
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
-    if (ix==1 || ix==nxl)
+    if (irow==1 || irow==n_rowl)
     {
         fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
     
     // SAVE MASS AND MOMENTUM FLUXES
-    (*ds.fn_1).at(ix,iy)=fn1;
-    (*ds.fn_2).at(ix,iy)=fn2;
-    (*ds.fn_3).at(ix,iy)=fn3;
-    (*ds.fe_1).at(ix,iy)=fe1;
-    (*ds.fe_2).at(ix,iy)=fe2;
-    (*ds.fe_3).at(ix,iy)=fe3;   
+    (*ds.fn_1).at(irow,icol)=fn1;
+    (*ds.fn_2).at(irow,icol)=fn2;
+    (*ds.fn_3).at(irow,icol)=fn3;
+    (*ds.fe_1).at(irow,icol)=fe1;
+    (*ds.fe_2).at(irow,icol)=fe2;
+    (*ds.fe_3).at(irow,icol)=fe3;   
 } 
 
-void solver_wet(declavar& ds, unsigned int ix, unsigned int iy){
+void solver_wet(declavar& ds, unsigned int irow, unsigned int icol){
 
-    unsigned int iw,ie, is,in,inn, nxl, nyl,dx,dy;
+    unsigned int iw,ie, is,in,inn, n_rowl, n_coll,dx,dy;
     double fe1,fe2,fe3,fn1,fn2,fn3,zw,zp,ze,zs,
         zn,znn,hw,he,hs,hn,hnn,fe2p,fn3p,qe,qp,qn,rw,rp,re,rn;
     double dze,dqe,dre,
@@ -456,54 +456,54 @@ void solver_wet(declavar& ds, unsigned int ix, unsigned int iy){
     float ldp,lde,ldn;
     bool lroe;
 
-    nxl = ds.nx;
-    nyl = ds.ny;
+    n_rowl = ds.n_row;
+    n_coll = ds.n_col;
     hdryl = ds.hdry;
     gaccl = ds.gacc;
-    kspl = (*ds.ks).at(ix,iy);
+    kspl = (*ds.ks).at(irow,icol);
     nueml = ds.nuem;
     cvdefl = ds.cvdef;
     
-    is=iy-1;
-    in=iy+1;
-    inn=fmin(iy+2,nyl+1);
+    is=icol-1;
+    in=icol+1;
+    inn=fmin(icol+2,n_coll+1);
     lroe = true;
-    iw=ix-1;
-    ie=ix+1;
+    iw=irow-1;
+    ie=irow+1;
    
     dx  = ds.dxy;
     dy  = ds.dxy;
     
-    ldp = (*ds.ldry).at(ix,iy);
-    lde = (*ds.ldry).at(ie,iy);
-    ldn = (*ds.ldry).at(ix,in);
+    ldp = (*ds.ldry).at(irow,icol);
+    lde = (*ds.ldry).at(ie,icol);
+    ldn = (*ds.ldry).at(irow,in);
 
     // CELL CENTER VALUES
-    zbw = (*ds.zb).at(iw,iy);
-    zbp = (*ds.zb).at(ix,iy);
-    zbe = (*ds.zb).at(ie,iy);
-    zbs = (*ds.zb).at(ix,is);
-    zbn = (*ds.zb).at(ix,in);
-    zbnn= (*ds.zb).at(ix,inn);
-    zw=(*ds.z).at(iw,iy);
-    zp=(*ds.z).at(ix,iy);
-    ze=(*ds.z).at(ie,iy);
-    zs=(*ds.z).at(ix,is);
-    zn=(*ds.z).at(ix,in);
-    znn=(*ds.z).at(ix,inn);
-    qp=(*ds.qx).at(ix,iy);
-    qe=(*ds.qx).at(ie,iy);
-    qn=(*ds.qx).at(ix,in);
-    rw=(*ds.qy).at(iw,iy);
-    rp=(*ds.qy).at(ix,iy);
-    re=(*ds.qy).at(ie,iy);
-    rn=(*ds.qy).at(ix,in);
+    zbw = (*ds.zb).at(iw,icol);
+    zbp = (*ds.zb).at(irow,icol);
+    zbe = (*ds.zb).at(ie,icol);
+    zbs = (*ds.zb).at(irow,is);
+    zbn = (*ds.zb).at(irow,in);
+    zbnn= (*ds.zb).at(irow,inn);
+    zw=(*ds.z).at(iw,icol);
+    zp=(*ds.z).at(irow,icol);
+    ze=(*ds.z).at(ie,icol);
+    zs=(*ds.z).at(irow,is);
+    zn=(*ds.z).at(irow,in);
+    znn=(*ds.z).at(irow,inn);
+    qp=(*ds.qx).at(irow,icol);
+    qe=(*ds.qx).at(ie,icol);
+    qn=(*ds.qx).at(irow,in);
+    rw=(*ds.qy).at(iw,icol);
+    rp=(*ds.qy).at(irow,icol);
+    re=(*ds.qy).at(ie,icol);
+    rn=(*ds.qy).at(irow,in);
 
     // zbpw=.5*(zbw+zbp);
     zbpe=.5*(zbe+zbp);
     // zbps=.5*(zbs+zbp);
     zbpn=.5*(zbn+zbp);
-    hp  = std::max(0.0,(*ds.z).at(ix,iy)-zbp);
+    hp  = std::max(0.0,(*ds.z).at(irow,icol)-zbp);
     hp0 = std::max(std::max(hdryl,hp),kspl);
     hw=std::max(0.0,zw-zbw);
     he=std::max(0.0,ze-zbe);
@@ -594,20 +594,20 @@ void solver_wet(declavar& ds, unsigned int ix, unsigned int iy){
     umn=qmn/std::max(hmn,hdryl);
     vmn=rmn/std::max(hmn,hdryl);
     
-    cnp=cvdefl*(*ds.us).at(ix,iy)*hp+nueml;
-    cne=cvdefl*(*ds.us).at(ie,iy)*he+nueml;
-    cnn=cvdefl*(*ds.us).at(ix,in)*hn+nueml;
+    cnp=cvdefl*(*ds.us).at(irow,icol)*hp+nueml;
+    cne=cvdefl*(*ds.us).at(ie,icol)*he+nueml;
+    cnn=cvdefl*(*ds.us).at(irow,in)*hn+nueml;
     hne=.5*(cnp+cne)*sqrt(hp*he);
     hnn=.5*(cnp+cnn)*sqrt(hp*hn);
 
     up=qp/hp0;
-    un=qn/std::max(std::max(hn,hdryl),(*ds.ks).at(ix,in));
-    us0=(*ds.qx).at(ix,is)/std::max(std::max(hs,hdryl),(*ds.ks).at(ix,is));
+    un=qn/std::max(std::max(hn,hdryl),(*ds.ks).at(irow,in));
+    us0=(*ds.qx).at(irow,is)/std::max(std::max(hs,hdryl),(*ds.ks).at(irow,is));
     use0=(*ds.qx).at(ie,is)/std::max(std::max((*ds.h).at(ie,is),hdryl),(*ds.ks).at(ie,is));
     une=(*ds.qx).at(ie,in)/std::max(std::max((*ds.h).at(ie,in),hdryl),(*ds.ks).at(ie,in));
     vp=rp/hp0;
-    ve=re/std::max(std::max(he,hdryl),(*ds.ks).at(ie,iy));
-    vw=rw/std::max(std::max(hw,hdryl),(*ds.ks).at(iw,iy));
+    ve=re/std::max(std::max(he,hdryl),(*ds.ks).at(ie,icol));
+    vw=rw/std::max(std::max(hw,hdryl),(*ds.ks).at(iw,icol));
     vwn=(*ds.qy).at(iw,in)/std::max(std::max((*ds.h).at(iw,in),hdryl),(*ds.ks).at(iw,in));
     ven=(*ds.qy).at(ie,in)/std::max(std::max((*ds.h).at(ie,in),hdryl),(*ds.ks).at(ie,in));
 
@@ -709,11 +709,11 @@ void solver_wet(declavar& ds, unsigned int ix, unsigned int iy){
     fn3=fn3c+fn3r+fn3p;
             
     // BOUNDARY CONDITIONS (WEIR DISCHARGE RATE) 
-    if (iy==1 || iy==nyl)
+    if (icol==1 || icol==n_coll)
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
-    if (ix==1 || ix==nxl)
+    if (irow==1 || irow==n_rowl)
     {
         fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
@@ -744,12 +744,12 @@ void solver_wet(declavar& ds, unsigned int ix, unsigned int iy){
     }
 
     // SAVE MASS AND MOMENTUM FLUXES
-    (*ds.fn_1).at(ix,iy)=fn1;
-    (*ds.fn_2).at(ix,iy)=fn2;
-    (*ds.fn_3).at(ix,iy)=fn3;
-    (*ds.fe_1).at(ix,iy)=fe1;
-    (*ds.fe_2).at(ix,iy)=fe2;
-    (*ds.fe_3).at(ix,iy)=fe3;
+    (*ds.fn_1).at(irow,icol)=fn1;
+    (*ds.fn_2).at(irow,icol)=fn2;
+    (*ds.fn_3).at(irow,icol)=fn3;
+    (*ds.fe_1).at(irow,icol)=fe1;
+    (*ds.fe_2).at(irow,icol)=fe2;
+    (*ds.fe_3).at(irow,icol)=fe3;
     
 } 
 
@@ -768,28 +768,28 @@ void flow_solver(declavar& ds)
 // fw3= momentum flux per unit width in y-direction
 //-----------------------------------------------------------------------
 
-    unsigned int ix, iy;
+    unsigned int irow, icol;
     double hp, dtl;
 
     dtl = ds.dtfl;
     
     // GET hp AND CHECK IF DRY OR WET
-    for(iy=1;iy<=ds.ny;iy++)
+    for(icol=1;icol<=ds.n_col;icol++)
     {
-        for(ix=1;ix<=ds.nx;ix++)
+        for(irow=1;irow<=ds.n_row;irow++)
         {  
-            hp=std::max(0.0,(*ds.z).at(ix,iy)-(*ds.zb).at(ix,iy));
-            (*ds.h).at(ix,iy) = hp;
+            hp=std::max(0.0,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
+            (*ds.h).at(irow,icol) = hp;
             
             if(hp<=ds.hdry)
             {
-              (*ds.qx).at(ix,iy)=0.0f;
-              (*ds.qy).at(ix,iy)=0.0f;
-              (*ds.us).at(ix,iy)=0.0f;
-              (*ds.ldry).at(ix,iy) = 1.0f;;          
+              (*ds.qx).at(irow,icol)=0.0f;
+              (*ds.qy).at(irow,icol)=0.0f;
+              (*ds.us).at(irow,icol)=0.0f;
+              (*ds.ldry).at(irow,icol) = 1.0f;;          
             } else
             {
-              (*ds.ldry).at(ix,iy) = 0.0f;         
+              (*ds.ldry).at(irow,icol) = 0.0f;         
             }
         }
     }
@@ -798,56 +798,56 @@ void flow_solver(declavar& ds)
      #pragma omp parallel
     {
         #pragma omp for collapse(2)
-        for(iy=1;iy<=ds.ny;iy++)
+        for(icol=1;icol<=ds.n_col;icol++)
         {
-            for(ix=1;ix<=ds.nx;ix++)
+            for(irow=1;irow<=ds.n_row;irow++)
             {  
-                if((*ds.ldry).at(ix,iy) == 1.0f)
+                if((*ds.ldry).at(irow,icol) == 1.0f)
                 {
-                    solver_dry(ds,ix,iy);
+                    solver_dry(ds,irow,icol);
                 } else
                 {
-                    solver_wet(ds,ix,iy);
+                    solver_wet(ds,irow,icol);
                 }
             }
         }
     }
     
     // CALCULATE TOTAL MASS AND MOMENTUM DERIVATIVE
-    for(iy=1;iy<=ds.ny;iy++)
+    for(icol=1;icol<=ds.n_col;icol++)
     {
-        for(ix=1;ix<=ds.nx;ix++)
+        for(irow=1;irow<=ds.n_row;irow++)
         {  
-            (*ds.dh).at(ix,iy)=(((*ds.fe_1).at(ix-1,iy)-(*ds.fe_1).at(ix,iy))/ds.dxy +((*ds.fn_1).at(ix,iy-1)-(*ds.fn_1).at(ix,iy))/ds.dxy)*dtl;
-            (*ds.dqx).at(ix,iy)=(((*ds.fe_2).at(ix-1,iy)-(*ds.fe_2).at(ix,iy))/ds.dxy +((*ds.fn_2).at(ix,iy-1)-(*ds.fn_2).at(ix,iy))/ds.dxy)*dtl;
-            (*ds.dqy).at(ix,iy)=(((*ds.fe_3).at(ix-1,iy)-(*ds.fe_3).at(ix,iy))/ds.dxy +((*ds.fn_3).at(ix,iy-1)-(*ds.fn_3).at(ix,iy))/ds.dxy)*dtl;
-            (*ds.qxf).at(ix,iy)=(*ds.fe_1).at(ix,iy)*dtl;
-            (*ds.qyf).at(ix,iy)=(*ds.fn_1).at(ix,iy)*dtl;
+            (*ds.dh).at(irow,icol)=(((*ds.fe_1).at(irow-1,icol)-(*ds.fe_1).at(irow,icol))/ds.dxy +((*ds.fn_1).at(irow,icol-1)-(*ds.fn_1).at(irow,icol))/ds.dxy)*dtl;
+            (*ds.dqx).at(irow,icol)=(((*ds.fe_2).at(irow-1,icol)-(*ds.fe_2).at(irow,icol))/ds.dxy +((*ds.fn_2).at(irow,icol-1)-(*ds.fn_2).at(irow,icol))/ds.dxy)*dtl;
+            (*ds.dqy).at(irow,icol)=(((*ds.fe_3).at(irow-1,icol)-(*ds.fe_3).at(irow,icol))/ds.dxy +((*ds.fn_3).at(irow,icol-1)-(*ds.fn_3).at(irow,icol))/ds.dxy)*dtl;
+            (*ds.qxf).at(irow,icol)=(*ds.fe_1).at(irow,icol)*dtl;
+            (*ds.qyf).at(irow,icol)=(*ds.fn_1).at(irow,icol)*dtl;
         }
     }
 
     // CAL NEW VALUES
-    for(iy=1;iy<=ds.ny;iy++)
+    for(icol=1;icol<=ds.n_col;icol++)
     {
-        for(ix=1;ix<=ds.nx;ix++)
+        for(irow=1;irow<=ds.n_row;irow++)
         {  
-            (*ds.z).at(ix,iy)=(*ds.z).at(ix,iy)+(*ds.dh).at(ix,iy);
-            hp=std::max(0.0,(*ds.z).at(ix,iy)-(*ds.zb).at(ix,iy));
-            (*ds.h).at(ix,iy)=hp;
+            (*ds.z).at(irow,icol)=(*ds.z).at(irow,icol)+(*ds.dh).at(irow,icol);
+            hp=std::max(0.0,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
+            (*ds.h).at(irow,icol)=hp;
             
             if(hp<ds.hdry) 
             {
-                (*ds.qx).at(ix,iy)= 0.0f;
-                (*ds.qy).at(ix,iy)= 0.0f;
-                (*ds.us).at(ix,iy)= 0.0f;
-                (*ds.ldry).at(ix,iy) = 1.0f;
+                (*ds.qx).at(irow,icol)= 0.0f;
+                (*ds.qy).at(irow,icol)= 0.0f;
+                (*ds.us).at(irow,icol)= 0.0f;
+                (*ds.ldry).at(irow,icol) = 1.0f;
             } else 
             {
-                (*ds.qx).at(ix,iy)=(*ds.qx).at(ix,iy)+(*ds.dqx).at(ix,iy);  // numerical flux at cell center
-                (*ds.qy).at(ix,iy)=(*ds.qy).at(ix,iy)+(*ds.dqy).at(ix,iy);  // numerical flux at cell center
-                (*ds.qx).at(ix,iy)=.1*(*ds.qxf).at(ix-1,iy)+.8*(*ds.qx).at(ix,iy)+.1*(*ds.qxf).at(ix,iy); 
-                (*ds.qy).at(ix,iy)=.1*(*ds.qyf).at(ix,iy-1)+.8*(*ds.qy).at(ix,iy)+.1*(*ds.qyf).at(ix,iy);
-                (*ds.ldry).at(ix,iy) = 0.0f;          
+                (*ds.qx).at(irow,icol)=(*ds.qx).at(irow,icol)+(*ds.dqx).at(irow,icol);  // numerical flux at cell center
+                (*ds.qy).at(irow,icol)=(*ds.qy).at(irow,icol)+(*ds.dqy).at(irow,icol);  // numerical flux at cell center
+                (*ds.qx).at(irow,icol)=.1*(*ds.qxf).at(irow-1,icol)+.8*(*ds.qx).at(irow,icol)+.1*(*ds.qxf).at(irow,icol); 
+                (*ds.qy).at(irow,icol)=.1*(*ds.qyf).at(irow,icol-1)+.8*(*ds.qy).at(irow,icol)+.1*(*ds.qyf).at(irow,icol);
+                (*ds.ldry).at(irow,icol) = 0.0f;          
             }  
         }
     } 
@@ -856,7 +856,7 @@ void flow_solver(declavar& ds)
 void write_results(declavar& ds, int print_tag)
 {
 
-    unsigned int iy,ix;
+    unsigned int icol,irow;
     int a = 0;
     double ux;
     
@@ -864,26 +864,26 @@ void write_results(declavar& ds, int print_tag)
     std::string filext(".txt");
     tprint += filext;
 
-    arma::mat filedataR(ds.nx*ds.ny,10); 
+    arma::mat filedataR(ds.n_row*ds.n_col,10); 
     
-    for(iy=1;iy<=ds.ny;iy++)
+    for(icol=1;icol<=ds.n_col;icol++)
     {
-        for(ix=1;ix<=ds.nx;ix++)
+        for(irow=1;irow<=ds.n_row;irow++)
         {
-            if ((*ds.h).at(ix,iy)>0.0f)
+            if ((*ds.h).at(irow,icol)>0.0f)
             {
-                ux=sqrt((*ds.ux).at(ix,iy) * (*ds.ux).at(ix,iy) +
-                        (*ds.uy).at(ix,iy) * (*ds.uy).at(ix,iy));
-                filedataR(a,0) = ix;  
-                filedataR(a,1) = iy; 
-                filedataR(a,2) = (*ds.z).at(ix,iy); 
-                filedataR(a,3) = (*ds.z).at(ix,iy) - (*ds.zb).at(ix,iy);
-                filedataR(a,4) = (*ds.ux).at(ix,iy); 
-                filedataR(a,5) = (*ds.uy).at(ix,iy); 
-                filedataR(a,6) = (*ds.qx).at(ix,iy)*ds.dxy; // m3/s/m -> m3/s
-                filedataR(a,7) = (*ds.qy).at(ix,iy)*ds.dxy; // m3/s/m -> m3/s
+                ux=sqrt((*ds.ux).at(irow,icol) * (*ds.ux).at(irow,icol) +
+                        (*ds.uy).at(irow,icol) * (*ds.uy).at(irow,icol));
+                filedataR(a,0) = irow;  
+                filedataR(a,1) = icol; 
+                filedataR(a,2) = (*ds.z).at(irow,icol); 
+                filedataR(a,3) = (*ds.z).at(irow,icol) - (*ds.zb).at(irow,icol);
+                filedataR(a,4) = (*ds.ux).at(irow,icol); 
+                filedataR(a,5) = (*ds.uy).at(irow,icol); 
+                filedataR(a,6) = (*ds.qx).at(irow,icol)*ds.dxy; // m3/s/m -> m3/s
+                filedataR(a,7) = (*ds.qy).at(irow,icol)*ds.dxy; // m3/s/m -> m3/s
                 filedataR(a,8) = ux; 
-                filedataR(a,9) = (*ds.us).at(ix,iy); 
+                filedataR(a,9) = (*ds.us).at(irow,icol); 
                 a = a + 1;
             }
         }
@@ -907,10 +907,10 @@ void write_results(declavar& ds, int print_tag)
     
 int main(int argc, char** argv) 
 {   
-    unsigned int nxl = 1034, nyl = 722;
-    declavar ds(nxl+2,nyl+2); 
+    unsigned int n_rowl = 722, n_coll = 1034;
+    declavar ds(n_rowl+2,n_coll+2); 
 
-    unsigned int a, ix, iy, print_step, print_next, qmelt_rowi;
+    unsigned int a, irow, icol, print_step, print_next, qmelt_rowi;
     double c0,v0,u0,hp, hpall, qmelti ; 
                
 //   // input/read data
@@ -920,13 +920,13 @@ int main(int argc, char** argv)
     //kapa = -2.    // /  -2=1.Ord ; -1=2.Ord   // KOMISCH, DASS REAL/INTEGER ->schauen bei Rolands Dateien
     ds.arbase = ds.dxy * ds.dxy;
     //betas = 2. // Chezy (parameter)
-    //ksfix = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
+    //ksfirow = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
     ds.cvdef = 0.07; // for turbulent stress calc
     ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
     print_step = 3600; // in seconds
 
-    ds.nx = ds.mx - 2;
-    ds.ny = ds.my - 2;
+    ds.n_row = ds.m_row - 2;
+    ds.n_col = ds.m_col - 2;
     
     read_geo(ds); // DEM
     read_load(ds); // snowmelt load
@@ -950,23 +950,23 @@ int main(int argc, char** argv)
         hpall = 0.0f;
         
         // SPACE LOOP
-        for(iy=1;iy<=ds.ny;iy++)
+        for(icol=1;icol<=ds.n_col;icol++)
         {
-            for(ix=1;ix<=ds.nx;ix++)
+            for(irow=1;irow<=ds.n_row;irow++)
             {
-                hp = (*ds.h).at(ix,iy);
+                hp = (*ds.h).at(irow,icol);
                 if(hp>ds.hdry)
                 {
-                    (*ds.ldry).at(ix,iy)=0.0f;
-                    hp=std::fmax((*ds.h).at(ix,iy),ds.hdry);
-                    hpall = std::fmax(hpall,(*ds.h).at(ix,iy));
-                    c0=sqrt(ds.gacc*(*ds.h).at(ix,iy));
-                    u0=std::fmax(.000001,fabs((*ds.qx).at(ix,iy)/hp));
-                    v0=std::fmax(.000001,fabs((*ds.qy).at(ix,iy)/hp));
+                    (*ds.ldry).at(irow,icol)=0.0f;
+                    hp=std::fmax((*ds.h).at(irow,icol),ds.hdry);
+                    hpall = std::fmax(hpall,(*ds.h).at(irow,icol));
+                    c0=sqrt(ds.gacc*(*ds.h).at(irow,icol));
+                    u0=std::fmax(.000001,fabs((*ds.qx).at(irow,icol)/hp));
+                    v0=std::fmax(.000001,fabs((*ds.qy).at(irow,icol)/hp));
                     ds.dtfl=fmin(fmin(ds.cfl*ds.dxy/(u0+c0),ds.cfl*ds.dxy/(v0+c0)),ds.dtfl);
                 }else 
                 {
-                    (*ds.ldry).at(ix,iy)=1.0f;
+                    (*ds.ldry).at(irow,icol)=1.0f;
                 }
                 ds.dtfl=fmin(print_next - ds.tim, ds.dtfl);
             }
@@ -983,11 +983,11 @@ int main(int argc, char** argv)
         }
         
         qmelti = (*ds.qmelt).at(qmelt_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
-        for (a=0;a<=(*ds.basinxy).col(1).n_elem;a++){
-            ix = (*ds.basinxy).at(a,0);
-            iy = (*ds.basinxy).at(a,1);            
-            (*ds.z).at(ix,iy) = (*ds.z).at(ix,iy) + qmelti;
-            (*ds.h)(ix,iy)=std::max((*ds.z).at(ix,iy)-(*ds.zb).at(ix,iy),0.0);
+        for (a=0;a<=(*ds.basin_rowy).col(1).n_elem;a++){
+            irow = (*ds.basin_rowy).at(a,0);
+            icol = (*ds.basin_rowy).at(a,1);            
+            (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;
+            (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
           }
         
         // FLOW SOLVERS
