@@ -89,7 +89,7 @@ void read_geo(declavar& ds)
 {
     unsigned int iy,ix,a;  
     arma::mat filedata; 
-    bool flstatus =  filedata.load("model_geo.txt",arma::csv_ascii);
+    bool flstatus =  filedata.load("model_geo.fluxos",arma::csv_ascii);
    
     if(flstatus == true) {
         for(a=0;a<filedata.col(1).n_elem;a++){
@@ -99,7 +99,7 @@ void read_geo(declavar& ds)
             (*ds.ks).at(ix,iy) = filedata(a,3); 
         }
     } else{
-            std::cout << "problem with loading 'modelgeo.txt'" << std::endl;
+            std::cout << "problem with loading 'modelgeo.fluxos'" << std::endl;
     } 
 }
 
@@ -110,7 +110,7 @@ void read_load(declavar& ds)
     double tmelts,vmelt;
     
     arma::mat filedataB; 
-    bool flstatusB =  filedataB.load("Basin_Info.txt",arma::csv_ascii);
+    bool flstatusB =  filedataB.load("Basin_Info.fluxos",arma::csv_ascii);
     if(flstatusB == true) {
         for(a=0;a<filedataB.col(0).n_elem;a++){
             ixb = filedataB(a,0);  
@@ -121,12 +121,12 @@ void read_load(declavar& ds)
             //printf("%f\n",(*ds.basinxy).at(a,1));
         }
     } else{
-            std::cout << "problem with loading 'Basin_Info.txt'" << std::endl;
+            std::cout << "problem with loading 'Basin_Info.fluxos'" << std::endl;
     } 
     
     // reading qmelt 
     arma::mat filedataQ; 
-    bool flstatusQ =  filedataQ.load("Qmelt_info.txt",arma::csv_ascii);
+    bool flstatusQ =  filedataQ.load("Qmelt_info.fluxos",arma::csv_ascii);
     if(flstatusQ == true) {
         for(a=0;a<filedataQ.col(1).n_elem;a++){
             tmelts = filedataQ(a,0);  // t melt seconds
@@ -135,7 +135,7 @@ void read_load(declavar& ds)
             (*ds.qmelt).at(a,1) = vmelt;  
         }
     } else{
-            std::cout << "problem with loading 'Qmelt_info.txt'" << std::endl;
+            std::cout << "problem with loading 'Qmelt_info.fluxos'" << std::endl;
     } 
     
 }
@@ -211,7 +211,7 @@ void initiation(declavar& ds) {
     }
  
     arma::mat filedata; 
-    bool flstatus = filedata.load("initial_conditions.txt",arma::csv_ascii);
+    bool flstatus = filedata.load("initial_conditions.fluxos",arma::csv_ascii);
 
     if(flstatus == true) 
     {
@@ -230,7 +230,7 @@ void initiation(declavar& ds) {
         }
     } else
     {
-        std::cout << "No initial conditions (file 'initial_conditions.txt not found). All variables set to zero.'" << std::endl;
+        std::cout << "No initial conditions (file 'initial_conditions.fluxos not found). All variables set to zero.'" << std::endl;
          for(iy=1;iy<=ds.ny;iy++)
         {
             for(ix=1;ix<=ds.nx;ix++)
