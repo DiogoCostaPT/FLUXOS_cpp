@@ -62,6 +62,10 @@ public:
     fn_3= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     ldry= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
     
+    conc_SW= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    h0= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    ldry_prev= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
+    
     basin_rowy= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(210290,2));
     qmelt = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(1633,2));
   }
@@ -79,10 +83,12 @@ public:
         dh,dqx ,dqy,                                  // changes in h[irow][icol], p[irow][icol] and q[irow][icol]
         //sbm_row,sbm_col,                                  // for calc of weight of water (bed slope term) (solver_wet)
         ks, //cfri                                  // Friction (Chezy model is not being used for now)
-        fe_1,fe_2,fe_3,fn_1,fn_2,fn_3; 
-    std::unique_ptr<arma::Mat<float>> ldry,basin_rowy,qmelt;   
+        fe_1,fe_2,fe_3,fn_1,fn_2,fn_3,
+        conc_SW,h0; 
+    std::unique_ptr<arma::Mat<float>> ldry,basin_rowy,qmelt,ldry_prev;   
     double hdry,                                    //minimum water depth
-        dtfl,tim;                                   // timestep for flow computation
+        dtfl,tim,                                   // timestep for flow computation
+        D_coef;
 };
 
 void read_geo(declavar& ds)
@@ -226,6 +232,7 @@ void initiation(declavar& ds) {
             (*ds.qx).at(irow,icol) = filedata(a,6);
             (*ds.qy).at(irow,icol) = filedata(a,7);
             (*ds.us).at(irow,icol) = filedata(a,9);
+            (*ds.conc_SW).at(irow,icol) = filedata(a,10);
             (*ds.ldry).at(irow,icol) = 0.0f;
         }
     } else
@@ -853,6 +860,396 @@ void flow_solver(declavar& ds)
     } 
 }
 
+// ADE solver
+void adesolver(declavar& ds, int it)
+{
+        // qes(arguments,...) - only input variables, not output variables
+  //!-----------------------------------------------------------------------
+  //!
+  //!   function    - conservative material
+  //!
+  //!   latest revision - march , 2013
+  //!  
+  //!
+  //! 
+  //! DC: INPUTS
+  //!     it - timestep index for flow computation (number of timestep)
+  //!     itmb - number of iterationstep of moveable bed computation (from mvbed.for)
+  //!     dtdp - dt/porosity (from source.for)     
+  //!     sour - source term for each size (from source.for) 
+  //!
+  //!-----------------------------------------------------------------------
+
+
+    // use comn
+    // implicit none
+
+    arma::mat qfcds(ds.m_row*ds.m_col,1);  //double qfcds(0:mx);
+    double pfw,pfe,qfs,qfn,ntp, pfce, he,fp,fe, hne, pfde,area,areae,arean,hn,pp,qp,fw,
+       fee,fs,fn,fnn,hnue,fem,hnn,qfcn,qfdn,fnm, cvolrate,cf,cbilan,dc,cvolpot,cvolrat,con, hnew, D_coef_x, D_coef_y;
+    long unsigned int ix,iy,a;//!, printlim
+    arma::mat cmaxr(ds.m_row,ds.m_col); //double  cmaxr(0:mx,0:my)
+    arma::mat cminr(ds.m_row,ds.m_col); //cminr(0:mx,0:my);
+    double dx,dy,dyn,hp,ie,iee,in, inn, is,iw;
+    double nt =1 ; // eddy viscosity (m2/s) = 1,
+    double sigc = 0.5;
+    double cflmb = 1; // this may be removed I think
+     
+    if (it==1 && ds.tim==0.) { // tim==0. because otherwise it will overwrite the conc from the initial_conditions.csv
+// ...initial conditions
+       
+
+ //$OMP DO PRIVATE(ix,iy)
+ //      for (a=1;a<=ds.n_col*ds.n_row;a++) {
+ //           iy=((a-1)/ds.n_row)+1;
+//            ix=a-ds.n_row*(iy-1);
+//            (*ds.conc_SW)(ix,iy)=10; //conc_SW(ix,iy)=conc_c0;
+ //      }
+       //$OMP END DO
+} else if(it>1) {
+//$OMP DO PRIVATE(ix,iy,hnew)
+// ...adjust concentration to new depth
+       for (a=1;a<=ds.n_col*ds.n_row;a++) {
+            iy= ((a-1)/ds.n_row)+1;
+            ix=a-ds.n_row*(iy-1);
+            // DON'T UNDERSTAND WHY BUT I CANNOT REMOVE THIS - otherwise the solution blowsup
+            cmaxr(ix,iy)=std::max((*ds.conc_SW)(ix-1,iy),std::max((*ds.conc_SW)(ix+1,iy),std::max((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
+            cminr(ix,iy)=std::min((*ds.conc_SW)(ix-1,iy),std::max((*ds.conc_SW)(ix+1,iy),std::max((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
+            hnew=(*ds.h)(ix,iy);
+               if((*ds.ldry)(ix,iy)==0){
+                  //hnew=hnew-dhg(ix,iy); // GW adjustment
+                  (*ds.conc_SW)(ix,iy)=(*ds.conc_SW)(ix,iy)*(*ds.h0)(ix,iy)/hnew;
+               } else if(it==1 && ds.tim!=0.) {
+               // do nothing
+               } else {
+                  (*ds.conc_SW)(ix,iy)=0.0f;
+               };
+       }
+    //$OMP END DO
+}
+
+        D_coef_x=ds.D_coef;
+        D_coef_y=ds.D_coef;
+            
+//...    POLLUTION SOURCES
+////$OMP PARALLEL
+//if (isqes2_on==1) call isqes2            // instantenous
+//if (csqes2_on==1) call csqes2          // continuous
+//if (gusqes2_on==1) call gusqes2        // gullies
+//if (gusqes2_on==1) call gusqes2_buildup
+//if (load_u_src>0) call usqes2                      // uniform
+////$OMP END PARALLEL
+
+// 2.1) starts the y-direction calculation
+
+
+//do 80 iy=1,ds.n_col // the model start by calculating iy = 1 (and calculates all ix), and so on and so forth
+//$OMP DO
+for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
+            iy= ((a-1)/ds.n_row)+1;
+            ix=a-ds.n_row*(iy-1);
+
+//        2.1) initialization and BC
+//          2.1.1) initializing
+        dy = ds.dxy; //dy=dy0(iy)            // cell x-length
+        is=iy-1;               // previous cell y-direction
+        in=iy+1;               // next cell y-direction
+        inn=std::min(iy+2,ds.n_col+1);     // next-next cell y-direction (limiter to make the model stop in a limit of the domain)
+        dyn=ds.dxy; //dy=dy0(in);           // ???
+//     
+//       BC (east flux into the domain - ix = 0)
+        if (ix==1) {
+            pfce=(*ds.conc_SW)(0,iy)*(*ds.qx)(0,iy)*dy;     // convective flux at x = 0 ("c" refers to convective)
+            hp=std::max((*ds.h)(1,iy),ds.hdry);                  // limiter to avoid instabilities (small values of h)
+            he=std::max((*ds.h)(2,iy),ds.hdry);                  // limiter to avoid crashing
+            fp=(*ds.conc_SW)(0,iy);
+            fe=(*ds.conc_SW)(1,iy);
+            //hne=sqrt(hp*nt(1,iy)*he*nt(2,iy))/sigc/abs(x(2)-x(1))*dy*D_coef_x;  // [m3/s] - ?????
+            hne=sqrt(hp*nt*he*nt)/sigc/abs(dx)*dy*D_coef_x;  // [m3/s] - ?????
+            pfde=0.;                              // no diffusive flux over boundary
+            pfe=pfce;                             // now we can write the x-flux over the east boundary
+        }
+//
+//         2.1.3) starts the x-direction calculation
+//       do 90 ix=1,ds.n_row
+//            if (itmb==10 &&  iy.ge.63  &&  ix.ge.33) {      // ???
+          //continue
+          
+          // ???
+    //            endif
+            dx=ds.dxy;//dx0(ix)           // cell x-length
+            iw=ix-1;              // previous cell x-direction      
+            ie=ix+1;              // next cell x-direction
+            iee=std::min(ix+2,ds.n_row+1);    // next-next cell x-direction (limiter to make the model stop in a limit of the domain)       
+
+    // ...       check if grid dry
+            if((*ds.ldry)(ix,iy)){  // if true set everything to zero (flow2 model gives this statement)
+                pfe=0.;
+                qfcds(ix)=0.;
+                (*ds.conc_SW)(ix,iy)=0.;
+                continue; //goto 90
+            };
+
+//.. adding the GW exfiltration contribution to the SW water quality   
+//                     if(MconcGW2SW(ix,iy,1,1)>0)   { //exfiltration
+ //                         if(ldry_prev(ix,iy)==1) {
+//                              (*ds.conc_SW)(ix,iy)=MconcGW2SW(ix,iy,1,1)/(dx0(ix)*dy0(iy)*(*ds.h)(ix,iy))
+//                              continue; //goto 90
+ //                       }
+//                          if(ldry_prev(ix,iy)==0) (*ds.conc_SW)(ix,iy)=((*ds.conc_SW)(ix,iy)*dy0(iy)*dx0(ix)*&
+//                          (*ds.h0)(ix,iy)+MconcGW2SW(ix,iy,1,1))/(dy0(iy)*dx0(ix)*(*ds.h)(ix,iy))
+ //                    }              
+                     
+        ////////!!!!!!!!!!!!!!!!!!!!!!
+        // DC 
+        // Calculation of Dispersion in rivers (////!!!!!!!! WRONG)
+//         if (D_coef==0.) {
+//            D_coef_x=phi_elder*h(ix,iy)*us(ix,iy)   // Lateral Dispersion (Elder, 1959) 
+//            D_coef_y= 0.011*v(ix,iy)**2*B_average**2/(h(ix,iy)*us(ix,iy))
+//        else         // defined by the user
+//            D_coef_x=ds.D_coef;
+//            D_coef_y=ds.D_coef;
+//        endif
+       
+    // ...       values in center of cells (area of the cells, water depth, flows, concentrations)
+            area=ds.arbase;//(ix,iy);      // area of the cell (being analyzed)
+            areae=ds.arbase;//(ie,iy);     // area of the adjacent cell - east (not yet calculated for the present time step)
+            arean=ds.arbase;//(ix,in);     // area of the adjacent cell - north
+            ntp = nt; // ntp=nt(ix,iy);           // eddy viscosity [m/s]
+            hp=(*ds.h)(ix,iy);             // water depth of the cell (being analyzed)
+            he=(*ds.h)(ie,iy);             // water depth of the adjaent cell - east (not yet calculated for the present time step)
+            hn=(*ds.h)(ix,in);             // water depth of the adjaent cell - west (not yet calculated for the present time step)
+            pp=(*ds.qx)(ix,iy);            // specific discharge at cell face
+            qp=(*ds.qy)(ix,iy);            // specific discharge at cell face
+            fw=(*ds.conc_SW)(iw,iy);       // concentration at x-1 cell - west
+            fp=(*ds.conc_SW)(ix,iy);       // concentration at cell (being analyzed)
+            fe=(*ds.conc_SW)(ie,iy);       // concentration at x+1 cell - east
+            fee=(*ds.conc_SW)(iee,iy);     // concentration at x+2 cell - east
+            fs=(*ds.conc_SW)(ix,is);       // concentration at y-1 cell - south
+            fn=(*ds.conc_SW)(ix,in);       // concentration at y+1 cell - north
+            fnn=(*ds.conc_SW)(ix,inn);     // concentration at y+2 cell - north
+
+
+    //         2.1.4) determining the incoming at the cell in the X- and Y- direction (from the previous time-step)
+
+    // ...       (X-direction) - fluxes over west face
+            pfw=pfe;       // convective + diffusive flux [m3/s] (mass balance) - coming from adjacent cells
+
+    // ...       (Y-direction) - sum of diffusive+convective flux over south face 
+            qfs=qfcds(ix);             //[m3/s]
+
+    //         2.1.5) determining the diffusion at the present time step X-direction (pfde, where d refers to diffusion)
+ 
+    //       x   location of x-lines [m]
+    //       y   location of y-lines [m]
+
+    // ...       diffusive flux and mean concentration at east face
+            if((*ds.ldry)(ie,iy)==0)           {             // to check if the cell is not dry
+                // hnue=std::max(hp*nt(ix,iy)*he*nt(ie,iy),.0001);     // limiter
+                hnue=std::max(hp*nt*he*nt,.0001);     // limiter
+                //hne=sqrt(hnue)/sigc/abs(x(ix)-x(ie))*dy*D_coef_x;  // [m3/s] - x(ix)-x(ie) is the distance between the cell and the east-adjacent cell
+                hne=sqrt(hnue)/sigc/abs(dx)*dy*D_coef_x;  // [m3/s] - x(ix)-x(ie) is the distance between the cell and the east-adjacent cell
+                pfde=-hne*(fe-fp);                     // diffusive flux
+
+                    if(pp>0.){    // for the calculation of the advetive flux - the concentration average according to the direction of the flow (but don't have experience with this method)
+        //                fem=fp
+                             if ((*ds.ldry)(iw,iy)==0) {
+                                fem=-.125*fw+.75*fp+.375*fe;        // value at cell face
+                             }else {
+                                fem=0.5*fp+0.5*fe;        // value at cell face
+                             }             
+                    } else{
+                          if ((*ds.ldry)(iee,iy)==0) {
+                            fem=.375*fp+.75*fe-.125*fee;
+                          }else {
+                            fem=0.5*fp+0.5*fe;   
+                          }
+                    }
+            }else { // if no flow, no concentration
+            fem=0.;
+            pfde=0.;
+            }
+
+//         2.1.6) if Boundary (overight the BC)
+               
+            fem=std::max(0.,fem);
+
+            if(ix==ds.n_row){  // if we are at the Boundary - overwrite with boundary condition
+                fem=(*ds.conc_SW)(ds.n_row+1,iy);
+            }
+   
+    //         2.1.7) Calculating the advetive flux - X-direction     
+    //            pfce=pj(ix,iy)*fem*dy          // [m3/s]
+            pfce=pp*fem*dy;          // [m3/s]
+
+    //         2.1.8) Summing the advetive and diffusinve terms (X-direction)   
+            pfe=pfce+pfde;                   // total flux = advective flux + diffusive
+
+// ...       total flux at east face
+//            pfce=pj(ix,iy)*fem*dy          // [m3/s]
+            if(pfe<0){           // inflwo from east cell
+              if((*ds.ldry)(ie,iy)==0)    { // volume rate in east cell
+                cvolrate=-(fe*he)*areae/ds.dtfl; //cvolrate=-(fe*he)*areae/dt_q; 
+                pfe=std::max(pfe,cvolrate*cflmb); //limit to available material
+              }else {
+                pfe=0.;
+              }
+            }             
+
+    //         2.1.5) determining the diffusion at the present time step Y-direction (pfde, where "d" refers to diffusion)
+
+    //!!!!!!!!!!!!!!!!! DOUBTS (start) (AGAIN, the same doubt)
+    // is "hne" the dispersion coefficient ?, in the case of the flow model it is the turbulent stress 
+    // what is: "sigc" and "facdif"
+
+            if((*ds.ldry)(ix,in)==0)           {
+                //hnue=std::max(.0001,hp*ntp*hn*nt(ix,in));
+                hnue=std::max(.0001,hp*ntp*hn*nt);
+                hnn=sqrt(hnue)/sigc/dyn*dx*D_coef_y;              // [m3/s]
+                qfdn=-hnn*(fn-fp);                    // diffusive flux
+                if(qp>0.)       {
+                        if((*ds.ldry)(ix,is)==0) {
+                             fnm=-.125*fs+.75*fp+.375*fn;       // value at cell face
+                        }else {
+                            fnm=0.5*fp+.5*fn;    
+                       }
+                }else{
+                       if ((*ds.ldry)(ix,inn)==0) {
+                            fnm=.375*fp+.75*fn-.125*fnn;
+                       }else {
+                           fnm=.5*fp+.5*fn;
+                      }
+                }
+            } else {
+                fnm=0.;
+                qfdn=0.;
+            }
+            
+            fnm=std::max(0.,fnm);
+
+    // ???????????????????????????????????????????
+    //!!!!!!!!!!!!!!!!! DOUBTS (end)
+
+    //         2.1.6) if Boundary (overight the BC)
+            if(iy==ds.n_col)    {  // overwrite with boundary condition
+                fnm=(*ds.conc_SW)(ix,ds.n_col+1);
+            }
+
+    //         2.1.7) Calculating the advetive flux - X-direction  
+    //            qfcn=qj(ix,ij)*fnm*dx        // [m3/s]
+            qfcn=qp*fnm*dx;        // [m3/s]
+
+    //         2.1.8) Summing the advetive and diffusinve terms (X-direction)   
+            qfn=qfcn+qfdn;
+            if(qfn<0)    {             // inflwo from north cell
+                if((*ds.ldry)(ix,in)==0)    {
+        //          sourn=sour(i,ix,in)
+                //cvolrate=-(fn*hn+sourn*dt_qes)*arean/dt_qes
+                cvolrate=-(fn*hn)*arean/ds.dtfl; //cvolrate=-(fn*hn)*arean/dt_q;
+                qfn=std::max(qfn,cvolrate*cflmb);      //limit to available material
+                }else {
+                qfn=0.;
+                }
+            }
+
+    // ...       available volume rate [m3/s] in actual cell
+            cvolpot=(fp*hp)*area; // [m3] from previous time-step
+            cvolrat=cvolpot/ds.dtfl +(pfw+qfs); //cvolrat=cvolpot/dt_q +(pfw+qfs); // inflow during actual time-step
+
+    // ...       limit flux out of actual cell due to available material
+            if (cvolrat>0.)  {               // outflow is possible
+                if(pfe>0.  &&  qfn>0.) {   // both outflow
+                    if (pfe+qfn > cvolrat) {    // limit outflow to volrat
+                        cf=qfn/(pfe+qfn);
+                        pfe= (1.-cf)*cvolrat;            // [m3/s]
+                        qfn=cf*cvolrat;
+                    }
+                } else if(pfe>0.){      // qfn is inflow
+                    pfe=std::min(pfe,(cvolrat-qfn));
+                } else if(qfn>0.){      // pfe is inflow
+                    qfn=std::min(qfn,(cvolrat-pfe));         
+                }
+            }else { // bilance outflow with inflow
+                if(pfe>=0.  &&  qfn<0.)  { //restrict pfe to bilan
+                    cbilan=cvolrat-qfn;                
+                    if(cbilan>0.) {
+                        pfe=std::min(pfe,cbilan);
+                    }else{
+                        pfe=0.;
+                    }
+                } else if(pfe<0.  &&  qfn>=0.)  {
+                    cbilan=cvolrat-pfe;
+                    if(cbilan>0.) {
+                        qfn=std::min(qfn,cbilan);
+                    }else{
+                        qfn=0.;
+                    }
+                } else if(pfe>=0.  &&  qfn>=0.)  {
+                    pfe=0.;
+                    qfn=0.;
+                }        
+            }                             
+
+            dc=(pfw-pfe + qfs-qfn)*ds.dtfl/area; // dc=(pfw-pfe + qfs-qfn)*dt_q/area;  // [m]
+            con=(*ds.conc_SW)(ix,iy)+dc/(*ds.h)(ix,iy);
+ 
+            // limiter for wetting problem (fluxes do not acompanny water elevation)
+            if ((*ds.ldry_prev)(ix,iy)==1) {
+                con=std::max(cminr(ix,iy),con);
+                //con=std::max(conc_c_BC(m,3),con); // Removed because there is no BC now - check
+             }
+            
+ //          scmin=cmax(ix,iy)/con 
+ //          scmin=min(scmin,1.)
+           
+  //         scmax=cmin(ix,iy)/con
+  //         scmax=max(scmax,1.)
+           
+  //         con=min(cmaxr(ix,iy),con)
+  //         con=max(cminr(ix,iy),con)
+           
+  //         pfe=scmin*pfe
+   //        pfe=scmax*pfe
+   //        qfn=scmin*qfn
+   //        qfn=scmax*qfn
+           
+            if (con<0) { // DC - to be changed // limiter
+//                write(nout, "(A23,I4,A7,I4,A11,f12.5,A6,f12.5,A5,f12.5,A5,f12.5,A6,f12.5,A7,&
+//                    &f12.5,A7,f12.5,A7,f12.5,A7,f12.5,A8,f12.5,A8,f12.5,A7,f12.5,A7,f12.5,A8,&
+//                    &f12.5,A8,f12.5,A6,f12.5,A6,f12.5,A6,f12.5,A6,f12.5)") 'Warning: C < 0 mg/l: ix= ',&
+//                    ix,' , iy= ',iy, ' ,t (sec)= ',tim,' ,C0= ',(*ds.conc_SW)(ix,iy),' ,C= ',con,&
+//                    ' h= ', h(ix,iy),' h0= ', h0(ix,iy),' ,pfw= ', pfw1,' ,pfe= ', pfe1,&
+//                     ' ,qfs= ', qfs1, ' ,qfn= ', qfn1, ' ,pp(x)= ', pp, ' ,pq(y)= ', qp, &
+//                     ' ,ppw= ', pj(iw,iy), ' ,pps= ',  qj(ix,is), ' ,u(x)= ', u(ix,iy), &
+//                     ' ,v(y)= ', v(ix,iy), ' ,he= ', h(ie,iy), ' ,hw= ', h(iw,iy), ' ,hs= ', &
+//                     h(ix,is), ' ,hn= ', h(ix,in)
+ 
+            con=0.;
+            }
+
+            (*ds.conc_SW)(ix,iy)=con;
+
+         
+            if (isnan(con)) { 
+                 std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                con=0 ;
+            }
+            
+    // ...       flux over south face
+             qfcds(ix)=qfn;  // convective+diffusive flux
+  
+
+            }//    90       continue    //loop ix
+//              if (iy==iygr(iprgy))   {
+//                iprgy =iprgy+1
+//              endif
+
+//     80     continue    //loop iy
+//$OMP END DO
+
+//    return 0;
+}
+
 void write_results(declavar& ds, int print_tag)
 {
 
@@ -864,7 +1261,7 @@ void write_results(declavar& ds, int print_tag)
     std::string filext(".txt");
     tprint += filext;
 
-    arma::mat filedataR(ds.n_row*ds.n_col,10); 
+    arma::mat filedataR(ds.n_row*ds.n_col,11); 
     
     for(icol=1;icol<=ds.n_col;icol++)
     {
@@ -884,13 +1281,14 @@ void write_results(declavar& ds, int print_tag)
                 filedataR(a,7) = (*ds.qy).at(irow,icol)*ds.dxy; // m3/s/m -> m3/s
                 filedataR(a,8) = ux; 
                 filedataR(a,9) = (*ds.us).at(irow,icol); 
+                filedataR(a,10) = (*ds.conc_SW).at(irow,icol); // adesolver
                 a = a + 1;
             }
         }
     }
    
-    arma::mat filedata(std::max(0,a-1),10); 
-    filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,9));
+    arma::mat filedata(std::max(0,a-1),11); 
+    filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,10));
     
     bool flstatus =  filedata.save(tprint,arma::csv_ascii);
    
@@ -907,7 +1305,7 @@ void write_results(declavar& ds, int print_tag)
     
 int main(int argc, char** argv) 
 {   
-    unsigned int n_rowl = 722, n_coll = 1034;
+    unsigned int n_rowl = 722, n_coll = 1034, it = 0;
     declavar ds(n_rowl+2,n_coll+2); 
 
     unsigned int a, irow, icol, print_step, print_next, qmelt_rowi;
@@ -923,10 +1321,12 @@ int main(int argc, char** argv)
     //ksfirow = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
     ds.cvdef = 0.07; // for turbulent stress calc
     ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
-    print_step = 3600; // in seconds
+    print_step = 1; // in seconds
 
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
+    
+    ds.D_coef = 0.01;
     
     read_geo(ds); // DEM
     read_load(ds); // snowmelt load
@@ -955,6 +1355,8 @@ int main(int argc, char** argv)
             for(irow=1;irow<=ds.n_row;irow++)
             {
                 hp = (*ds.h).at(irow,icol);
+                (*ds.h0)(irow,icol) = hp; // adesolver
+                (*ds.ldry_prev)(irow,icol) = (*ds.ldry)(irow,icol); // adesolver
                 if(hp>ds.hdry)
                 {
                     (*ds.ldry).at(irow,icol)=0.0f;
@@ -993,7 +1395,9 @@ int main(int argc, char** argv)
         // FLOW SOLVERS
         if (hpall!=0) 
         {
+            it++;
             flow_solver(ds);
+            adesolver(ds, it);
         }
         
         // PRINT RESULTS
