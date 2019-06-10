@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /media/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_Cpp
+CMAKE_SOURCE_DIR = /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /media/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_Cpp
+CMAKE_BINARY_DIR = /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_Cpp/CMakeFiles /media/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_Cpp/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/CMakeFiles /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_Cpp/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

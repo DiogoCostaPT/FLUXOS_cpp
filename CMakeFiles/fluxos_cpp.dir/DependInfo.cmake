@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/media/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_Cpp/main.cpp" "/media/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_Cpp/CMakeFiles/fluxos_cpp.dir/main.cpp.o"
+  "/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/main.cpp" "/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/CMakeFiles/fluxos_cpp.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

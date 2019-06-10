@@ -1,4 +1,4 @@
-# Install script for directory: /media/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_Cpp
+# Install script for directory: /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/media/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_Cpp/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -1,1 +1,0 @@
-/usr/bin/c++  -O3 -fopenmp   CMakeFiles/fluxos.dir/main.cpp.o  -o fluxos /usr/lib/libarmadillo.so 
