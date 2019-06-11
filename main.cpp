@@ -895,7 +895,7 @@ void adesolver(declavar& ds, int it)
     double sigc = 0.5;
     double cflmb = 1; // this may be removed I think
      
-    if (it==1 && ds.tim==0.) { // tim==0. because otherwise it will overwrite the conc from the initial_conditions.csv
+  //  if (it==1 && ds.tim==0.) { // tim==0. because otherwise it will overwrite the conc from the initial_conditions.csv
 // ...initial conditions
        
 
@@ -906,7 +906,8 @@ void adesolver(declavar& ds, int it)
 //            (*ds.conc_SW)(ix,iy)=10; //conc_SW(ix,iy)=conc_c0;
  //      }
        //$OMP END DO
-} else if(it>1) {
+//} else 
+    if(it>1) {
 //$OMP DO PRIVATE(ix,iy,hnew)
 // ...adjust concentration to new depth
        for (a=1;a<=ds.n_col*ds.n_row;a++) {
@@ -916,14 +917,17 @@ void adesolver(declavar& ds, int it)
             cmaxr(ix,iy)=std::max((*ds.conc_SW)(ix-1,iy),std::max((*ds.conc_SW)(ix+1,iy),std::max((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
             cminr(ix,iy)=std::min((*ds.conc_SW)(ix-1,iy),std::max((*ds.conc_SW)(ix+1,iy),std::max((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
             hnew=(*ds.h)(ix,iy);
-               if((*ds.ldry)(ix,iy)==0){
+               if((*ds.ldry)(ix,iy)==0 && (*ds.ldry_prev)(ix,iy)==0){
                   //hnew=hnew-dhg(ix,iy); // GW adjustment
                   (*ds.conc_SW)(ix,iy)=(*ds.conc_SW)(ix,iy)*(*ds.h0)(ix,iy)/hnew;
+                    if (isnan((*ds.conc_SW)(ix,iy))) { 
+                         std::cout << (*ds.h0)(ix,iy)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                    }
                } else if(it==1 && ds.tim!=0.) {
                // do nothing
-               } else {
-                  (*ds.conc_SW)(ix,iy)=0.0f;
-               };
+               } //else {
+               //   (*ds.conc_SW)(ix,iy)=0.0f;
+               //};
        }
     //$OMP END DO
 }
@@ -942,6 +946,9 @@ void adesolver(declavar& ds, int it)
 
 // 2.1) starts the y-direction calculation
 
+dx=ds.dxy;//dx0(ix)           // cell x-length
+dy = ds.dxy; //dy=dy0(iy)            // cell x-length
+dyn=ds.dxy; //dy=dy0(in);           // ???
 
 //do 80 iy=1,ds.n_col // the model start by calculating iy = 1 (and calculates all ix), and so on and so forth
 //$OMP DO
@@ -951,11 +958,11 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
 
 //        2.1) initialization and BC
 //          2.1.1) initializing
-        dy = ds.dxy; //dy=dy0(iy)            // cell x-length
+        
         is=iy-1;               // previous cell y-direction
         in=iy+1;               // next cell y-direction
         inn=std::min(iy+2,ds.n_col+1);     // next-next cell y-direction (limiter to make the model stop in a limit of the domain)
-        dyn=ds.dxy; //dy=dy0(in);           // ???
+        
 //     
 //       BC (east flux into the domain - ix = 0)
         if (ix==1) {
@@ -983,10 +990,10 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
             iee=std::min(ix+2,ds.n_row+1);    // next-next cell x-direction (limiter to make the model stop in a limit of the domain)       
 
     // ...       check if grid dry
-            if((*ds.ldry)(ix,iy)){  // if true set everything to zero (flow2 model gives this statement)
+            if((*ds.ldry)(ix,iy)==1){  // if true set everything to zero (flow2 model gives this statement)
                 pfe=0.;
                 qfcds(ix)=0.;
-                (*ds.conc_SW)(ix,iy)=0.;
+                //(*ds.conc_SW)(ix,iy)=0.;
                 continue; //goto 90
             };
 
@@ -1028,7 +1035,11 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
             fs=(*ds.conc_SW)(ix,is);       // concentration at y-1 cell - south
             fn=(*ds.conc_SW)(ix,in);       // concentration at y+1 cell - north
             fnn=(*ds.conc_SW)(ix,inn);     // concentration at y+2 cell - north
-
+            
+            if (fp !=0) { 
+                 std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                //con=0 ;
+            }
 
     //         2.1.4) determining the incoming at the cell in the X- and Y- direction (from the previous time-step)
 
@@ -1084,7 +1095,12 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
 
     //         2.1.8) Summing the advetive and diffusinve terms (X-direction)   
             pfe=pfce+pfde;                   // total flux = advective flux + diffusive
-
+            
+            if (pfe>1.2) { 
+                 std::cout << "maybe a problem here"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                //con=0 ;
+            }
+            
 // ...       total flux at east face
 //            pfce=pj(ix,iy)*fem*dy          // [m3/s]
             if(pfe<0){           // inflwo from east cell
@@ -1191,7 +1207,7 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
             }                             
 
             dc=(pfw-pfe + qfs-qfn)*ds.dtfl/area; // dc=(pfw-pfe + qfs-qfn)*dt_q/area;  // [m]
-            con=(*ds.conc_SW)(ix,iy)+dc/(*ds.h)(ix,iy);
+            con=(*ds.conc_SW)(ix,iy)+dc/hp;
  
             // limiter for wetting problem (fluxes do not acompanny water elevation)
             if ((*ds.ldry_prev)(ix,iy)==1) {
@@ -1205,15 +1221,15 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
   //         scmax=cmin(ix,iy)/con
   //         scmax=max(scmax,1.)
            
-  //         con=min(cmaxr(ix,iy),con)
-  //         con=max(cminr(ix,iy),con)
+          // con=std::min(cmaxr(ix,iy),con);
+          // con=std::max(cminr(ix,iy),con);
            
   //         pfe=scmin*pfe
    //        pfe=scmax*pfe
    //        qfn=scmin*qfn
    //        qfn=scmax*qfn
            
-            if (con<0) { // DC - to be changed // limiter
+//            if (con<0) { // DC - to be changed // limiter
 //                write(nout, "(A23,I4,A7,I4,A11,f12.5,A6,f12.5,A5,f12.5,A5,f12.5,A6,f12.5,A7,&
 //                    &f12.5,A7,f12.5,A7,f12.5,A7,f12.5,A8,f12.5,A8,f12.5,A7,f12.5,A7,f12.5,A8,&
 //                    &f12.5,A8,f12.5,A6,f12.5,A6,f12.5,A6,f12.5,A6,f12.5)") 'Warning: C < 0 mg/l: ix= ',&
@@ -1224,15 +1240,20 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
 //                     ' ,v(y)= ', v(ix,iy), ' ,he= ', h(ie,iy), ' ,hw= ', h(iw,iy), ' ,hs= ', &
 //                     h(ix,is), ' ,hn= ', h(ix,in)
  
-            con=0.;
-            }
+            //con=0.;
+ //           }
 
             (*ds.conc_SW)(ix,iy)=con;
 
          
             if (isnan(con)) { 
                  std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
-                con=0 ;
+                //con=0 ;
+            }
+            
+            if (con !=0) { 
+                 std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                //con=0 ;
             }
             
     // ...       flux over south face
@@ -1357,6 +1378,7 @@ int main(int argc, char** argv)
                 hp = (*ds.h).at(irow,icol);
                 (*ds.h0)(irow,icol) = hp; // adesolver
                 (*ds.ldry_prev)(irow,icol) = (*ds.ldry)(irow,icol); // adesolver
+                (*ds.conc_SW)(irow,icol) = 0.0f; // adesolver
                 if(hp>ds.hdry)
                 {
                     (*ds.ldry).at(irow,icol)=0.0f;
@@ -1385,11 +1407,23 @@ int main(int argc, char** argv)
         }
         
         qmelti = (*ds.qmelt).at(qmelt_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
-        for (a=0;a<=(*ds.basin_rowy).col(1).n_elem;a++){
+        for (a=0;a<(*ds.basin_rowy).col(1).n_elem;a++){
             irow = (*ds.basin_rowy).at(a,0);
-            icol = (*ds.basin_rowy).at(a,1);            
-            (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;
+            icol = (*ds.basin_rowy).at(a,1);
+            hp = std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0); // adesolver hp before adding snowmelt   
+            (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   
             (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
+            if (hp!=0.)
+            {
+                (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver
+                if ((*ds.conc_SW)(irow,icol) !=0) { 
+                 std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                //con=0 ;
+                }
+                
+            } else {
+                //(*ds.conc_SW)(irow,icol) = 1.5;
+            }
           }
         
         // FLOW SOLVERS
