@@ -119,7 +119,7 @@ void read_load(declavar& ds)
     bool flstatusB =  filedataB.load("Basin_Info.fluxos",arma::csv_ascii);
     if(flstatusB == true) {
         for(a=0;a<filedataB.col(0).n_elem;a++){
-            irowb = filedataB(a,0);  
+                       irowb = filedataB(a,0);  
             icolb = filedataB(a,1);  
             (*ds.basin_rowy).at(a,0) = irowb;  
             (*ds.basin_rowy).at(a,1) = icolb;  
@@ -885,6 +885,7 @@ void adesolver(declavar& ds, int it)
     // implicit none
 
     arma::mat qfcds(ds.m_row*ds.m_col,1);  //double qfcds(0:mx);
+    arma::mat con_step(ds.m_row,ds.m_col);  //double qfcds(0:mx);
     double pfw,pfe,qfs,qfn,ntp, pfce, he,fp,fe, hne, pfde,area,areae,arean,hn,pp,qp,fw,
        fee,fs,fn,fnn,hnue,fem,hnn,qfcn,qfdn,fnm, cvolrate,cf,cbilan,dc,cvolpot,cvolrat,con, hnew, D_coef_x, D_coef_y;
     long unsigned int ix,iy,a;//!, printlim
@@ -898,6 +899,7 @@ void adesolver(declavar& ds, int it)
   //  if (it==1 && ds.tim==0.) { // tim==0. because otherwise it will overwrite the conc from the initial_conditions.csv
 // ...initial conditions
        
+              
 
  //$OMP DO PRIVATE(ix,iy)
  //      for (a=1;a<=ds.n_col*ds.n_row;a++) {
@@ -915,17 +917,22 @@ void adesolver(declavar& ds, int it)
             ix=a-ds.n_row*(iy-1);
             // DON'T UNDERSTAND WHY BUT I CANNOT REMOVE THIS - otherwise the solution blowsup
             cmaxr(ix,iy)=std::max((*ds.conc_SW)(ix-1,iy),std::max((*ds.conc_SW)(ix+1,iy),std::max((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
-            cminr(ix,iy)=std::min((*ds.conc_SW)(ix-1,iy),std::max((*ds.conc_SW)(ix+1,iy),std::max((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
+            cminr(ix,iy)=std::min((*ds.conc_SW)(ix-1,iy),std::min((*ds.conc_SW)(ix+1,iy),std::min((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
             hnew=(*ds.h)(ix,iy);
                if((*ds.ldry)(ix,iy)==0 && (*ds.ldry_prev)(ix,iy)==0){
                   //hnew=hnew-dhg(ix,iy); // GW adjustment
-                  (*ds.conc_SW)(ix,iy)=(*ds.conc_SW)(ix,iy)*(*ds.h0)(ix,iy)/hnew;
-                    if (isnan((*ds.conc_SW)(ix,iy))) { 
+                   if ((*ds.conc_SW)(ix,iy) > 30) { 
                          std::cout << (*ds.h0)(ix,iy)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                         std::cout << hnew<< std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                         std::cout << (*ds.conc_SW)(ix,iy)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                    }
+                  (*ds.conc_SW)(ix,iy)=(*ds.conc_SW)(ix,iy)*(*ds.h0)(ix,iy)/hnew;
+                    if ((*ds.conc_SW)(ix,iy) > 30) { 
+                         std::cout << (*ds.conc_SW)(ix,iy)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
                     }
                } else if(it==1 && ds.tim!=0.) {
                // do nothing
-               } //else {
+               } //else { // means there will be no adjustment to a new h computed by flow_solver
                //   (*ds.conc_SW)(ix,iy)=0.0f;
                //};
        }
@@ -1036,10 +1043,6 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
             fn=(*ds.conc_SW)(ix,in);       // concentration at y+1 cell - north
             fnn=(*ds.conc_SW)(ix,inn);     // concentration at y+2 cell - north
             
-            if (fp !=0) { 
-                 std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
-                //con=0 ;
-            }
 
     //         2.1.4) determining the incoming at the cell in the X- and Y- direction (from the previous time-step)
 
@@ -1096,10 +1099,6 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
     //         2.1.8) Summing the advetive and diffusinve terms (X-direction)   
             pfe=pfce+pfde;                   // total flux = advective flux + diffusive
             
-            if (pfe>1.2) { 
-                 std::cout << "maybe a problem here"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
-                //con=0 ;
-            }
             
 // ...       total flux at east face
 //            pfce=pj(ix,iy)*fem*dy          // [m3/s]
@@ -1170,10 +1169,10 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
 
     // ...       available volume rate [m3/s] in actual cell
             cvolpot=(fp*hp)*area; // [m3] from previous time-step
-            cvolrat=cvolpot/ds.dtfl +(pfw+qfs); //cvolrat=cvolpot/dt_q +(pfw+qfs); // inflow during actual time-step
+            cvolrat=cvolpot/ds.dtfl;// +(pfw+qfs); //cvolrat=cvolpot/dt_q +(pfw+qfs); // inflow during actual time-step
 
     // ...       limit flux out of actual cell due to available material
-            if (cvolrat>0.)  {               // outflow is possible
+            if (cvolrat>0.0f)  {               // outflow is possible
                 if(pfe>0.  &&  qfn>0.) {   // both outflow
                     if (pfe+qfn > cvolrat) {    // limit outflow to volrat
                         cf=qfn/(pfe+qfn);
@@ -1207,11 +1206,23 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
             }                             
 
             dc=(pfw-pfe + qfs-qfn)*ds.dtfl/area; // dc=(pfw-pfe + qfs-qfn)*dt_q/area;  // [m]
+            
+            if ((*ds.conc_SW)(ix,iy) > 30) { 
+                         std::cout << (*ds.conc_SW)(ix,iy)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                    }
+            
             con=(*ds.conc_SW)(ix,iy)+dc/hp;
  
+             if (con > 30) { 
+                         std::cout << con  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                         std::cout << dc<< std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                         std::cout << hp << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                         std::cout << dc/hp << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                    }
+            
             // limiter for wetting problem (fluxes do not acompanny water elevation)
             if ((*ds.ldry_prev)(ix,iy)==1) {
-                con=std::max(cminr(ix,iy),con);
+                //con=std::max(cminr(ix,iy),con);
                 //con=std::max(conc_c_BC(m,3),con); // Removed because there is no BC now - check
              }
             
@@ -1243,7 +1254,7 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
             //con=0.;
  //           }
 
-            (*ds.conc_SW)(ix,iy)=con;
+            con_step(ix,iy)=con;
 
          
             if (isnan(con)) { 
@@ -1251,10 +1262,10 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
                 //con=0 ;
             }
             
-            if (con !=0) { 
-                 std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+          // if (con > 500 ){ 
+           //      std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
                 //con=0 ;
-            }
+           // }
             
     // ...       flux over south face
              qfcds(ix)=qfn;  // convective+diffusive flux
@@ -1267,6 +1278,12 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
 
 //     80     continue    //loop iy
 //$OMP END DO
+
+    for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
+        iy= ((a-1)/ds.n_row)+1;
+        ix=a-ds.n_row*(iy-1);
+        (*ds.conc_SW)(ix,iy) = con_step(ix,iy);
+    }
 
 //    return 0;
 }
@@ -1358,6 +1375,18 @@ int main(int argc, char** argv)
     ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
     ds.tim = 0.0f;
     
+    // temporary load - TO REMOVE IN THE FUTURE - JUST FOR DEBUGGING
+     if (it==0) 
+    {
+        for(icol=200;icol<=400;icol++)
+        {
+            for(irow=200;irow<=400;irow++)
+            {
+              (*ds.conc_SW)(irow,icol)=10;
+            }
+        }
+    }   
+    
     // SAVE INITIAL STATUS IN RESULTS (t = 0)
     print_next = 0.0f;
     write_results(ds,std::round(print_next));
@@ -1378,7 +1407,6 @@ int main(int argc, char** argv)
                 hp = (*ds.h).at(irow,icol);
                 (*ds.h0)(irow,icol) = hp; // adesolver
                 (*ds.ldry_prev)(irow,icol) = (*ds.ldry)(irow,icol); // adesolver
-                (*ds.conc_SW)(irow,icol) = 0.0f; // adesolver
                 if(hp>ds.hdry)
                 {
                     (*ds.ldry).at(irow,icol)=0.0f;
@@ -1415,11 +1443,20 @@ int main(int argc, char** argv)
             (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
             if (hp!=0.)
             {
-                (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver
-                if ((*ds.conc_SW)(irow,icol) !=0) { 
-                 std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+//              if ((*ds.conc_SW)(irow,icol) >30) { 
+//                   std::cout << hp << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+//                 std::cout << (*ds.h)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+//                 std::cout <<  (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                 
                 //con=0 ;
-                }
+ //               }
+              
+                (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)
+                
+ //               if ((*ds.conc_SW)(irow,icol) >30) { 
+//                 std::cout << (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                //con=0 ;
+//                }
                 
             } else {
                 //(*ds.conc_SW)(irow,icol) = 1.5;
