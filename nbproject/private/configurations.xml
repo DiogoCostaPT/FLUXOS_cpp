@@ -28,6 +28,8 @@
         <in>feature_tests.c</in>
         <in>feature_tests.cxx</in>
       </df>
+      <df name="Results">
+      </df>
       <in>main.cpp</in>
     </df>
   </logicalFolder>
