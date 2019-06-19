@@ -930,11 +930,11 @@ void adesolver(declavar& ds, int it)
                     if ((*ds.conc_SW)(ix,iy) > 30) { 
                          std::cout << (*ds.conc_SW)(ix,iy)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
                     }
-               } else if(it==1 && ds.tim!=0.) {
+               //} else if(it==1 && ds.tim!=0.) {
                // do nothing
-               } //else { // means there will be no adjustment to a new h computed by flow_solver
+               //} else { // means there will be no adjustment to a new h computed by flow_solver
                //   (*ds.conc_SW)(ix,iy)=0.0f;
-               //};
+               };
        }
     //$OMP END DO
 }
@@ -1001,6 +1001,7 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
                 pfe=0.;
                 qfcds(ix)=0.;
                 //(*ds.conc_SW)(ix,iy)=0.;
+                con_step(ix,iy)=(*ds.conc_SW)(ix,iy);
                 continue; //goto 90
             };
 
@@ -1262,11 +1263,6 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
                 //con=0 ;
             }
             
-          // if (con > 500 ){ 
-           //      std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
-                //con=0 ;
-           // }
-            
     // ...       flux over south face
              qfcds(ix)=qfn;  // convective+diffusive flux
   
@@ -1376,16 +1372,13 @@ int main(int argc, char** argv)
     ds.tim = 0.0f;
     
     // temporary load - TO REMOVE IN THE FUTURE - JUST FOR DEBUGGING
-     if (it==0) 
+    for(icol=200;icol<=400;icol++)
     {
-        for(icol=200;icol<=400;icol++)
+        for(irow=200;irow<=400;irow++)
         {
-            for(irow=200;irow<=400;irow++)
-            {
-              (*ds.conc_SW)(irow,icol)=10;
-            }
+          (*ds.conc_SW)(irow,icol)=10;
         }
-    }   
+    }
     
     // SAVE INITIAL STATUS IN RESULTS (t = 0)
     print_next = 0.0f;
@@ -1443,25 +1436,30 @@ int main(int argc, char** argv)
             (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
             if (hp!=0.)
             {
-//              if ((*ds.conc_SW)(irow,icol) >30) { 
-//                   std::cout << hp << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
-//                 std::cout << (*ds.h)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
-//                 std::cout <<  (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+              if ((*ds.conc_SW)(irow,icol) >30) { 
+                   std::cout << hp << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                 std::cout << (*ds.h)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                 std::cout <<  (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
                  
                 //con=0 ;
- //               }
+                }
               
                 (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)
                 
- //               if ((*ds.conc_SW)(irow,icol) >30) { 
-//                 std::cout << (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                if ((*ds.conc_SW)(irow,icol) >30) { 
+                 std::cout << (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
                 //con=0 ;
-//                }
+                }
                 
             } else {
                 //(*ds.conc_SW)(irow,icol) = 1.5;
             }
           }
+        
+        if (irow == 267 && icol == 47){
+            std::cout <<  (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN'; 
+        }
+        
         
         // FLOW SOLVERS
         if (hpall!=0) 
