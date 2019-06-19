@@ -1168,9 +1168,9 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
                 }
             }
 
-    // ...       available volume rate [m3/s] in actual cell
+    // ...  available volume rate [m3/s] in actual cell
             cvolpot=(fp*hp)*area; // [m3] from previous time-step
-            cvolrat=cvolpot/ds.dtfl;// +(pfw+qfs); //cvolrat=cvolpot/dt_q +(pfw+qfs); // inflow during actual time-step
+            cvolrat=cvolpot/ds.dtfl +(pfw+qfs); //cvolrat=cvolpot/dt_q +(pfw+qfs); // inflow during actual time-step
 
     // ...       limit flux out of actual cell due to available material
             if (cvolrat>0.0f)  {               // outflow is possible
@@ -1186,24 +1186,24 @@ for (a=1;a<ds.n_col*ds.n_row;a++) {//do 90 a=1,ds.n_col*ds.n_row
                     qfn=std::min(qfn,(cvolrat-pfe));         
                 }
             }else { // bilance outflow with inflow
-                if(pfe>=0.  &&  qfn<0.)  { //restrict pfe to bilan
-                    cbilan=cvolrat-qfn;                
-                    if(cbilan>0.) {
-                        pfe=std::min(pfe,cbilan);
-                    }else{
-                        pfe=0.;
-                    }
-                } else if(pfe<0.  &&  qfn>=0.)  {
-                    cbilan=cvolrat-pfe;
-                    if(cbilan>0.) {
-                        qfn=std::min(qfn,cbilan);
-                    }else{
-                        qfn=0.;
-                    }
-                } else if(pfe>=0.  &&  qfn>=0.)  {
-                    pfe=0.;
-                    qfn=0.;
-                }        
+            //    if(pfe>=0.  &&  qfn<0.)  { //restrict pfe to bilan
+            //        cbilan=cvolrat-qfn;                
+            //        if(cbilan>0.) {
+            //            pfe=std::min(pfe,cbilan);
+            //        }else{
+            //            pfe=0.;
+            //        }
+            //    } else if(pfe<0.  &&  qfn>=0.)  {
+            //        cbilan=cvolrat-pfe;
+            //        if(cbilan>0.) {
+            //            qfn=std::min(qfn,cbilan);
+            //        }else{
+            //            qfn=0.;
+            //        }
+             //   } else if(pfe>=0.  &&  qfn>=0.)  {
+                    pfe=0.0f;
+                    qfn=0.0f;
+            //    }        
             }                             
 
             dc=(pfw-pfe + qfs-qfn)*ds.dtfl/area; // dc=(pfw-pfe + qfs-qfn)*dt_q/area;  // [m]
@@ -1334,7 +1334,6 @@ void write_results(declavar& ds, int print_tag)
         std::cout << "Problem when saving the results:" + tprint << std::endl;
     }
 
-
 }
     
 int main(int argc, char** argv) 
@@ -1355,7 +1354,7 @@ int main(int argc, char** argv)
     //ksfirow = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
     ds.cvdef = 0.07; // for turbulent stress calc
     ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
-    print_step = 1; // in seconds
+    print_step = 10; // in seconds
 
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
@@ -1376,7 +1375,15 @@ int main(int argc, char** argv)
     {
         for(irow=200;irow<=400;irow++)
         {
-          (*ds.conc_SW)(irow,icol)=10;
+          (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + 1;
+        }
+    }
+    
+        for(icol=220;icol<=230;icol++)
+    {
+        for(irow=220;irow<=230;irow++)
+        {
+          (*ds.conc_SW).at(irow,icol)=10;
         }
     }
     
@@ -1437,7 +1444,7 @@ int main(int argc, char** argv)
             if (hp!=0.)
             {
               if ((*ds.conc_SW)(irow,icol) >30) { 
-                   std::cout << hp << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                 std::cout << hp << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
                  std::cout << (*ds.h)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
                  std::cout <<  (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
                  
@@ -1455,10 +1462,6 @@ int main(int argc, char** argv)
                 //(*ds.conc_SW)(irow,icol) = 1.5;
             }
           }
-        
-        if (irow == 267 && icol == 47){
-            std::cout <<  (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN'; 
-        }
         
         
         // FLOW SOLVERS

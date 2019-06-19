@@ -1,4 +1,4 @@
 *.txt
 nbproject/private/configurations.xml
-build/
 CMakeFiles/
+fluxos.cpp
