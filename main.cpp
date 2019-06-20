@@ -839,7 +839,7 @@ void flow_solver(declavar& ds)
         for(irow=1;irow<=ds.n_row;irow++)
         {  
             (*ds.z).at(irow,icol)=(*ds.z).at(irow,icol)+(*ds.dh).at(irow,icol);
-            hp=std::max(0.0,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
+            hp=std::fmax(0.0f,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
             (*ds.h).at(irow,icol)=hp;
             
             if(hp<ds.hdry) 
@@ -863,22 +863,22 @@ void flow_solver(declavar& ds)
 // ADE solver
 void adesolver(declavar& ds, int it)
 {
-        // qes(arguments,...) - only input variables, not output variables
-  //!-----------------------------------------------------------------------
-  //!
-  //!   function    - conservative material
-  //!
-  //!   latest revision - march , 2013
-  //!  
-  //!
-  //! 
-  //! DC: INPUTS
-  //!     it - timestep index for flow computation (number of timestep)
-  //!     itmb - number of iterationstep of moveable bed computation (from mvbed.for)
-  //!     dtdp - dt/porosity (from source.for)     
-  //!     sour - source term for each size (from source.for) 
-  //!
-  //!-----------------------------------------------------------------------
+    // qes(arguments,...) - only input variables, not output variables
+    //!-----------------------------------------------------------------------
+    //!
+    //!   function    - conservative material
+    //!
+    //!   latest revision - march , 2013
+    //!  
+    //!
+    //! 
+    //! DC: INPUTS
+    //!     it - timestep index for flow computation (number of timestep)
+    //!     itmb - number of iterationstep of moveable bed computation (from mvbed.for)
+    //!     dtdp - dt/porosity (from source.for)     
+    //!     sour - source term for each size (from source.for) 
+    //!
+    //!-----------------------------------------------------------------------
 
 
     arma::mat qfcds(ds.m_row*ds.m_col,1);  //double qfcds(0:mx);
@@ -892,7 +892,7 @@ void adesolver(declavar& ds, int it)
     double nt =1 ; // eddy viscosity (m2/s) = 1,
     double sigc = 0.5;
     double cflmb = 1; // this may be removed I think
-          
+
 
      if(it>1) {
     //$OMP DO PRIVATE(ix,iy,hnew)
@@ -900,13 +900,19 @@ void adesolver(declavar& ds, int it)
        for (a=1;a<=ds.n_col*ds.n_row;a++) {
             iy= ((a-1)/ds.n_row)+1;
             ix=a-ds.n_row*(iy-1);
+                
+            if (it == 6 && ix==294 && iy == 272 ) {
+             //   std::cout << "STOP HERE"  << std::endl; // write(nout,"(A15)") '"conc" is a N
+             //   std::cout << (*ds.h0)(ix,iy)  << std::endl; // write(nout,"(A15)") '"conc" is a N
+            }
+            
             // DON'T UNDERSTAND WHY BUT I CANNOT REMOVE THIS - otherwise the solution blows up
             cmaxr(ix,iy)=std::max((*ds.conc_SW)(ix-1,iy),std::max((*ds.conc_SW)(ix+1,iy),std::max((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
             cminr(ix,iy)=std::min((*ds.conc_SW)(ix-1,iy),std::min((*ds.conc_SW)(ix+1,iy),std::min((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
             hnew=(*ds.h)(ix,iy);
             if((*ds.ldry)(ix,iy)==0 && (*ds.ldry_prev)(ix,iy)==0){
 
-              (*ds.conc_SW)(ix,iy)=(*ds.conc_SW)(ix,iy)*(*ds.h)(ix,iy)/hnew;
+              (*ds.conc_SW)(ix,iy)=(*ds.conc_SW)(ix,iy)*(*ds.h0)(ix,iy)/hnew;
 
             //} else if(it==1 && ds.tim!=0.) {
             // do nothing
@@ -943,7 +949,7 @@ void adesolver(declavar& ds, int it)
         iw=ix-1;              // previous cell x-direction      
         ie=ix+1;              // next cell x-direction
         iee=std::min(ix+2,ds.n_row+1);    // next-next cell x-direction (limiter to make the model stop in a limit of the domain)    
-           
+                     
         //  BC 
         if (ix==1) {
             pfce=(*ds.conc_SW)(0,iy)*(*ds.qx)(0,iy)*dy;     // convective flux at x = 0 ("c" refers to convective)
@@ -953,8 +959,8 @@ void adesolver(declavar& ds, int it)
             fe=(*ds.conc_SW)(1,iy);
             //hne=sqrt(hp*nt(1,iy)*he*nt(2,iy))/sigc/abs(x(2)-x(1))*dy*D_coef_x;  // [m3/s] - ?????
             hne=std::sqrt(hp*nt*he*nt)/sigc/std::abs(dx)*dy*ds.D_coef;  // [m3/s] - ?????
-            pfde=0.;                              // no diffusive flux over boundary
-            pfe=pfce;                             // now we can write the x-flux over the east boundary
+            pfde=0.;            // no diffusive flux over boundary
+            pfe=pfce;           // now we can write the x-flux over the east boundary
         }  
 
         // CHECK IF THE DOMAIN IS DRY
@@ -962,7 +968,11 @@ void adesolver(declavar& ds, int it)
             pfe=0.;
             qfcds(ix)=0.;
             //(*ds.conc_SW)(ix,iy)=0.;
-            con_step(ix,iy)=(*ds.conc_SW)(ix,iy); // remains unmixed with the main flow
+            //con_step(ix,iy)=(*ds.conc_SW)(ix,iy); // remains unmixed with the main flow
+            if (ix==263 && iy == 304 ) {
+            //   std::cout << "dry cell: " + std::to_string((*ds.h0)(ix,iy)) + "," + std::to_string((*ds.h)(ix,iy)) + "," + std::to_string((*ds.conc_SW)(ix,iy)) << std::endl;
+        } 
+            
             continue; 
         };
 
@@ -1001,17 +1011,17 @@ void adesolver(declavar& ds, int it)
             pfde=-hne*(fe-fp);                     // diffusive flux
 
             if(qxl>0.0f){    // for the calculation of the advetive flux - the concentration average according to the direction of the flow (but don't have experience with this method)
-                     if ((*ds.ldry)(iw,iy)==0) {
-                        fem=-.125*fw+.75*fp+.375*fe;
-                     }else {
-                        fem=0.5*fp+0.5*fe;
-                     }             
+                if ((*ds.ldry)(iw,iy)==0) {
+                   fem=-.125*fw+.75*fp+.375*fe;
+                }else {
+                   fem=0.5*fp+0.5*fe;
+                }             
             } else{
-                  if ((*ds.ldry)(iee,iy)==0) {
-                    fem=.375*fp+.75*fe-.125*fee;
-                  }else {
-                    fem=0.5*fp+0.5*fe;   
-                  }
+                if ((*ds.ldry)(iee,iy)==0) {
+                  fem=.375*fp+.75*fe-.125*fee;
+                }else {
+                  fem=0.5*fp+0.5*fe;   
+                }
             }
         }else {
             fem=0.;
@@ -1025,7 +1035,8 @@ void adesolver(declavar& ds, int it)
         }
 
         //// advective flux - X-direction  - [m3/s] 
-        pfce=qxl*fem*dy;   
+        //pfce=qxl*fem*dy;   
+        pfce=(*ds.fe_1)(ix,iy)*fem*dy;  
         
         //// total flux = advective flux + diffusive
         pfe=pfce+pfde;      
@@ -1073,7 +1084,8 @@ void adesolver(declavar& ds, int it)
         }
 
         //// advective flux - X-direction  
-        qfcn=qyl*fnm*dx;        // qfcn=qj(ix,ij)*fnm*dx  [g/s]
+        //qfcn=qyl*fnm*dx;        // qfcn=qj(ix,ij)*fnm*dx  [g/s]
+        qfcn=(*ds.fn_1)(ix,iy)*fnm*dx;        // qfcn=qj(ix,ij)*fnm*dx  [g/s]
 
         //// total flux
         qfn=qfcn+qfdn;
@@ -1088,7 +1100,6 @@ void adesolver(declavar& ds, int it)
                 qfn=0.;
             }
         }
-
 
         //// check available volume rate [m3/s] in actual cell - limit flux out of actual cell due to available material
         cvolpot=(fp*hp)*area; // [m3] from previous time-step
@@ -1135,11 +1146,21 @@ void adesolver(declavar& ds, int it)
                 //con=std::max(cminr(ix,iy),con);
                 //con=std::max(conc_c_BC(m,3),con); // Removed because there is no BC now - check
              }
-                                
+              
+                    if (ix==263 && iy == 304 ) {
+            //   std::cout << std::to_string(con) + "," + std::to_string(dc/hp) + "," + std::to_string(dc) + "," + std::to_string(hp) +
+            //           "," + std::to_string(pfw) + "," + std::to_string(pfe) +
+            //           "," + std::to_string(qfs) + "," + std::to_string(qfn) << std::endl; // write(nout,"(A15)") '"conc" is a N
+        } 
 
             //con_step(ix,iy)=con;
             (*ds.conc_SW)(ix,iy) = con;
 
+            if (con>12) { 
+            //     std::cout << "conc > 25"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
+                //con=0 ;
+            }
+            
             if (isnan(con)) { 
                  std::cout << "conc is NaN"  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
                 //con=0 ;
@@ -1231,7 +1252,7 @@ int main(int argc, char** argv)
     //ksfirow = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
     ds.cvdef = 0.07; // for turbulent stress calc
     ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
-    print_step = 100; // in seconds
+    print_step = 200; // in seconds
 
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
@@ -1322,6 +1343,10 @@ int main(int argc, char** argv)
             hp = std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0); // adesolver hp before adding snowmelt  
             (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   
             (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
+            if ((*ds.h)(irow,icol) <= ds.hdry)
+            {
+                    (*ds.ldry).at(irow,icol)=0.0f;
+        }
             (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
             if (hp!=0.)
             {
