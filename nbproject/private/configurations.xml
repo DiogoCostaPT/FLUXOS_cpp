@@ -25,6 +25,8 @@
         </df>
         <df name="fluxos_cpp.dir">
         </df>
+        <df name="Progress">
+        </df>
         <in>feature_tests.c</in>
         <in>feature_tests.cxx</in>
       </df>
@@ -58,8 +60,6 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
-        <gdb_signals>
-        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
