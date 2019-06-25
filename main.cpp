@@ -146,7 +146,7 @@ void read_load(declavar& ds)
     
 }
 
-void initiation(declavar& ds) {
+void initiation(declavar& ds, unsigned int timstart) {
     
     std::unique_ptr<double[]> zbs1(new double[ds.m_row]);   
     double zbsw,zbnw,zbse,zbne,zbsum;
@@ -217,7 +217,7 @@ void initiation(declavar& ds) {
     }
  
     arma::mat filedata; 
-    bool flstatus = filedata.load("initial_conditions.fluxos",arma::csv_ascii);
+    bool flstatus = filedata.load("Results/" + std::to_string(timstart) + ".txt",arma::csv_ascii);
 
     if(flstatus == true) 
     {
@@ -1167,7 +1167,7 @@ int main(int argc, char** argv)
     unsigned int n_rowl = 722, n_coll = 1034, it = 0;
     declavar ds(n_rowl+2,n_coll+2); 
 
-    unsigned int a, irow, icol, print_step, print_next, qmelt_rowi;
+    unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
     double c0,v0,u0,hp, hpall, qmelti ; 
                
 //   // input/read data
@@ -1180,7 +1180,8 @@ int main(int argc, char** argv)
     //ksfirow = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
     ds.cvdef = 0.07; // for turbulent stress calc
     ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
-    print_step = 100; // in seconds
+    print_step = 3600; // in seconds
+    timstart = 496800; // start of the simulation
 
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
@@ -1190,34 +1191,14 @@ int main(int argc, char** argv)
     read_geo(ds); // DEM
     read_load(ds); // snowmelt load
     
-    initiation(ds);
+    initiation(ds, timstart);
     
     // INITIATION
     ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
-    ds.tim = 0.0f;
-    
-    // temporary load - TO REMOVE IN THE FUTURE - JUST FOR DEBUGGING
-    for(icol=200;icol<=400;icol++)
-    {
-        for(irow=200;irow<=400;irow++)
-        {
-          (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + 1;
-        }
-    }
-
-        for(icol=230;icol<=350;icol++)
-    {
-        for(irow=230;irow<=350;irow++)
-        {
-            if((*ds.ldry)(irow,icol) == 0.0f){
-          (*ds.conc_SW).at(irow,icol) = 10;
-        }
-        }
-    }
-    
-    // SAVE INITIAL STATUS IN RESULTS (t = 0)
-    print_next = 0.0f;
-    write_results(ds,std::round(print_next));
+        
+    print_next = timstart;
+    ds.tim = timstart;
+    //write_results(ds,std::round(print_next));
     
     print_next = print_next + print_step;
     
@@ -1234,7 +1215,15 @@ int main(int argc, char** argv)
             {
                 hp = (*ds.h).at(irow,icol);
                 (*ds.h0)(irow,icol) = hp; // adesolver
-                (*ds.ldry_prev)(irow,icol) = (*ds.ldry)(irow,icol); // adesolver
+                
+                // temporary: dry -> wet -> load on first contact with the soil 
+                if ((*ds.ldry_prev).at(irow,icol) == 1 && (*ds.ldry).at(irow,icol) == 0)
+                {
+                    (*ds.conc_SW).at(irow,icol) += 0.10/hp; 
+                }
+                
+                (*ds.ldry_prev).at(irow,icol) = (*ds.ldry).at(irow,icol); // adesolver
+                        
                 if(hp>ds.hdry)
                 {
                     (*ds.ldry).at(irow,icol)=0.0f;
@@ -1254,10 +1243,7 @@ int main(int argc, char** argv)
                 
         ds.tim = ds.tim + ds.dtfl;
           
-            
-        //(*ds.conc_SW).at(200,400)= (*ds.conc_SW).at(200,400) + 1 * ds.dtfl;
-
-        
+       
         // Qmelt load
         for (a=0;a<=(*ds.qmelt).col(0).n_elem;a++){
             qmelt_rowi = a;
@@ -1279,28 +1265,11 @@ int main(int argc, char** argv)
         }
             (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
             if (hp!=0.)
-            {
-              if ((*ds.conc_SW)(irow,icol) >30) { 
-            //     std::cout << hp << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
-            //     std::cout << (*ds.h)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
-            //     std::cout <<  (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
-                 
-                //con=0 ;
-                }
-              
-            //    (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)
-                
-                if ((*ds.conc_SW)(irow,icol) >30) { 
-              //   std::cout << (*ds.conc_SW)(irow,icol)  << std::endl; // write(nout,"(A15)") '"conc" is a NaN';
-                //con=0 ;
-                }
-                
-            } else {
-                //(*ds.conc_SW)(irow,icol) = 1.5;
+            {          
+                (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0.5)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
             }
           }
-        
-        
+                
         // FLOW SOLVERS
         if (hpall!=0) 
         {
