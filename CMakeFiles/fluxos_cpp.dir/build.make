@@ -60,15 +60,15 @@ include CMakeFiles/fluxos_cpp.dir/flags.make
 CMakeFiles/fluxos_cpp.dir/main.cpp.o: CMakeFiles/fluxos_cpp.dir/flags.make
 CMakeFiles/fluxos_cpp.dir/main.cpp.o: main.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/fluxos_cpp.dir/main.cpp.o"
-	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fluxos_cpp.dir/main.cpp.o -c /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/main.cpp
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/fluxos_cpp.dir/main.cpp.o -c /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/main.cpp
 
 CMakeFiles/fluxos_cpp.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fluxos_cpp.dir/main.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/main.cpp > CMakeFiles/fluxos_cpp.dir/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/main.cpp > CMakeFiles/fluxos_cpp.dir/main.cpp.i
 
 CMakeFiles/fluxos_cpp.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fluxos_cpp.dir/main.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/main.cpp -o CMakeFiles/fluxos_cpp.dir/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/main.cpp -o CMakeFiles/fluxos_cpp.dir/main.cpp.s
 
 CMakeFiles/fluxos_cpp.dir/main.cpp.o.requires:
 

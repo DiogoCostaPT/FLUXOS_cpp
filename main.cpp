@@ -21,6 +21,7 @@
 #include<armadillo>
 #include<string>
 #include<memory> 
+#include <ctime>   
 
 
 class declavar
@@ -1110,14 +1111,14 @@ void adesolver(declavar& ds, int it)
     }
 }
 
-void write_results(declavar& ds, int print_tag)
+void write_results(declavar& ds, int print_tag, unsigned int print_step, std::chrono::duration<double> elapsed_seconds)
 {
 
     unsigned int icol,irow;
     int a = 0;
     double ux;
     
-    std::string tprint = "Results/" + std::to_string(print_tag);
+    std::string tprint = "Results/" + std::to_string(print_tag); 
     std::string filext(".txt");
     tprint += filext;
 
@@ -1154,7 +1155,7 @@ void write_results(declavar& ds, int print_tag)
    
     if(flstatus == true) 
     {
-        std::cout << "Result " + tprint + " saved"  << std::endl;
+        std::cout << "Saved: '" << tprint << "' || time step (min): " << std::to_string(print_step/60) << " || Time elapsed (min): " << elapsed_seconds.count()/60 << std::endl;
     } else
     {
         std::cout << "Problem when saving the results:" + tprint << std::endl;
@@ -1169,6 +1170,9 @@ int main(int argc, char** argv)
 
     unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
     double c0,v0,u0,hp, hpall, qmelti ; 
+    std::chrono::duration<double> elapsed_seconds;
+    auto start = std::chrono::system_clock::now();
+    auto end = std::chrono::system_clock::now();
                
 //   // input/read data
     ds.cfl = 1; // Courant condition
@@ -1181,7 +1185,7 @@ int main(int argc, char** argv)
     ds.cvdef = 0.07; // for turbulent stress calc
     ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
     print_step = 3600; // in seconds
-    timstart = 496800; // start of the simulation
+    timstart = 558000; // start of the simulation
 
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
@@ -1203,6 +1207,9 @@ int main(int argc, char** argv)
     print_next = print_next + print_step;
     
     // TIME LOOP
+    std::time_t start_time = std::chrono::system_clock::to_time_t(start);
+    std::cout << "FLUXOS"  << std::endl;
+    std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
     while(ds.tim <= ds.ntim) 
     {              
         ds.dtfl=9.e10;
@@ -1281,10 +1288,16 @@ int main(int argc, char** argv)
         // PRINT RESULTS
         if (ds.tim>=print_next)
         {
-             write_results(ds,std::round(print_next));
+             end = std::chrono::system_clock::now();
+             elapsed_seconds = end-start;
+             
+             write_results(ds,std::round(print_next),print_step,elapsed_seconds);
+             
              print_next = print_next + print_step;
+             start = std::chrono::system_clock::now();
          }
     }
+      std::cout << "Simulation complete (" << std::chrono::system_clock::now << ")"  << std::endl;
     return 0;
 }
 
