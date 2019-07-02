@@ -29,8 +29,6 @@
         <in>feature_tests.cxx</in>
       </df>
       <df name="Results">
-        <df name="Results_transport_only_snowmelt_load_first_test">
-        </df>
       </df>
       <in>main.cpp</in>
     </df>
@@ -60,8 +58,6 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
-        <gdb_signals>
-        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
