@@ -21,7 +21,45 @@
 #include<armadillo>
 #include<string>
 #include<memory> 
-#include <ctime>   
+#include <chrono>
+#include <ctime>  
+
+#include <vector> 
+#include <dirent.h>
+#include <sys/types.h>
+
+// read file names in Results directory
+int findLastStep(const char *path) {
+
+   struct dirent *entry;
+   int i, timestart, filenum = 0, simnum;
+   std::vector<char*> filenames; //stringvec filenames, filename_i;
+   const char* filename_i;
+   char *simnum_str_i;
+   DIR *dir = opendir(path);
+   
+   if (dir != NULL) {
+        while ((entry = readdir(dir)) != NULL) {
+        filenames.push_back(entry->d_name); // storing the file names
+        filenum = filenum + 1;
+        }
+   }
+   closedir(dir);
+   
+   timestart = 0;
+   for(i=2;i<filenum;i++){
+       filename_i = filenames[i]; //.assign(filenames[i]); //strcpy(filename_i,(char *)(&filenames[i]));
+        simnum_str_i = (char*) malloc(sizeof(filename_i)-2);
+        strncpy (simnum_str_i, filename_i, sizeof(filename_i)-2);
+        simnum = atoi(simnum_str_i);
+        timestart = std::max(timestart,simnum);
+        free(simnum_str_i);
+   }
+   
+   free(simnum_str_i);
+   std::cout << "Start time (s): " << timestart << " (initial conditions available)" << std::endl;
+   return timestart;
+}
 
 
 class declavar
@@ -147,16 +185,17 @@ void read_load(declavar& ds)
     
 }
 
-void initiation(declavar& ds, unsigned int timstart) {
+unsigned int initiation(declavar& ds) {
     
     std::unique_ptr<double[]> zbs1(new double[ds.m_row]);   
     double zbsw,zbnw,zbse,zbne,zbsum;
     unsigned int a,icol,irow,irow1,icol1;
     unsigned int n_row1,n_col1;
+    unsigned int timstart;
     n_row1=ds.n_row+1;
     n_col1=ds.n_col+1;
 
-       // INTERPOLATE ELEVATIONS OF THE BOUNDARIES
+     // INTERPOLATE ELEVATIONS OF THE BOUNDARIES
     for(irow=0;irow<=n_row1;irow++){
       zbs1[irow]=(*ds.zb).at(irow,1);
       (*ds.zb).at(irow,0) = (*ds.zb).at(irow,1);
@@ -216,7 +255,9 @@ void initiation(declavar& ds, unsigned int timstart) {
             (*ds.qy).at(irow,icol)=(*ds.uy).at(irow,icol)*(*ds.h).at(irow,icol);
         }
     }
- 
+    
+    timstart = findLastStep("Results/"); // list the results files to get the last time step
+    
     arma::mat filedata; 
     bool flstatus = filedata.load("Results/" + std::to_string(timstart) + ".txt",arma::csv_ascii);
 
@@ -280,6 +321,8 @@ void initiation(declavar& ds, unsigned int timstart) {
           (*ds.qy).at(irow,n_col1)=0.0f;
           (*ds.qyf).at(irow,0)=0.0f;
         }
+    
+    return timstart;
 }
 
 void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
@@ -1173,7 +1216,9 @@ int main(int argc, char** argv)
     std::chrono::duration<double> elapsed_seconds;
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
-               
+           
+    std::cout << "FLUXOS"  << std::endl;
+            
 //   // input/read data
     ds.cfl = 1; // Courant condition
     ds.dxy = 3; // grid size (structure grid) - it will actually come from DEM
@@ -1184,8 +1229,8 @@ int main(int argc, char** argv)
     //ksfirow = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
     ds.cvdef = 0.07; // for turbulent stress calc
     ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
-    print_step = 3600; // in seconds
-    timstart = 558000; // start of the simulation
+    print_step = 1; // in seconds
+    // timstart = 558000; // start of the simulation
 
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
@@ -1195,7 +1240,7 @@ int main(int argc, char** argv)
     read_geo(ds); // DEM
     read_load(ds); // snowmelt load
     
-    initiation(ds, timstart);
+    timstart = initiation(ds);
     
     // INITIATION
     ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
@@ -1208,8 +1253,7 @@ int main(int argc, char** argv)
     
     // TIME LOOP
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-    std::cout << "FLUXOS"  << std::endl;
-    std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
+    //std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
     while(ds.tim <= ds.ntim) 
     {              
         ds.dtfl=9.e10;
