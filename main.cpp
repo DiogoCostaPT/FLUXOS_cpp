@@ -63,6 +63,22 @@ int findLastStep(const char *path) {
    return timestart;
 }
 
+// get size of the domain
+void get_domain_size(unsigned int *rown, unsigned int *coln )
+{
+    unsigned int numele;  
+    arma::mat filedata; 
+    bool flstatus =  filedata.load("model_geo.fluxos",arma::csv_ascii);
+   
+    if(flstatus == true) {
+        numele = filedata.col(1).n_elem;
+        *rown = filedata(numele-1,0);
+        *coln = filedata(numele-1,1);
+    } else{
+        std::cout << "problem with loading 'modelgeo.fluxos'" << std::endl;
+    } 
+}
+
 
 class declavar
 {
@@ -131,6 +147,7 @@ public:
         dtfl,tim,                                   // timestep for flow computation
         D_coef;
 };
+
 
 void read_geo(declavar& ds)
 {
@@ -1211,9 +1228,7 @@ void write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
     
 int main(int argc, char** argv) 
 {   
-    unsigned int n_rowl = 722, n_coll = 1034, it = 0;
-    declavar ds(n_rowl+2,n_coll+2); 
-
+    unsigned int n_rowl, n_coll, it = 0;
     unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
     double c0,v0,u0,hp, hpall, qmelti ; 
     std::chrono::duration<double> elapsed_seconds;
@@ -1223,8 +1238,14 @@ int main(int argc, char** argv)
     std::cout << "FLUXOS"  << std::endl;
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
     std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
-            
-//   // input/read data
+      
+     // Get the size of the domain (nrow and ncol)
+    get_domain_size(&n_rowl, &n_coll);
+    
+    // Initiate variables on the heap
+    declavar ds(n_rowl+2,n_coll+2); 
+    
+    // input/read data
     ds.cfl = 1; // Courant condition
     ds.dxy = 3; // grid size (structure grid) - it will actually come from DEM
     ds.ntim = 0;// maximum time step (seconds)
@@ -1236,7 +1257,7 @@ int main(int argc, char** argv)
     ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
     //print_step = 3600; // in seconds
     // timstart = 558000; // start of the simulation
-
+            
     // Request user input
     std::cout << "Print step (s) = ";
     std::cin >> print_step;

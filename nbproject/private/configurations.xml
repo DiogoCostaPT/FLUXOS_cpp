@@ -23,8 +23,6 @@
           <in>OpenMPTryFlag.c</in>
           <in>OpenMPTryFlag.cpp</in>
         </df>
-        <df name="fluxos_cpp.dir">
-        </df>
         <in>feature_tests.c</in>
         <in>feature_tests.cxx</in>
       </df>
