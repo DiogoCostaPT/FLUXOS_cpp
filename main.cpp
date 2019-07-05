@@ -784,7 +784,7 @@ void solver_wet(declavar& ds, unsigned int irow, unsigned int icol){
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
-    if (irow==1 || irow==n_rowl || zbn == 9999)
+    if (irow==1 || irow==n_rowl || zbe == 9999)
     {
         fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
@@ -843,7 +843,7 @@ void flow_solver(declavar& ds)
     double hp, dtl;
 
     dtl = ds.dtfl;
-    float zbp = (*ds.zb).at(irow,icol);
+    float zbp;
     
     // GET hp AND CHECK IF DRY OR WET
     for(icol=1;icol<=ds.n_col;icol++)
@@ -852,6 +852,7 @@ void flow_solver(declavar& ds)
         {  
             hp=std::max(0.0,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
             (*ds.h).at(irow,icol) = hp;
+            zbp = (*ds.zb).at(irow,icol);
             
             if(hp<=ds.hdry || zbp == 9999)
             {
@@ -874,6 +875,7 @@ void flow_solver(declavar& ds)
         {
             for(irow=1;irow<=ds.n_row;irow++)
             {  
+                zbp = (*ds.zb).at(irow,icol);
                 if (zbp != 9999)
                 {
                     if((*ds.ldry).at(irow,icol) == 1.0f)
@@ -893,6 +895,7 @@ void flow_solver(declavar& ds)
     {
         for(irow=1;irow<=ds.n_row;irow++)
         {
+            zbp = (*ds.zb).at(irow,icol);
             if (zbp != 9999)
             {
                 (*ds.dh).at(irow,icol)=(((*ds.fe_1).at(irow-1,icol)-(*ds.fe_1).at(irow,icol))/ds.dxy +((*ds.fn_1).at(irow,icol-1)-(*ds.fn_1).at(irow,icol))/ds.dxy)*dtl;
@@ -913,8 +916,9 @@ void flow_solver(declavar& ds)
             (*ds.z).at(irow,icol)=(*ds.z).at(irow,icol)+(*ds.dh).at(irow,icol);
             hp=std::fmax(0.0f,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
             (*ds.h).at(irow,icol)=hp;
+            zbp = (*ds.zb).at(irow,icol);
             
-            if(hp<ds.hdry || zbp != 9999) 
+            if(hp<ds.hdry || zbp == 9999) 
             {
                 (*ds.qx).at(irow,icol)= 0.0f;
                 (*ds.qy).at(irow,icol)= 0.0f;
