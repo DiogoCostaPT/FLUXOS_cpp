@@ -58,7 +58,7 @@ int findLastStep(const char *path) {
    
    //free(filename_i);
    free(entry);
-   free(dir);
+   //free(dir);
    std::cout << "Start time (s): " << timestart << " (initial conditions available)" << std::endl;
    return timestart;
 }
@@ -150,7 +150,7 @@ void read_geo(declavar& ds)
     } 
 }
 
-void read_load(declavar& ds)
+float read_load(declavar& ds)
 {
     unsigned int a; 
     int icolb,irowb;
@@ -183,8 +183,9 @@ void read_load(declavar& ds)
         }
     } else{
             std::cout << "problem with loading 'Qmelt_info.fluxos'" << std::endl;
-    } 
-    
+    }
+    float tim = tmelts;
+    return tim;
 }
 
 unsigned int initiation(declavar& ds) {
@@ -1220,11 +1221,13 @@ int main(int argc, char** argv)
     auto end = std::chrono::system_clock::now();
            
     std::cout << "FLUXOS"  << std::endl;
+    std::time_t start_time = std::chrono::system_clock::to_time_t(start);
+    std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
             
 //   // input/read data
     ds.cfl = 1; // Courant condition
     ds.dxy = 3; // grid size (structure grid) - it will actually come from DEM
-    //ds.ntim = 3000000;// maximum time step (seconds)
+    ds.ntim = 0;// maximum time step (seconds)
     //kapa = -2.    // /  -2=1.Ord ; -1=2.Ord   // KOMISCH, DASS REAL/INTEGER ->schauen bei Rolands Dateien
     ds.arbase = ds.dxy * ds.dxy;
     //betas = 2. // Chezy (parameter)
@@ -1237,9 +1240,6 @@ int main(int argc, char** argv)
     // Request user input
     std::cout << "Print step (s) = ";
     std::cin >> print_step;
-    std::cout << "Simulation time (days) = ";
-    std::cin >> ds.ntim;
-    ds.ntim = ds.ntim * 3600 * 24;
   
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
@@ -1247,7 +1247,11 @@ int main(int argc, char** argv)
     ds.D_coef = 0.01;
     
     read_geo(ds); // DEM
-    read_load(ds); // snowmelt load
+    ds.ntim = read_load(ds); // snowmelt load
+    
+    std::cout << "Simulation time (days) (Snowmelt input duration = " + std::to_string(ds.ntim/(3600*24)) + " days) = ";
+    std::cin >> ds.ntim;
+    ds.ntim = ds.ntim * 3600 * 24;
     
     timstart = initiation(ds);
     
@@ -1260,9 +1264,9 @@ int main(int argc, char** argv)
     
     print_next = print_next + print_step;
     
+    std::cout << "-----------------------------------------------" << std::endl;
+    
     // TIME LOOP
-    std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-    //std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
     while(ds.tim <= ds.ntim) 
     {              
         ds.dtfl=9.e10;
