@@ -492,11 +492,11 @@ void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
     }
     
     // BOUNDARY CONDITIONS (WEIR DISCHARGE RATE)
-    if (icol==1 || icol==n_coll)
+    if (icol==1 || icol==n_coll || zbn == 9999)
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
-    if (irow==1 || irow==n_rowl)
+    if (irow==1 || irow==n_rowl || zbe == 9999)
     {
         fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
@@ -780,11 +780,11 @@ void solver_wet(declavar& ds, unsigned int irow, unsigned int icol){
     fn3=fn3c+fn3r+fn3p;
             
     // BOUNDARY CONDITIONS (WEIR DISCHARGE RATE) 
-    if (icol==1 || icol==n_coll)
+    if (icol==1 || icol==n_coll || zbn == 9999)
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
-    if (irow==1 || irow==n_rowl)
+    if (irow==1 || irow==n_rowl || zbn == 9999)
     {
         fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
@@ -843,6 +843,7 @@ void flow_solver(declavar& ds)
     double hp, dtl;
 
     dtl = ds.dtfl;
+    float zbp = (*ds.zb).at(irow,icol);
     
     // GET hp AND CHECK IF DRY OR WET
     for(icol=1;icol<=ds.n_col;icol++)
@@ -852,7 +853,7 @@ void flow_solver(declavar& ds)
             hp=std::max(0.0,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
             (*ds.h).at(irow,icol) = hp;
             
-            if(hp<=ds.hdry)
+            if(hp<=ds.hdry || zbp == 9999)
             {
               (*ds.qx).at(irow,icol)=0.0f;
               (*ds.qy).at(irow,icol)=0.0f;
@@ -873,12 +874,15 @@ void flow_solver(declavar& ds)
         {
             for(irow=1;irow<=ds.n_row;irow++)
             {  
-                if((*ds.ldry).at(irow,icol) == 1.0f)
+                if (zbp != 9999)
                 {
-                    solver_dry(ds,irow,icol);
-                } else
-                {
-                    solver_wet(ds,irow,icol);
+                    if((*ds.ldry).at(irow,icol) == 1.0f)
+                    {
+                        solver_dry(ds,irow,icol);
+                    } else
+                    {
+                        solver_wet(ds,irow,icol);
+                    }
                 }
             }
         }
@@ -888,12 +892,16 @@ void flow_solver(declavar& ds)
     for(icol=1;icol<=ds.n_col;icol++)
     {
         for(irow=1;irow<=ds.n_row;irow++)
-        {  
-            (*ds.dh).at(irow,icol)=(((*ds.fe_1).at(irow-1,icol)-(*ds.fe_1).at(irow,icol))/ds.dxy +((*ds.fn_1).at(irow,icol-1)-(*ds.fn_1).at(irow,icol))/ds.dxy)*dtl;
-            (*ds.dqx).at(irow,icol)=(((*ds.fe_2).at(irow-1,icol)-(*ds.fe_2).at(irow,icol))/ds.dxy +((*ds.fn_2).at(irow,icol-1)-(*ds.fn_2).at(irow,icol))/ds.dxy)*dtl;
-            (*ds.dqy).at(irow,icol)=(((*ds.fe_3).at(irow-1,icol)-(*ds.fe_3).at(irow,icol))/ds.dxy +((*ds.fn_3).at(irow,icol-1)-(*ds.fn_3).at(irow,icol))/ds.dxy)*dtl;
-            (*ds.qxf).at(irow,icol)=(*ds.fe_1).at(irow,icol)*dtl;
-            (*ds.qyf).at(irow,icol)=(*ds.fn_1).at(irow,icol)*dtl;
+        {
+            if (zbp != 9999)
+            {
+                (*ds.dh).at(irow,icol)=(((*ds.fe_1).at(irow-1,icol)-(*ds.fe_1).at(irow,icol))/ds.dxy +((*ds.fn_1).at(irow,icol-1)-(*ds.fn_1).at(irow,icol))/ds.dxy)*dtl;
+                (*ds.dqx).at(irow,icol)=(((*ds.fe_2).at(irow-1,icol)-(*ds.fe_2).at(irow,icol))/ds.dxy +((*ds.fn_2).at(irow,icol-1)-(*ds.fn_2).at(irow,icol))/ds.dxy)*dtl;
+                (*ds.dqy).at(irow,icol)=(((*ds.fe_3).at(irow-1,icol)-(*ds.fe_3).at(irow,icol))/ds.dxy +((*ds.fn_3).at(irow,icol-1)-(*ds.fn_3).at(irow,icol))/ds.dxy)*dtl;
+                (*ds.qxf).at(irow,icol)=(*ds.fe_1).at(irow,icol)*dtl;
+                (*ds.qyf).at(irow,icol)=(*ds.fn_1).at(irow,icol)*dtl;
+            }
+                
         }
     }
 
@@ -906,7 +914,7 @@ void flow_solver(declavar& ds)
             hp=std::fmax(0.0f,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
             (*ds.h).at(irow,icol)=hp;
             
-            if(hp<ds.hdry) 
+            if(hp<ds.hdry || zbp != 9999) 
             {
                 (*ds.qx).at(irow,icol)= 0.0f;
                 (*ds.qy).at(irow,icol)= 0.0f;
