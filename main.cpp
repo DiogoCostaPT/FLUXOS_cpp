@@ -34,7 +34,7 @@ int findLastStep(const char *path) {
    struct dirent *entry;
    int i, timestart, filenum = 0, simnum;
    std::vector<char*> filenames; //stringvec filenames, filename_i;
-   const char* filename_i;
+   const char *filename_i;
    char *simnum_str_i;
    DIR *dir = opendir(path);
    
@@ -56,7 +56,9 @@ int findLastStep(const char *path) {
         free(simnum_str_i);
    }
    
-   free(simnum_str_i);
+   //free(filename_i);
+   free(entry);
+   free(dir);
    std::cout << "Start time (s): " << timestart << " (initial conditions available)" << std::endl;
    return timestart;
 }
@@ -1222,16 +1224,23 @@ int main(int argc, char** argv)
 //   // input/read data
     ds.cfl = 1; // Courant condition
     ds.dxy = 3; // grid size (structure grid) - it will actually come from DEM
-    ds.ntim = 3000000;// maximum time step (seconds)
+    //ds.ntim = 3000000;// maximum time step (seconds)
     //kapa = -2.    // /  -2=1.Ord ; -1=2.Ord   // KOMISCH, DASS REAL/INTEGER ->schauen bei Rolands Dateien
     ds.arbase = ds.dxy * ds.dxy;
     //betas = 2. // Chezy (parameter)
     //ksfirow = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
     ds.cvdef = 0.07; // for turbulent stress calc
     ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
-    print_step = 1; // in seconds
+    //print_step = 3600; // in seconds
     // timstart = 558000; // start of the simulation
 
+    // Request user input
+    std::cout << "Print step (s) = ";
+    std::cin >> print_step;
+    std::cout << "Simulation time (days) = ";
+    std::cin >> ds.ntim;
+    ds.ntim = ds.ntim * 3600 * 24;
+  
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
     
