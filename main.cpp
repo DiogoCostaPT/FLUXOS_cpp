@@ -1258,7 +1258,7 @@ bool write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
     filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,11));
     
     bool outwritestatus =  filedata.save(tprint,arma::csv_ascii);
-    
+    return outwritestatus;
 
 }
     

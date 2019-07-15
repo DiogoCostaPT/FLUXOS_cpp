@@ -1,18 +1,7 @@
 FLUXOS 
-Simulation started... Mon Jul 15 16:04:22 2019
-Print step (s) = 1
-Simulation time (days) = 0.000100 (= 8 sec)
+Simulation started... Mon Jul 15 16:20:56 2019
+Print step (s) = 3600
+Simulation time (days) = 17.000000 (= 1468800 sec)
 Soil release rate (1/day) = 0.900000
 -----------------------------------------------
 
-Saved: '2.txt' || time step (min): 0 || Time elapsed (min): 0.141004
-Saved: '3.txt' || time step (min): 0 || Time elapsed (min): 0.000057
-Saved: '4.txt' || time step (min): 0 || Time elapsed (min): 0.000056
-Saved: '5.txt' || time step (min): 0 || Time elapsed (min): 0.000058
-Saved: '6.txt' || time step (min): 0 || Time elapsed (min): 0.000056
-Saved: '7.txt' || time step (min): 0 || Time elapsed (min): 0.000056
-Saved: '8.txt' || time step (min): 0 || Time elapsed (min): 0.000055
-Saved: '9.txt' || time step (min): 0 || Time elapsed (min): 0.000058
-
------------------------------------------------
-Simulation complete (1
