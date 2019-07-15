@@ -17,6 +17,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include<iostream>
+#include<fstream>
 #include<math.h>
 #include<armadillo>
 #include<string>
@@ -1215,7 +1216,7 @@ void wintra(declavar& ds)
     }
 }
 
-void write_results(declavar& ds, int print_tag, unsigned int print_step, std::chrono::duration<double> elapsed_seconds)
+bool write_results(declavar& ds, int print_tag, unsigned int print_step, std::chrono::duration<double> elapsed_seconds)
 {
 
     unsigned int icol,irow;
@@ -1256,15 +1257,8 @@ void write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
     arma::mat filedata(std::max(0,a-1),12); 
     filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,11));
     
-    bool flstatus =  filedata.save(tprint,arma::csv_ascii);
-   
-    if(flstatus == true) 
-    {
-        std::cout << "Saved: '" << tprint << "' || time step (min): " << std::to_string(print_step/60) << " || Time elapsed (min): " << elapsed_seconds.count()/60 << std::endl;
-    } else
-    {
-        std::cout << "Problem when saving the results:" + tprint << std::endl;
-    }
+    bool outwritestatus =  filedata.save(tprint,arma::csv_ascii);
+    
 
 }
     
@@ -1272,15 +1266,22 @@ int main(int argc, char** argv)
 {   
     unsigned int n_rowl, n_coll, it = 0;
     unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
-    double c0,v0,u0,hp, hpall, qmelti ; 
+    double c0,v0,u0,hp, hpall, qmelti, ntim_days;
+    bool outwritestatus;
     std::chrono::duration<double> elapsed_seconds;
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
-           
+    
+    // Create/Open log file
+    std::ofstream logFLUXOSfile ("logFLUXOS.out");
+    
     std::cout << "FLUXOS"  << std::endl;
+    logFLUXOSfile << "FLUXOS \n";
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
     std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
-      
+    logFLUXOSfile << "Simulation started... " << std::ctime(&start_time);
+    
+   
      // Get the size of the domain (nrow and ncol)
     get_domain_size(&n_rowl, &n_coll);
     
@@ -1303,6 +1304,7 @@ int main(int argc, char** argv)
     // Request user input
     std::cout << "Print step (s) = ";
     std::cin >> print_step;
+    logFLUXOSfile << "Print step (s) = " + std::to_string(print_step) + "\n";
   
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
@@ -1314,13 +1316,15 @@ int main(int argc, char** argv)
     
     // Input the duration of the simulation
     std::cout << "Simulation time (days) (Snowmelt input duration = " + std::to_string(ds.ntim/(3600*24)) + " days) = ";
-    std::cin >> ds.ntim;
-    ds.ntim = ds.ntim * 3600 * 24;
+    std::cin >> ntim_days;
+    ds.ntim = ntim_days * 3600 * 24;
+    logFLUXOSfile << "Simulation time (days) = " + std::to_string(ntim_days) + " (= " + std::to_string(ds.ntim) + " sec)";
     
     
     // Input the soil nutrient release rate
     std::cout << "Soil release rate (1/day) = ";
     std::cin >> ds.soil_release_rate;
+    logFLUXOSfile << "\nSoil release rate (1/day) = " + std::to_string(ds.soil_release_rate) + "\n";
    
     
     // INITIATION
@@ -1334,6 +1338,7 @@ int main(int argc, char** argv)
     print_next = print_next + print_step;
         
     std::cout << "-----------------------------------------------" << std::endl;
+    logFLUXOSfile << "-----------------------------------------------\n" << std::endl;
     
     // TIME LOOP
     while(ds.tim <= ds.ntim) 
@@ -1394,7 +1399,7 @@ int main(int argc, char** argv)
             (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
             if ((*ds.h)(irow,icol) <= ds.hdry)
             {
-                    (*ds.ldry).at(irow,icol)=0.0f;
+                (*ds.ldry).at(irow,icol)=0.0f;
         }
             (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
             if (hp!=0.)
@@ -1418,13 +1423,34 @@ int main(int argc, char** argv)
              end = std::chrono::system_clock::now();
              elapsed_seconds = end-start;
              
-             write_results(ds,std::round(print_next),print_step,elapsed_seconds);
+             outwritestatus = write_results(ds,std::round(print_next),print_step,elapsed_seconds);
              
-             print_next = print_next + print_step;
-             start = std::chrono::system_clock::now();
+               
+            if(outwritestatus == true) 
+            {
+                std::cout << "Saved: '" << print_next << ".txt' || time step (min): " << std::to_string(print_step/60) << " || Time elapsed (min): " << elapsed_seconds.count()/60 << std::endl;
+                logFLUXOSfile << "Saved: '" << print_next << ".txt' || time step (min): " << std::to_string(print_step/60) << " || Time elapsed (min): " << std::to_string(elapsed_seconds.count()/60) + "\n";
+                print_next = print_next + print_step;
+                start = std::chrono::system_clock::now();
+
+            } else
+            {
+                std::cout << "Problem when saving the results:" + print_next << std::endl;
+                logFLUXOSfile << "Problem when saving the results:" + print_next;
+                return 0;
+            }
+             
+             
          }
     }
+    
+    // Simulation complete
+      std::cout << "-----------------------------------------------" << std::endl;
+      logFLUXOSfile << "\n-----------------------------------------------" << std::endl;
       std::cout << "Simulation complete (" << std::chrono::system_clock::now << ")"  << std::endl;
+      logFLUXOSfile << "Simulation complete (" << std::chrono::system_clock::now;
+      logFLUXOSfile.close(); 
+      
     return 0;
 }
 
