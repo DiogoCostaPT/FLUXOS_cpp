@@ -259,7 +259,7 @@ unsigned int initiation(declavar& ds) {
                 zbsum=zbsum + zbne;
                 a = a + 1;
             }
-            (*ds.zb).at(irow,icol)=(zbsum)/a;
+            //(*ds.zb).at(irow,icol)=(zbsum)/a;
             zbs1[irow1]=zbne;
             zbsw= zbse;
             zbnw= zbne;
@@ -289,6 +289,7 @@ unsigned int initiation(declavar& ds) {
         {
             irow = filedata(a,0);  
             icol = filedata(a,1);  
+            // filedata(a,2) is z(irow,icol) but it isn't used
             (*ds.h).at(irow,icol) = filedata(a,3);
             (*ds.z).at(irow,icol) = (*ds.zb).at(irow,icol) + filedata(a,3);
             (*ds.ux).at(irow,icol) = filedata(a,4);
@@ -403,7 +404,7 @@ void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
     zp=(*ds.z).at(irow,icol);
     ze=(*ds.z).at(ie,icol);
     zn=(*ds.z).at(irow,in);
-    hp  = std::max(0.0,(*ds.z).at(irow,icol)-(*ds.z).at(irow,icol));
+    hp  = std::max(0.0,(*ds.z).at(irow,icol)-zbp);
     he=std::max(0.0,ze-zbe);
     hn=std::max(0.0,zn-zbn);
     qp=(*ds.qx).at(irow,icol);
@@ -498,6 +499,7 @@ void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
     if (icol==1 || icol==n_coll || zbn == 9999)
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
+        volrat = volrat - fn1;
     }
     if (irow==1 || irow==n_rowl || zbe == 9999)
     {
@@ -786,10 +788,15 @@ void solver_wet(declavar& ds, unsigned int irow, unsigned int icol){
     if (icol==1 || icol==n_coll || zbn == 9999)
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
+        volrat = volrat - fn1;
+        fn2 = 0.0f;
+        fn3 = 0.0f;
     }
     if (irow==1 || irow==n_rowl || zbe == 9999)
     {
         fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
+        fe2 = 0.0f;
+        fe3 = 0.0f;
     }
 
     // CHECK MASS BALANCE (restrict outflow flux to available water)        
@@ -1221,7 +1228,7 @@ bool write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
 
     unsigned int icol,irow;
     int a = 0;
-    double ux;
+    double ux, zbp;
     
     std::string tprint = "Results/" + std::to_string(print_tag); 
     std::string filext(".txt");
@@ -1233,14 +1240,15 @@ bool write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
     {
         for(irow=1;irow<=ds.n_row;irow++)
         {
-            if ((*ds.h).at(irow,icol)>0.0f)
+            zbp = (*ds.zb).at(irow,icol);
+            if ((*ds.h).at(irow,icol)>0.0f && zbp != 9999 )
             {
                 ux=sqrt((*ds.ux).at(irow,icol) * (*ds.ux).at(irow,icol) +
                         (*ds.uy).at(irow,icol) * (*ds.uy).at(irow,icol));
                 filedataR(a,0) = irow;  
                 filedataR(a,1) = icol; 
                 filedataR(a,2) = (*ds.z).at(irow,icol); 
-                filedataR(a,3) = (*ds.z).at(irow,icol) - (*ds.zb).at(irow,icol);
+                filedataR(a,3) = (*ds.z).at(irow,icol) - zbp;
                 filedataR(a,4) = (*ds.ux).at(irow,icol); 
                 filedataR(a,5) = (*ds.uy).at(irow,icol); 
                 filedataR(a,6) = (*ds.qx).at(irow,icol)*ds.dxy; // m3/s/m -> m3/s (maybe look into this - should it be fn_1 instead)
