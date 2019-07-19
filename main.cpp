@@ -403,7 +403,7 @@ void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
     zp=(*ds.z).at(irow,icol);
     ze=(*ds.z).at(ie,icol);
     zn=(*ds.z).at(irow,in);
-    hp  = std::max(0.0,(*ds.z).at(irow,icol)-(*ds.z).at(irow,icol));
+    hp  = std::max(0.0,(*ds.z).at(irow,icol)-zbp);
     he=std::max(0.0,ze-zbe);
     hn=std::max(0.0,zn-zbn);
     qp=(*ds.qx).at(irow,icol);
