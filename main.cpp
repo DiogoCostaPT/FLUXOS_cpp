@@ -17,7 +17,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include<iostream>
-#include<fstream>
 #include<math.h>
 #include<armadillo>
 #include<string>
@@ -121,7 +120,6 @@ public:
     ldry= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
     
     conc_SW= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
-    soil_mass= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     h0= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     ldry_prev= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
     
@@ -143,11 +141,11 @@ public:
         //sbm_row,sbm_col,                                  // for calc of weight of water (bed slope term) (solver_wet)
         ks, //cfri                                  // Friction (Chezy model is not being used for now)
         fe_1,fe_2,fe_3,fn_1,fn_2,fn_3,
-        conc_SW,h0,soil_mass; 
+        conc_SW,h0; 
     std::unique_ptr<arma::Mat<float>> ldry,basin_rowy,qmelt,ldry_prev;   
     double hdry,                                    //minimum water depth
         dtfl,tim,                                   // timestep for flow computation
-        D_coef,soil_release_rate;
+        D_coef;
 };
 
 
@@ -259,7 +257,7 @@ unsigned int initiation(declavar& ds) {
                 zbsum=zbsum + zbne;
                 a = a + 1;
             }
-            //(*ds.zb).at(irow,icol)=(zbsum)/a;
+            (*ds.zb).at(irow,icol)=(zbsum)/a;
             zbs1[irow1]=zbne;
             zbsw= zbse;
             zbnw= zbne;
@@ -289,7 +287,6 @@ unsigned int initiation(declavar& ds) {
         {
             irow = filedata(a,0);  
             icol = filedata(a,1);  
-            // filedata(a,2) is z(irow,icol) but it isn't used
             (*ds.h).at(irow,icol) = filedata(a,3);
             (*ds.z).at(irow,icol) = (*ds.zb).at(irow,icol) + filedata(a,3);
             (*ds.ux).at(irow,icol) = filedata(a,4);
@@ -298,7 +295,6 @@ unsigned int initiation(declavar& ds) {
             (*ds.qy).at(irow,icol) = filedata(a,7);
             (*ds.us).at(irow,icol) = filedata(a,9);
             (*ds.conc_SW).at(irow,icol) = filedata(a,10);
-            (*ds.soil_mass).at(irow,icol) = filedata(a,11);
             (*ds.ldry).at(irow,icol) = 0.0f;
         }
     } else
@@ -404,7 +400,7 @@ void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
     zp=(*ds.z).at(irow,icol);
     ze=(*ds.z).at(ie,icol);
     zn=(*ds.z).at(irow,in);
-    hp  = std::max(0.0,(*ds.z).at(irow,icol)-zbp);
+    hp  = std::max(0.0,(*ds.z).at(irow,icol)-(*ds.z).at(irow,icol));
     he=std::max(0.0,ze-zbe);
     hn=std::max(0.0,zn-zbn);
     qp=(*ds.qx).at(irow,icol);
@@ -496,12 +492,11 @@ void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
     }
     
     // BOUNDARY CONDITIONS (WEIR DISCHARGE RATE)
-    if (icol==1 || icol==n_coll || zbn == 9999)
+    if (icol==1 || icol==n_coll)
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
-        volrat = volrat - fn1;
     }
-    if (irow==1 || irow==n_rowl || zbe == 9999)
+    if (irow==1 || irow==n_rowl)
     {
         fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
@@ -785,18 +780,13 @@ void solver_wet(declavar& ds, unsigned int irow, unsigned int icol){
     fn3=fn3c+fn3r+fn3p;
             
     // BOUNDARY CONDITIONS (WEIR DISCHARGE RATE) 
-    if (icol==1 || icol==n_coll || zbn == 9999)
+    if (icol==1 || icol==n_coll)
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
-        volrat = volrat - fn1;
-        fn2 = 0.0f;
-        fn3 = 0.0f;
     }
-    if (irow==1 || irow==n_rowl || zbe == 9999)
+    if (irow==1 || irow==n_rowl)
     {
         fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
-        fe2 = 0.0f;
-        fe3 = 0.0f;
     }
 
     // CHECK MASS BALANCE (restrict outflow flux to available water)        
@@ -853,7 +843,6 @@ void flow_solver(declavar& ds)
     double hp, dtl;
 
     dtl = ds.dtfl;
-    float zbp;
     
     // GET hp AND CHECK IF DRY OR WET
     for(icol=1;icol<=ds.n_col;icol++)
@@ -862,9 +851,8 @@ void flow_solver(declavar& ds)
         {  
             hp=std::max(0.0,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
             (*ds.h).at(irow,icol) = hp;
-            zbp = (*ds.zb).at(irow,icol);
             
-            if(hp<=ds.hdry || zbp == 9999)
+            if(hp<=ds.hdry)
             {
               (*ds.qx).at(irow,icol)=0.0f;
               (*ds.qy).at(irow,icol)=0.0f;
@@ -885,16 +873,12 @@ void flow_solver(declavar& ds)
         {
             for(irow=1;irow<=ds.n_row;irow++)
             {  
-                zbp = (*ds.zb).at(irow,icol);
-                if (zbp != 9999)
+                if((*ds.ldry).at(irow,icol) == 1.0f)
                 {
-                    if((*ds.ldry).at(irow,icol) == 1.0f)
-                    {
-                        solver_dry(ds,irow,icol);
-                    } else
-                    {
-                        solver_wet(ds,irow,icol);
-                    }
+                    solver_dry(ds,irow,icol);
+                } else
+                {
+                    solver_wet(ds,irow,icol);
                 }
             }
         }
@@ -904,17 +888,12 @@ void flow_solver(declavar& ds)
     for(icol=1;icol<=ds.n_col;icol++)
     {
         for(irow=1;irow<=ds.n_row;irow++)
-        {
-            zbp = (*ds.zb).at(irow,icol);
-            if (zbp != 9999)
-            {
-                (*ds.dh).at(irow,icol)=(((*ds.fe_1).at(irow-1,icol)-(*ds.fe_1).at(irow,icol))/ds.dxy +((*ds.fn_1).at(irow,icol-1)-(*ds.fn_1).at(irow,icol))/ds.dxy)*dtl;
-                (*ds.dqx).at(irow,icol)=(((*ds.fe_2).at(irow-1,icol)-(*ds.fe_2).at(irow,icol))/ds.dxy +((*ds.fn_2).at(irow,icol-1)-(*ds.fn_2).at(irow,icol))/ds.dxy)*dtl;
-                (*ds.dqy).at(irow,icol)=(((*ds.fe_3).at(irow-1,icol)-(*ds.fe_3).at(irow,icol))/ds.dxy +((*ds.fn_3).at(irow,icol-1)-(*ds.fn_3).at(irow,icol))/ds.dxy)*dtl;
-                (*ds.qxf).at(irow,icol)=(*ds.fe_1).at(irow,icol)*dtl;
-                (*ds.qyf).at(irow,icol)=(*ds.fn_1).at(irow,icol)*dtl;
-            }
-                
+        {  
+            (*ds.dh).at(irow,icol)=(((*ds.fe_1).at(irow-1,icol)-(*ds.fe_1).at(irow,icol))/ds.dxy +((*ds.fn_1).at(irow,icol-1)-(*ds.fn_1).at(irow,icol))/ds.dxy)*dtl;
+            (*ds.dqx).at(irow,icol)=(((*ds.fe_2).at(irow-1,icol)-(*ds.fe_2).at(irow,icol))/ds.dxy +((*ds.fn_2).at(irow,icol-1)-(*ds.fn_2).at(irow,icol))/ds.dxy)*dtl;
+            (*ds.dqy).at(irow,icol)=(((*ds.fe_3).at(irow-1,icol)-(*ds.fe_3).at(irow,icol))/ds.dxy +((*ds.fn_3).at(irow,icol-1)-(*ds.fn_3).at(irow,icol))/ds.dxy)*dtl;
+            (*ds.qxf).at(irow,icol)=(*ds.fe_1).at(irow,icol)*dtl;
+            (*ds.qyf).at(irow,icol)=(*ds.fn_1).at(irow,icol)*dtl;
         }
     }
 
@@ -926,9 +905,8 @@ void flow_solver(declavar& ds)
             (*ds.z).at(irow,icol)=(*ds.z).at(irow,icol)+(*ds.dh).at(irow,icol);
             hp=std::fmax(0.0f,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
             (*ds.h).at(irow,icol)=hp;
-            zbp = (*ds.zb).at(irow,icol);
             
-            if(hp<ds.hdry || zbp == 9999) 
+            if(hp<ds.hdry) 
             {
                 (*ds.qx).at(irow,icol)= 0.0f;
                 (*ds.qy).at(irow,icol)= 0.0f;
@@ -960,12 +938,7 @@ void adesolver(declavar& ds, int it)
     double dx,dy,dyn,hp,ie,iee,in, inn, is,iw;
     double nt =1 ; // eddy viscosity (m2/s) = 1,
     double sigc = 0.5;
-    double zbp;
 
-    if (it == 1)
-    {
-        return;
-    }
 
     if(it>1) {
     // ADJUST CONCENTRATION TO NEW DEPTH
@@ -986,7 +959,7 @@ void adesolver(declavar& ds, int it)
             }
         }
     }
-
+            
     //...    POLLUTION SOURCES
     ////$OMP PARALLEL
     //if (isqes2_on==1) call isqes2            // instantenous
@@ -1012,15 +985,14 @@ void adesolver(declavar& ds, int it)
         iw=ix-1;
         ie=ix+1;
         iee=std::min(ix+2,ds.n_row+1);
-        zbp = (*ds.zb)(ix,iy);
                      
         //  BC 
         if (ix==1) {
-            pfce=(*ds.conc_SW).at(0,iy)*(*ds.fe_1)(0,iy)*dy;     // convective flux
-            hp=std::max((*ds.h).at(1,iy),ds.hdry);                  
-            he=std::max((*ds.h).at(2,iy),ds.hdry);
-            fp=(*ds.conc_SW).at(0,iy);
-            fe=(*ds.conc_SW).at(1,iy);
+            pfce=(*ds.conc_SW)(0,iy)*(*ds.fe_1)(0,iy)*dy;     // convective flux
+            hp=std::max((*ds.h)(1,iy),ds.hdry);                  
+            he=std::max((*ds.h)(2,iy),ds.hdry);
+            fp=(*ds.conc_SW)(0,iy);
+            fe=(*ds.conc_SW)(1,iy);
            
             hne=std::sqrt(hp*nt*he*nt)/sigc/std::abs(dx)*dy*ds.D_coef;
             pfde=0.;            // no diffusive flux over boundary
@@ -1028,10 +1000,10 @@ void adesolver(declavar& ds, int it)
         }  
 
         // CHECK IF THE DOMAIN IS DRY
-        if((*ds.ldry).at(ix,iy)==1 || zbp==9999) {
+        if((*ds.ldry)(ix,iy)==1){
             pfe=0.;
             qfcds(ix)=0.;
-            (*ds.conc_SW).at(ix,iy)=0.;            
+            (*ds.conc_SW)(ix,iy)=0.;            
             continue; 
         };
 
@@ -1202,53 +1174,31 @@ void adesolver(declavar& ds, int it)
     }
 }
 
-void wintra(declavar& ds)
-{
-    unsigned int icol,irow;
-    double deltam,hp,zbp;
-    
-    for(icol=1;icol<=ds.n_col;icol++)
-    {
-        for(irow=1;irow<=ds.n_row;irow++)
-        {
-            hp = (*ds.h).at(irow,icol);
-            zbp =(*ds.zb).at(irow,icol);
-            if(hp>ds.hdry && zbp != 9999) 
-            {       
-                deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600/24 * ds.dtfl; // mass release
-                (*ds.soil_mass).at(irow,icol) = (*ds.soil_mass).at(irow,icol) - deltam;
-                (*ds.conc_SW).at(irow,icol) = (*ds.conc_SW).at(irow,icol) + deltam/(hp*ds.arbase);
-            }
-        }
-    }
-}
-
-bool write_results(declavar& ds, int print_tag, unsigned int print_step, std::chrono::duration<double> elapsed_seconds)
+void write_results(declavar& ds, int print_tag, unsigned int print_step, std::chrono::duration<double> elapsed_seconds)
 {
 
     unsigned int icol,irow;
     int a = 0;
-    double ux, zbp;
+    double ux;
     
     std::string tprint = "Results/" + std::to_string(print_tag); 
     std::string filext(".txt");
     tprint += filext;
 
-    arma::mat filedataR(ds.n_row*ds.n_col,12); 
+    arma::mat filedataR(ds.n_row*ds.n_col,11); 
     
     for(icol=1;icol<=ds.n_col;icol++)
     {
         for(irow=1;irow<=ds.n_row;irow++)
         {
-            zbp = (*ds.zb).at(irow,icol);
-            if ((*ds.h).at(irow,icol)>0.0f && zbp != 9999 )
+            if ((*ds.h).at(irow,icol)>0.0f)
             {
                 ux=sqrt((*ds.ux).at(irow,icol) * (*ds.ux).at(irow,icol) +
                         (*ds.uy).at(irow,icol) * (*ds.uy).at(irow,icol));
                 filedataR(a,0) = irow;  
                 filedataR(a,1) = icol; 
                 filedataR(a,2) = (*ds.z).at(irow,icol); 
-                filedataR(a,3) = (*ds.z).at(irow,icol) - zbp;
+                filedataR(a,3) = (*ds.z).at(irow,icol) - (*ds.zb).at(irow,icol);
                 filedataR(a,4) = (*ds.ux).at(irow,icol); 
                 filedataR(a,5) = (*ds.uy).at(irow,icol); 
                 filedataR(a,6) = (*ds.qx).at(irow,icol)*ds.dxy; // m3/s/m -> m3/s (maybe look into this - should it be fn_1 instead)
@@ -1256,17 +1206,23 @@ bool write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
                 filedataR(a,8) = ux; 
                 filedataR(a,9) = (*ds.us).at(irow,icol); 
                 filedataR(a,10) = (*ds.conc_SW).at(irow,icol); // adesolver
-                filedataR(a,11) = (*ds.soil_mass).at(irow,icol); // adesolver
                 a = a + 1;
             }
         }
     }
    
-    arma::mat filedata(std::max(0,a-1),12); 
-    filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,11));
+    arma::mat filedata(std::max(0,a-1),11); 
+    filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,10));
     
-    bool outwritestatus =  filedata.save(tprint,arma::csv_ascii);
-    return outwritestatus;
+    bool flstatus =  filedata.save(tprint,arma::csv_ascii);
+   
+    if(flstatus == true) 
+    {
+        std::cout << "Saved: '" << tprint << "' || time step (min): " << std::to_string(print_step/60) << " || Time elapsed (min): " << elapsed_seconds.count()/60 << std::endl;
+    } else
+    {
+        std::cout << "Problem when saving the results:" + tprint << std::endl;
+    }
 
 }
     
@@ -1274,22 +1230,15 @@ int main(int argc, char** argv)
 {   
     unsigned int n_rowl, n_coll, it = 0;
     unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
-    double c0,v0,u0,hp, hpall, qmelti, ntim_days;
-    bool outwritestatus;
+    double c0,v0,u0,hp, hpall, qmelti ; 
     std::chrono::duration<double> elapsed_seconds;
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
-    
-    // Create/Open log file
-    std::ofstream logFLUXOSfile ("logFLUXOS.out");
-    
+           
     std::cout << "FLUXOS"  << std::endl;
-    logFLUXOSfile << "FLUXOS \n";
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
     std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
-    logFLUXOSfile << "Simulation started... " << std::ctime(&start_time);
-    
-   
+      
      // Get the size of the domain (nrow and ncol)
     get_domain_size(&n_rowl, &n_coll);
     
@@ -1312,7 +1261,6 @@ int main(int argc, char** argv)
     // Request user input
     std::cout << "Print step (s) = ";
     std::cin >> print_step;
-    logFLUXOSfile << "Print step (s) = " + std::to_string(print_step) + "\n";
   
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
@@ -1322,21 +1270,13 @@ int main(int argc, char** argv)
     read_geo(ds); // DEM
     ds.ntim = read_load(ds); // snowmelt load
     
-    // Input the duration of the simulation
     std::cout << "Simulation time (days) (Snowmelt input duration = " + std::to_string(ds.ntim/(3600*24)) + " days) = ";
-    std::cin >> ntim_days;
-    ds.ntim = ntim_days * 3600 * 24;
-    logFLUXOSfile << "Simulation time (days) = " + std::to_string(ntim_days) + " (= " + std::to_string(ds.ntim) + " sec)";
+    std::cin >> ds.ntim;
+    ds.ntim = ds.ntim * 3600 * 24;
     
-    
-    // Input the soil nutrient release rate
-    std::cout << "Soil release rate (1/day) = ";
-    std::cin >> ds.soil_release_rate;
-    logFLUXOSfile << "\nSoil release rate (1/day) = " + std::to_string(ds.soil_release_rate) + "\n";
-   
+    timstart = initiation(ds);
     
     // INITIATION
-    timstart = initiation(ds);
     ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
         
     print_next = timstart;
@@ -1344,9 +1284,8 @@ int main(int argc, char** argv)
     //write_results(ds,std::round(print_next));
     
     print_next = print_next + print_step;
-        
+    
     std::cout << "-----------------------------------------------" << std::endl;
-    logFLUXOSfile << "-----------------------------------------------\n" << std::endl;
     
     // TIME LOOP
     while(ds.tim <= ds.ntim) 
@@ -1407,21 +1346,20 @@ int main(int argc, char** argv)
             (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
             if ((*ds.h)(irow,icol) <= ds.hdry)
             {
-                (*ds.ldry).at(irow,icol)=0.0f;
+                    (*ds.ldry).at(irow,icol)=0.0f;
         }
             (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
             if (hp!=0.)
             {          
-                (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
+                (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0.5)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
             }
           }
                 
-        // SOLVERS
+        // FLOW SOLVERS
         if (hpall!=0) 
         {
             it++;
             flow_solver(ds);
-            wintra(ds);
             adesolver(ds, it);
         }
         
@@ -1431,34 +1369,13 @@ int main(int argc, char** argv)
              end = std::chrono::system_clock::now();
              elapsed_seconds = end-start;
              
-             outwritestatus = write_results(ds,std::round(print_next),print_step,elapsed_seconds);
+             write_results(ds,std::round(print_next),print_step,elapsed_seconds);
              
-               
-            if(outwritestatus == true) 
-            {
-                std::cout << "Saved: '" << print_next << ".txt' || time step (min): " << std::to_string(print_step/60) << " || Time elapsed (min): " << elapsed_seconds.count()/60 << std::endl;
-                logFLUXOSfile << "Saved: '" << print_next << ".txt' || time step (min): " << std::to_string(print_step/60) << " || Time elapsed (min): " << std::to_string(elapsed_seconds.count()/60) + "\n";
-                print_next = print_next + print_step;
-                start = std::chrono::system_clock::now();
-
-            } else
-            {
-                std::cout << "Problem when saving the results:" + print_next << std::endl;
-                logFLUXOSfile << "Problem when saving the results:" + print_next;
-                return 0;
-            }
-             
-             
+             print_next = print_next + print_step;
+             start = std::chrono::system_clock::now();
          }
     }
-    
-    // Simulation complete
-      std::cout << "-----------------------------------------------" << std::endl;
-      logFLUXOSfile << "\n-----------------------------------------------" << std::endl;
       std::cout << "Simulation complete (" << std::chrono::system_clock::now << ")"  << std::endl;
-      logFLUXOSfile << "Simulation complete (" << std::chrono::system_clock::now;
-      logFLUXOSfile.close(); 
-      
     return 0;
 }
 
