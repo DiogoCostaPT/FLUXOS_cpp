@@ -120,6 +120,7 @@ public:
     ldry= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
     
     conc_SW= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    soil_mass= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     h0= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     ldry_prev= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
     
@@ -141,11 +142,11 @@ public:
         //sbm_row,sbm_col,                                  // for calc of weight of water (bed slope term) (solver_wet)
         ks, //cfri                                  // Friction (Chezy model is not being used for now)
         fe_1,fe_2,fe_3,fn_1,fn_2,fn_3,
-        conc_SW,h0; 
+        conc_SW,h0,soil_mass; 
     std::unique_ptr<arma::Mat<float>> ldry,basin_rowy,qmelt,ldry_prev;   
     double hdry,                                    //minimum water depth
         dtfl,tim,                                   // timestep for flow computation
-        D_coef;
+        D_coef,soil_release_rate;
 };
 
 
@@ -295,6 +296,7 @@ unsigned int initiation(declavar& ds) {
             (*ds.qy).at(irow,icol) = filedata(a,7);
             (*ds.us).at(irow,icol) = filedata(a,9);
             (*ds.conc_SW).at(irow,icol) = filedata(a,10);
+            (*ds.soil_mass).at(irow,icol) = filedata(a,11);
             (*ds.ldry).at(irow,icol) = 0.0f;
         }
     } else
@@ -958,6 +960,9 @@ void adesolver(declavar& ds, int it)
                 (*ds.conc_SW)(ix,iy) = 0.0f;
             }
         }
+    }else
+    {
+        return;
     }
             
     //...    POLLUTION SOURCES
@@ -1174,6 +1179,27 @@ void adesolver(declavar& ds, int it)
     }
 }
 
+void wintra(declavar& ds)
+{
+    unsigned int icol,irow;
+    double deltam,hp,zbp;
+    
+    for(icol=1;icol<=ds.n_col;icol++)
+    {
+        for(irow=1;irow<=ds.n_row;irow++)
+        {
+            hp = (*ds.h).at(irow,icol);
+            zbp =(*ds.zb).at(irow,icol);
+            if(hp>ds.hdry && zbp != 9999) 
+            {       
+                deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600/24 * ds.dtfl; // mass release
+                (*ds.soil_mass).at(irow,icol) = (*ds.soil_mass).at(irow,icol) - deltam;
+                (*ds.conc_SW).at(irow,icol) = (*ds.conc_SW).at(irow,icol) + deltam/(hp*ds.arbase);
+            }
+        }
+    }
+}
+
 void write_results(declavar& ds, int print_tag, unsigned int print_step, std::chrono::duration<double> elapsed_seconds)
 {
 
@@ -1185,7 +1211,7 @@ void write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
     std::string filext(".txt");
     tprint += filext;
 
-    arma::mat filedataR(ds.n_row*ds.n_col,11); 
+    arma::mat filedataR(ds.n_row*ds.n_col,12); 
     
     for(icol=1;icol<=ds.n_col;icol++)
     {
@@ -1206,13 +1232,14 @@ void write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
                 filedataR(a,8) = ux; 
                 filedataR(a,9) = (*ds.us).at(irow,icol); 
                 filedataR(a,10) = (*ds.conc_SW).at(irow,icol); // adesolver
+                filedataR(a,11) = (*ds.soil_mass).at(irow,icol); // adesolver
                 a = a + 1;
             }
         }
     }
    
-    arma::mat filedata(std::max(0,a-1),11); 
-    filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,10));
+    arma::mat filedata(std::max(0,a-1),12); 
+    filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,11));
     
     bool flstatus =  filedata.save(tprint,arma::csv_ascii);
    
@@ -1235,10 +1262,7 @@ int main(int argc, char** argv)
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
            
-    std::cout << "FLUXOS"  << std::endl;
-    std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-    std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
-      
+   
      // Get the size of the domain (nrow and ncol)
     get_domain_size(&n_rowl, &n_coll);
     
@@ -1257,7 +1281,13 @@ int main(int argc, char** argv)
     ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
     //print_step = 3600; // in seconds
     // timstart = 558000; // start of the simulation
-            
+         
+        // Input the duration of the simulation
+    std::cout << "FLUXOS"  << std::endl;
+    std::time_t start_time = std::chrono::system_clock::to_time_t(start);
+    std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
+      
+    
     // Request user input
     std::cout << "Print step (s) = ";
     std::cin >> print_step;
@@ -1285,7 +1315,11 @@ int main(int argc, char** argv)
     
     print_next = print_next + print_step;
     
-    std::cout << "-----------------------------------------------" << std::endl;
+        // Input the soil nutrient release rate
+    std::cout << "Soil release rate (1/day) = ";
+    std::cin >> ds.soil_release_rate;
+    
+    std::cout << "-----------------------------------------------\n" << std::endl;
     
     // TIME LOOP
     while(ds.tim <= ds.ntim) 
@@ -1351,7 +1385,7 @@ int main(int argc, char** argv)
             (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
             if (hp!=0.)
             {          
-                (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0.5)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
+                (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
             }
           }
                 
@@ -1361,6 +1395,7 @@ int main(int argc, char** argv)
             it++;
             flow_solver(ds);
             adesolver(ds, it);
+            wintra(ds);
         }
         
         // PRINT RESULTS
