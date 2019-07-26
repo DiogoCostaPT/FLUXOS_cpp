@@ -147,7 +147,7 @@ public:
     std::unique_ptr<arma::Mat<float>> ldry,basin_rowy,qmelt,ldry_prev;   
     double hdry,                                    //minimum water depth
         dtfl,tim,                                   // timestep for flow computation
-        D_coef,soil_release_rate;
+        D_coef,soil_release_rate,soil_conc_bckgrd;
 };
 
 
@@ -275,6 +275,7 @@ unsigned int initiation(declavar& ds) {
             (*ds.z).at(irow,icol)=(*ds.zb).at(irow,icol)+(*ds.h).at(irow,icol);
             (*ds.qx).at(irow,icol)=(*ds.ux).at(irow,icol)*(*ds.h).at(irow,icol);
             (*ds.qy).at(irow,icol)=(*ds.uy).at(irow,icol)*(*ds.h).at(irow,icol);
+            (*ds.soil_mass).at(irow,icol)  = ds.soil_conc_bckgrd;
         }
     }
     
@@ -1304,6 +1305,16 @@ int main(int argc, char** argv)
     ds.ntim = ntim_days * 3600 * 24;
     logFLUXOSfile << "Simulation time (days) = " + std::to_string(ntim_days) + " (= " + std::to_string(ds.ntim) + " sec)";
    
+    // Input the soil nutrient release rate
+    std::cout << "Soil release rate (1/day) = ";
+    std::cin >> ds.soil_release_rate;
+    logFLUXOSfile << "\nSoil release rate (1/day) = " + std::to_string(ds.soil_release_rate) + "\n";
+    
+    // Input the soil background concentration
+    std::cout << "Soil initial background concentration (mg/l) (0.txt points will be overwritten) = ";
+    std::cin >> ds.soil_conc_bckgrd;
+    logFLUXOSfile << "\nSoil release rate (1/day) = " + std::to_string(ds.soil_release_rate) + "\n";
+    
     
     timstart = initiation(ds);
     
@@ -1316,11 +1327,7 @@ int main(int argc, char** argv)
     
     print_next = print_next + print_step;
     
-        // Input the soil nutrient release rate
-    std::cout << "Soil release rate (1/day) = ";
-    std::cin >> ds.soil_release_rate;
-      logFLUXOSfile << "\nSoil release rate (1/day) = " + std::to_string(ds.soil_release_rate) + "\n";
-      logFLUXOSfile << "-----------------------------------------------\n" << std::endl;
+    logFLUXOSfile << "-----------------------------------------------\n" << std::endl;
     
     std::cout << "-----------------------------------------------\n" << std::endl;
     
