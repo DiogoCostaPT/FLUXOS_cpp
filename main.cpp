@@ -1194,7 +1194,7 @@ void wintra(declavar& ds)
             zbp =(*ds.zb).at(irow,icol);
             if(hp>ds.hdry && zbp != 9999) 
             {       
-                deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600/24 * ds.dtfl; // mass release
+                deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
                 (*ds.soil_mass).at(irow,icol) = (*ds.soil_mass).at(irow,icol) - deltam;
                 (*ds.conc_SW).at(irow,icol) = (*ds.conc_SW).at(irow,icol) + deltam/(hp*ds.arbase);
             }
@@ -1306,14 +1306,14 @@ int main(int argc, char** argv)
     logFLUXOSfile << "Simulation time (days) = " + std::to_string(ntim_days) + " (= " + std::to_string(ds.ntim) + " sec)";
    
     // Input the soil nutrient release rate
-    std::cout << "Soil release rate (1/day) = ";
+    std::cout << "Soil release rate (1/hour) = ";
     std::cin >> ds.soil_release_rate;
-    logFLUXOSfile << "\nSoil release rate (1/day) = " + std::to_string(ds.soil_release_rate) + "\n";
+    logFLUXOSfile << "\nSoil release rate (1/hour) = " + std::to_string(ds.soil_release_rate) + "\n";
     
     // Input the soil background concentration
     std::cout << "Soil initial background concentration (mg/l) (0.txt points will be overwritten) = ";
     std::cin >> ds.soil_conc_bckgrd;
-    logFLUXOSfile << "\nSoil release rate (1/day) = " + std::to_string(ds.soil_release_rate) + "\n";
+    logFLUXOSfile << "\nSoil initial background concentration (mg/l) (0.txt points will be overwritten) = " + std::to_string(ds.soil_release_rate) + "\n";
     
     
     timstart = initiation(ds);
