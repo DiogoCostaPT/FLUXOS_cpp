@@ -69,12 +69,11 @@ void get_domain_size(unsigned int *rown, unsigned int *coln )
 {
     unsigned int numele;  
     arma::mat filedata; 
-    bool flstatus =  filedata.load("model_geo.fluxos",arma::csv_ascii);
+    bool flstatus =  filedata.load("dem_ersi_grid",arma::raw_ascii);
    
     if(flstatus == true) {
-        numele = filedata.col(1).n_elem;
-        *rown = filedata(numele-1,0);
-        *coln = filedata(numele-1,1);
+        *rown = filedata.col(1).n_elem;
+        *coln = filedata.row(1).n_elem;
     } else{
         std::cout << "problem with loading 'modelgeo.fluxos'" << std::endl;
     } 
@@ -151,21 +150,26 @@ public:
 };
 
 
-void read_geo(declavar& ds)
+void read_geo(declavar& ds,double ks_input)
 {
-    unsigned int icol,irow,a;  
+    unsigned int icol,irow;  
+    double temp;
     arma::mat filedata; 
-    bool flstatus =  filedata.load("model_geo.fluxos",arma::csv_ascii);
+    bool flstatus =  filedata.load("dem_ersi_grid",arma::raw_ascii);
    
     if(flstatus == true) {
-        for(a=0;a<filedata.col(1).n_elem;a++){
-            irow = filedata(a,0);  
-            icol = filedata(a,1);  
-            (*ds.zb).at(irow,icol) = filedata(a,2);  
-            (*ds.ks).at(irow,icol) = filedata(a,3); 
+        //for(a=0;a<filedata.col(1).n_elem;a++){
+        for(icol=1;icol<=ds.n_col;icol++)
+        {
+            for(irow=1;irow<=ds.n_row;irow++)
+            {   
+                (*ds.zb).at(irow,icol) = filedata(irow-1,icol-1);  
+                (*ds.ks).at(irow,icol) = ks_input; 
+            }
         }
+        //}
     } else{
-            std::cout << "problem with loading 'modelgeo.fluxos'" << std::endl;
+            std::cout << "problem with loading the DEM: file 'dem_ersi_grid'" << std::endl;
     } 
 }
 
@@ -1251,7 +1255,7 @@ int main(int argc, char** argv)
 {   
     unsigned int n_rowl, n_coll, it = 0;
     unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
-    double c0,v0,u0,hp, hpall, qmelti,ntim_days; 
+    double c0,v0,u0,hp, hpall, qmelti,ntim_days,ks_input; 
     bool outwritestatus;
     std::chrono::duration<double> elapsed_seconds;
     auto start = std::chrono::system_clock::now();
@@ -1275,7 +1279,7 @@ int main(int argc, char** argv)
     
     // input/read data
     ds.cfl = 1; // Courant condition
-    ds.dxy = 3; // grid size (structure grid) - it will actually come from DEM
+    // ds.dxy = 3; // grid size (structure grid) - it will actually come from DEM
     ds.ntim = 0;// maximum time step (seconds)
     //kapa = -2.    // /  -2=1.Ord ; -1=2.Ord   // KOMISCH, DASS REAL/INTEGER ->schauen bei Rolands Dateien
     ds.arbase = ds.dxy * ds.dxy;
@@ -1297,7 +1301,15 @@ int main(int argc, char** argv)
     
     ds.D_coef = 0.01;
     
-    read_geo(ds); // DEM
+    std::cout << "Roughness height (m) = ";
+    std::cin >> ks_input;
+    logFLUXOSfile << "Roughness height (m) = " + std::to_string(ks_input) + "\n";
+    
+    std::cout << "Cell size (m) = ";
+    std::cin >> ds.dxy;
+    logFLUXOSfile << "Cell size (m) = " + std::to_string(ds.dxy) + "\n";
+    
+    read_geo(ds,ks_input); // DEM
     ds.ntim = read_load(ds); // snowmelt load
     
     std::cout << "Simulation time (days) (Snowmelt input duration = " + std::to_string(ds.ntim/(3600*24)) + " days) = ";
@@ -1311,9 +1323,9 @@ int main(int argc, char** argv)
     logFLUXOSfile << "\nSoil release rate (1/hour) = " + std::to_string(ds.soil_release_rate) + "\n";
     
     // Input the soil background concentration
-    std::cout << "Soil initial background concentration (mg/l) (0.txt points will be overwritten) = ";
+    std::cout << "Soil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = ";
     std::cin >> ds.soil_conc_bckgrd;
-    logFLUXOSfile << "\nSoil initial background concentration (mg/l) (0.txt points will be overwritten) = " + std::to_string(ds.soil_release_rate) + "\n";
+    logFLUXOSfile << "\nSoil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = " + std::to_string(ds.soil_conc_bckgrd) + "\n";
     
     
     timstart = initiation(ds);

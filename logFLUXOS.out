@@ -1,7 +1,11 @@
 FLUXOS 
-Simulation started... Mon Jul 15 16:20:56 2019
+Simulation started... Thu Aug  1 16:48:25 2019
 Print step (s) = 3600
+Roughness height (m) = 0.010000
+Cell size (m) = 3
 Simulation time (days) = 17.000000 (= 1468800 sec)
-Soil release rate (1/day) = 0.900000
+Soil release rate (1/hour) = 0.008000
+
+Soil initial background concentration (mg/l) (0.txt points will be overwritten) = 0.008000
 -----------------------------------------------
 
