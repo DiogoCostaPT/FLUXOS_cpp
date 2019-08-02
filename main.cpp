@@ -71,11 +71,14 @@ void get_domain_size(unsigned int *rown, unsigned int *coln )
     arma::mat filedata; 
     bool flstatus =  filedata.load("dem_ersi_grid",arma::raw_ascii);
    
+    *rown = 0;
+    *coln = 0;
+    
     if(flstatus == true) {
         *rown = filedata.col(1).n_elem;
         *coln = filedata.row(1).n_elem;
     } else{
-        std::cout << "problem with loading 'modelgeo.fluxos'" << std::endl;
+        std::cout << "problem with loading 'dem_ersi_grid'" << std::endl;
     } 
 }
 
@@ -153,7 +156,6 @@ public:
 void read_geo(declavar& ds,double ks_input)
 {
     unsigned int icol,irow;  
-    double temp;
     arma::mat filedata; 
     bool flstatus =  filedata.load("dem_ersi_grid",arma::raw_ascii);
    
@@ -163,7 +165,7 @@ void read_geo(declavar& ds,double ks_input)
         {
             for(irow=1;irow<=ds.n_row;irow++)
             {   
-                (*ds.zb).at(irow,icol) = filedata(irow-1,icol-1);  
+                (*ds.zb).at(irow,icol) = std::abs(filedata(ds.n_row - irow,icol-1));  
                 (*ds.ks).at(irow,icol) = ks_input; 
             }
         }
@@ -1233,8 +1235,10 @@ bool write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
                 filedataR(a,3) = (*ds.z).at(irow,icol) - (*ds.zb).at(irow,icol);
                 filedataR(a,4) = (*ds.ux).at(irow,icol); 
                 filedataR(a,5) = (*ds.uy).at(irow,icol); 
-                filedataR(a,6) = (*ds.qx).at(irow,icol)*ds.dxy; // m3/s/m -> m3/s (maybe look into this - should it be fn_1 instead)
-                filedataR(a,7) = (*ds.qy).at(irow,icol)*ds.dxy; // m3/s/m -> m3/s (maybe look into this - should it be fe_1 instead)
+                //filedataR(a,6) = (*ds.qx).at(irow,icol)*ds.dxy; // m3/s/m -> m3/s (maybe look into this - should it be fn_1 instead)
+                //filedataR(a,7) = (*ds.qy).at(irow,icol)*ds.dxy; // m3/s/m -> m3/s (maybe look into this - should it be fe_1 instead)
+                filedataR(a,6) = (*ds.fe_1).at(irow,icol);
+                filedataR(a,7) = (*ds.fn_1).at(irow,icol); 
                 filedataR(a,8) = ux; 
                 filedataR(a,9) = (*ds.us).at(irow,icol); 
                 filedataR(a,10) = (*ds.conc_SW).at(irow,icol); // adesolver
@@ -1262,7 +1266,7 @@ int main(int argc, char** argv)
     auto end = std::chrono::system_clock::now();
         
     // Create/Open log file
-    std::ofstream logFLUXOSfile ("logFLUXOS.out");
+    std::ofstream logFLUXOSfile ("fluxos_run.log");
    
      // Get the size of the domain (nrow and ncol)
     get_domain_size(&n_rowl, &n_coll);
@@ -1282,7 +1286,6 @@ int main(int argc, char** argv)
     // ds.dxy = 3; // grid size (structure grid) - it will actually come from DEM
     ds.ntim = 0;// maximum time step (seconds)
     //kapa = -2.    // /  -2=1.Ord ; -1=2.Ord   // KOMISCH, DASS REAL/INTEGER ->schauen bei Rolands Dateien
-    ds.arbase = ds.dxy * ds.dxy;
     //betas = 2. // Chezy (parameter)
     //ksfirow = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
     ds.cvdef = 0.07; // for turbulent stress calc
@@ -1309,6 +1312,7 @@ int main(int argc, char** argv)
     std::cin >> ds.dxy;
     logFLUXOSfile << "Cell size (m) = " + std::to_string(ds.dxy) + "\n";
     
+    ds.arbase = ds.dxy * ds.dxy;
     read_geo(ds,ks_input); // DEM
     ds.ntim = read_load(ds); // snowmelt load
     
@@ -1356,13 +1360,6 @@ int main(int argc, char** argv)
             {
                 hp = (*ds.h).at(irow,icol);
                 (*ds.h0)(irow,icol) = hp; // adesolver
-                
-                // temporary: dry -> wet -> load on first contact with the soil 
-                if ((*ds.ldry_prev).at(irow,icol) == 1 && (*ds.ldry).at(irow,icol) == 0)
-                {
-                    (*ds.conc_SW).at(irow,icol) += 0.10/hp; 
-                }
-                
                 (*ds.ldry_prev).at(irow,icol) = (*ds.ldry).at(irow,icol); // adesolver
                         
                 if(hp>ds.hdry)
