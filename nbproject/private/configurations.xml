@@ -28,8 +28,6 @@
         <in>feature_tests.c</in>
         <in>feature_tests.cxx</in>
       </df>
-      <df name="Results">
-      </df>
       <df name="VisIt">
       </df>
       <in>main.cpp</in>
@@ -60,8 +58,6 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
-        <gdb_signals>
-        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
