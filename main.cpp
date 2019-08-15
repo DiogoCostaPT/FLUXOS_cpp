@@ -1209,7 +1209,8 @@ void wintra(declavar& ds)
             zbp =(*ds.zb).at(irow,icol);
             if(hp>ds.hdry && zbp != 9999) 
             {       
-                deltam = (*ds.soil_mass).at(irow,icol) * (1-f) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
+                //deltam = (*ds.soil_mass).at(irow,icol) * (1-f) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
+                deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
                 (*ds.soil_mass).at(irow,icol) = (*ds.soil_mass).at(irow,icol) - deltam;
                 (*ds.conc_SW).at(irow,icol) = (*ds.conc_SW).at(irow,icol) + deltam/(hp*ds.arbase);
             }
@@ -1333,20 +1334,20 @@ int main(int argc, char** argv)
     // Input the soil nutrient release rate
     std::cout << "Soil release rate (1/hour) = ";
     std::cin >> ds.soil_release_rate;
-    logFLUXOSfile << "\nSoil release rate (1/hour) = " + std::to_string(ds.soil_release_rate) + "\n";
+    logFLUXOSfile << "\nSoil release rate (1/hour) = " + std::to_string(ds.soil_release_rate);
     
     // Input the soil background concentration
     std::cout << "Soil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = ";
     std::cin >> ds.soil_conc_bckgrd;
-    logFLUXOSfile << "\nSoil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = " + std::to_string(ds.soil_conc_bckgrd) + "\n";
+    logFLUXOSfile << "\nSoil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = " + std::to_string(ds.soil_conc_bckgrd);
     
     std::cout << "SWE max (cm) = ";
     std::cin >> ds.SWEmax;
-    logFLUXOSfile << "\nSWE max (cm) = " + std::to_string(ds.SWEmax) + "\n";
+    logFLUXOSfile << "\nSWE max (cm) = " + std::to_string(ds.SWEmax);
     ds.SWEmax = ds.SWEmax/100;
     std::cout << "SWE std (cm) = ";
     std::cin >> ds.SWEstd;
-    logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd) + "\n";
+    logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd);
     ds.SWEstd = ds.SWEstd/100;
     
     timstart = initiation(ds);
@@ -1359,10 +1360,9 @@ int main(int argc, char** argv)
     //write_results(ds,std::round(print_next));
     
     print_next = print_next + print_step;
-    
-    logFLUXOSfile << "-----------------------------------------------\n" << std::endl;
-    
+        
     std::cout << "-----------------------------------------------\n" << std::endl;
+    logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
     
     // TIME LOOP
     while(ds.tim <= ds.ntim) 
