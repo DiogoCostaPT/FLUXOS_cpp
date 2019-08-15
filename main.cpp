@@ -149,7 +149,7 @@ public:
     std::unique_ptr<arma::Mat<float>> ldry,basin_rowy,qmelt,ldry_prev;   
     double hdry,                                    //minimum water depth
         dtfl,tim,                                   // timestep for flow computation
-        D_coef,soil_release_rate,soil_conc_bckgrd;
+        D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
 };
 
 
@@ -179,7 +179,7 @@ float read_load(declavar& ds)
 {
     unsigned int a; 
     int icolb,irowb;
-    double tmelts,vmelt;
+    double tmelts,vmelt, tmelts_bef = 0.0f;
     
     arma::mat filedataB; 
     bool flstatusB =  filedataB.load("Basin_Info.fluxos",arma::csv_ascii);
@@ -197,6 +197,7 @@ float read_load(declavar& ds)
     } 
     
     // reading qmelt 
+    ds.qmelvtotal  = 0;
     arma::mat filedataQ; 
     bool flstatusQ =  filedataQ.load("Qmelt_info.fluxos",arma::csv_ascii);
     if(flstatusQ == true) {
@@ -204,7 +205,9 @@ float read_load(declavar& ds)
             tmelts = filedataQ(a,0);  // t melt seconds
             vmelt = filedataQ(a,1);  // value of melt
             (*ds.qmelt).at(a,0) = tmelts;  
-            (*ds.qmelt).at(a,1) = vmelt;  
+            (*ds.qmelt).at(a,1) = vmelt;
+            ds.qmelvtotal += vmelt /(1000.*3600.*24.) * (tmelts - tmelts_bef); 
+            tmelts_bef = tmelts;
         }
     } else{
             std::cout << "problem with loading 'Qmelt_info.fluxos'" << std::endl;
@@ -410,7 +413,7 @@ void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
     zp=(*ds.z).at(irow,icol);
     ze=(*ds.z).at(ie,icol);
     zn=(*ds.z).at(irow,in);
-    hp  = std::max(0.0,(*ds.z).at(irow,icol)-zbp);
+    hp  = std::max(0.0,(*ds.z).at(irow,icol)-(*ds.z).at(irow,icol));
     he=std::max(0.0,ze-zbe);
     hn=std::max(0.0,zn-zbn);
     qp=(*ds.qx).at(irow,icol);
@@ -1190,7 +1193,13 @@ void adesolver(declavar& ds, int it)
 void wintra(declavar& ds)
 {
     unsigned int icol,irow;
-    double deltam,hp,zbp;
+    double deltam,hp,zbp, f,frac, QVolstd;
+    
+    frac = ds.SWEmax/ds.SWEstd;
+    QVolstd = ds.qmelvtotal/frac;
+    
+    f=tanh(1.26*(ds.qmelvtotal - ds.qmelv_inc)/QVolstd);
+    
     
     for(icol=1;icol<=ds.n_col;icol++)
     {
@@ -1200,7 +1209,7 @@ void wintra(declavar& ds)
             zbp =(*ds.zb).at(irow,icol);
             if(hp>ds.hdry && zbp != 9999) 
             {       
-                deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
+                deltam = (*ds.soil_mass).at(irow,icol) * (1-f) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
                 (*ds.soil_mass).at(irow,icol) = (*ds.soil_mass).at(irow,icol) - deltam;
                 (*ds.conc_SW).at(irow,icol) = (*ds.conc_SW).at(irow,icol) + deltam/(hp*ds.arbase);
             }
@@ -1331,6 +1340,14 @@ int main(int argc, char** argv)
     std::cin >> ds.soil_conc_bckgrd;
     logFLUXOSfile << "\nSoil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = " + std::to_string(ds.soil_conc_bckgrd) + "\n";
     
+    std::cout << "SWE max (cm) = ";
+    std::cin >> ds.SWEmax;
+    logFLUXOSfile << "\nSWE max (cm) = " + std::to_string(ds.SWEmax) + "\n";
+    ds.SWEmax = ds.SWEmax/100;
+    std::cout << "SWE std (cm) = ";
+    std::cin >> ds.SWEstd;
+    logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd) + "\n";
+    ds.SWEstd = ds.SWEstd/100;
     
     timstart = initiation(ds);
     
@@ -1391,6 +1408,7 @@ int main(int argc, char** argv)
         }
         
         qmelti = (*ds.qmelt).at(qmelt_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
+        ds.qmelv_inc += qmelti;
         for (a=0;a<(*ds.basin_rowy).col(1).n_elem;a++){
             irow = (*ds.basin_rowy).at(a,0);
             icol = (*ds.basin_rowy).at(a,1);
@@ -1399,7 +1417,7 @@ int main(int argc, char** argv)
             (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
             if ((*ds.h)(irow,icol) <= ds.hdry)
             {
-                    (*ds.ldry).at(irow,icol)=0.0f;
+                (*ds.ldry).at(irow,icol)=0.0f;
         }
             (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
             if (hp!=0.)
