@@ -11,7 +11,7 @@ import data_management as dm
 
 
 # Plot CS extracted values
-def plotCSvals(crosecval,obsval,simname,resultdir,simType):
+def plotCSvals(crosecval,obsval,simname,resultdir,simType,runlag):
 
     import plotly as py
     from plotly import tools
@@ -19,7 +19,7 @@ def plotCSvals(crosecval,obsval,simname,resultdir,simType):
     import pandas as pd
 
     # Simulations
-    time_CS = crosecval[:, 0]
+    time_CS = (crosecval[:, 0]  - runlag) / 3600 # sec to hour (for lag time between forcing and response)
     values_CS = crosecval[:, 1:len(crosecval.T)-1]
     values_CS_orig = values_CS
 
@@ -37,7 +37,7 @@ def plotCSvals(crosecval,obsval,simname,resultdir,simType):
     obsval_adj = obsval
     obsval_adj_val = obsval_adj[:,1]
     #obsval_adj_val = obsval_adj[:,1] / 1000 / 3600 /24 * 210290 * 9
-    time_temp = (obsval_adj[:,0] - obsval_adj[0,0]) * 24 * 3600 #+ 39000 # day to sec (temporary - need to correct this)
+    time_temp = ((obsval_adj[:,0] - obsval_adj[0,0])) * 24
     #time_temp = (obsval_adj[:, 0] - obsval_adj[1, 0])
 
 

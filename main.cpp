@@ -127,8 +127,8 @@ public:
     h0= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     ldry_prev= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
     
-    basin_rowy= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(210290,2));
-    qmelt = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(1633,2));
+    basin_rowy= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row*m_col,2));
+    qmelt = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(2000,2));
   }
     size_t n_row,n_col;
     size_t m_row,m_col,dxy,arbase, 
@@ -185,7 +185,7 @@ float read_load(declavar& ds)
     bool flstatusB =  filedataB.load("Basin_Info.fluxos",arma::csv_ascii);
     if(flstatusB == true) {
         for(a=0;a<filedataB.col(0).n_elem;a++){
-                       irowb = filedataB(a,0);  
+            irowb = filedataB(a,0);  
             icolb = filedataB(a,1);  
             (*ds.basin_rowy).at(a,0) = irowb;  
             (*ds.basin_rowy).at(a,1) = icolb;  

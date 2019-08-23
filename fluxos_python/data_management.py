@@ -5,7 +5,7 @@ import numpy as np
 # Extract the simulation name
 def getsimname(resultdir,obsPath,simType):
 
-    namstart = resultdir.find('local/')
+    namstart = resultdir.find('STC/')
     nameend = resultdir.find('Results/')
 
     Csectiom_nstart = obsPath.find('MS')

@@ -32,13 +32,16 @@ resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_23_before_s
 #resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_22/Results/'
 resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_11/Results/'
 resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_28/Results/'
-
 resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_31/Results/'
 resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_32/Results/'
 #resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_33/Results/'
 resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_34/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_35/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_36/Results/'
+
+resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/test_wintra_35/Results/'  # Ks = 0.01
+resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/test_wintra_36/Results/'  # Ks = 0.005
+#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/test_wintra_37/Results/'  # Ks = 0.015
+#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/test_wintra_38/Results/'  # Ks = 0.005 - wintra par changed
+#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/test_wintra_39/Results/'  # Ks = 0.002
 
 TimeStrgStart = datetime(2011, 3, 31, 0, 0, 0)
 Tinitial = 0
@@ -48,6 +51,7 @@ simnum = 972000  # simulation to plot map
 nx = 722
 ny = 1034
 dxy = 3
+runlag = 32400 # lag factor to account for the fact that we the model is being forced using streamflow time series
 
 # Coordinates for STC (3m resolution) - GOOGLE EARTH
 coords = [49.339205,  # N
@@ -115,7 +119,7 @@ if (simType == 'cs'):
     obsval = dm.obsextract(obsPath, time_col, val_col)
 
     # Plot cross-section data
-    grph.plotCSvals(crosecval, obsval, simname,resultdir,simType)
+    grph.plotCSvals(crosecval, obsval, simname,resultdir,simType,runlag)
 
 
 elif (simType == 'im'):
