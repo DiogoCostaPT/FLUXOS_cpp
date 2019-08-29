@@ -12,28 +12,29 @@ import data_management as dm
 
 
 # Extract the values for the cross-section (for all time steps) - parallel
-def csextract(simType,resultdir, xy_CS, Tinitial, Timee, t_step_read, var_col_1, var_col_2, nx, ny, dxy):
+def csextract(simType,resultdir,resfiles_list, xy_CS,  sim, var_col_1, var_col_2, nx, ny, dxy):
 
     # extracting the cross-section values
-    ntimstp = round((Timee - Tinitial) / t_step_read)+1  # number of time steps
-    timevec = np.linspace(Tinitial, Timee, num=ntimstp)  # time of simulation
-    timevec = timevec.astype(int)
+    #ntimstp = round((Timee - Tinitial) / t_step_read)+1  # number of time steps
+    ntimstp = len(resfiles_list) # number of outputfiles
+    #timevec = np.linspace(Tinitial, Timee, num=ntimstp)  # time of simulation
+    #timevec = timevec.astype(int)
 
     # Get angle of the CS with the vertical and horizontal planes - change direction to guarantee always b1 < b2 (xy_CS_cor)
     geom_CS, xy_CS_cor = getanglesCS(xy_CS)
 
     num_cores = multiprocessing.cpu_count()
-    crosecvals = np.vstack(Parallel(n_jobs=num_cores)(delayed(Extract_File_Res)(simType,resultdir, xy_CS_cor, geom_CS, timevec, nx, ny, t, var_col_1, var_col_2) for t in tqdm(range(0, ntimstp))))
+    crosecvals = np.vstack(Parallel(n_jobs=num_cores)(delayed(Extract_File_Res)(simType,resultdir,resfiles_list,ntimstp, xy_CS_cor, geom_CS, nx, ny, sim, var_col_1, var_col_2) for t in tqdm(range(0, ntimstp))))
 
     return crosecvals
 
 # Extract the values for the cross-section (each time step)
-def Extract_File_Res(simType,resultdir, xy_CS_cor, geom_CS, timevec, nx, ny, t, var_col_1, var_col_2):  # Loop over the result files
+def Extract_File_Res(simType,resultdir,resfilepath_all, ntimstp,xy_CS_cor, geom_CS, nx, ny, sim, var_col_1, var_col_2):  # Loop over the result files
 
     # generate the file name string
     crosecvals_t = np.zeros(((len(xy_CS_cor)) + 1))  # + 1 because the first column is time
-    timei = timevec[t]
-    resfilepath = resultdir + str(timei) + ".txt"
+    #timei = timevec[t]
+    resfilepath = resultdir + resfilepath_all[ntimstp-1]
 
     # open result file
     if os.path.exists(resfilepath):
@@ -61,7 +62,7 @@ def Extract_File_Res(simType,resultdir, xy_CS_cor, geom_CS, timevec, nx, ny, t, 
                 alpha_h = geom_CS[2]
 
                 # extract the values of the cross section
-                crosecvals_t[0] = timei
+                #crosecvals_t[0] = timei
 
                 for segi in range(0, len(xy_CS_cor)):
                     xi = xy_CS_cor[segi, 0].astype(int)

@@ -18,6 +18,14 @@ def getsimname(resultdir,obsPath,simType):
 
     return simname
 
+def getsimname_2(resultdir,simType):
+
+    namstart = resultdir.find('/t_')
+    nameend = resultdir.find('Results/')
+
+    simname = [resultdir[namstart+1:nameend - 1] + '_' + simType]
+
+    return simname
 
 #  generated xyz_data by extracting  x, y and z values from the selected columns
 def xyz_extract_z_column(table_data, x_loc, y_loc, var1_loc, var2_loc):
@@ -59,3 +67,8 @@ def obsextract(obsPath,time_col,val_col):
         obsval_noNAN = obsval_noNAN.T # put in columns
 
     return obsval_noNAN
+
+def savereslt(simname,crosecval):
+    filename = 'CS_Results/' + simname[0] + '.out'
+    np.savetxt(filename, crosecval, delimiter=',')
+

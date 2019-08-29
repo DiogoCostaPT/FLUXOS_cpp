@@ -152,6 +152,26 @@ public:
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
 };
 
+void read_modset(declavar& ds, unsigned int *print_step, double *ks_input, double *zbinc)
+{
+    // read_modset(ds,print_step,ks_input,zbinc,ntim_days)
+    arma::mat modsetinfo; 
+    bool flstatus =  modsetinfo.load("modset.fluxos",arma::csv_ascii);
+    
+    if(flstatus == true) {
+        *print_step = int(modsetinfo(0));  
+        *ks_input = modsetinfo(1);  
+        ds.dxy = modsetinfo(2);
+        *zbinc = modsetinfo(3); 
+        ds.soil_release_rate = modsetinfo(4); 
+        ds.soil_conc_bckgrd = modsetinfo(5); 
+        ds.SWEstd = modsetinfo(6); 
+        ds.SWEmax = modsetinfo(7);             
+    } else{
+            std::cout << "problem loading the model set up: file 'modset.fluxos'" << std::endl;
+    } 
+    
+}
 
 void read_geo(declavar& ds,double ks_input)
 {
@@ -171,11 +191,11 @@ void read_geo(declavar& ds,double ks_input)
         }
         //}
     } else{
-            std::cout << "problem with loading the DEM: file 'dem_ersi_grid'" << std::endl;
+            std::cout << "problem loading the DEM: file 'dem_ersi_grid'" << std::endl;
     } 
 }
 
-float read_load(declavar& ds)
+float read_load(declavar& ds,float zbinc)
 {
     unsigned int a; 
     int icolb,irowb;
@@ -184,16 +204,18 @@ float read_load(declavar& ds)
     arma::mat filedataB; 
     bool flstatusB =  filedataB.load("Basin_Info.fluxos",arma::csv_ascii);
     if(flstatusB == true) {
+        (*ds.zb) += zbinc;
         for(a=0;a<filedataB.col(0).n_elem;a++){
             irowb = filedataB(a,0);  
             icolb = filedataB(a,1);  
             (*ds.basin_rowy).at(a,0) = irowb;  
             (*ds.basin_rowy).at(a,1) = icolb;  
+            (*ds.zb).at(irowb,icolb) -= zbinc;
             //printf("%f\n",(*ds.basin_rowy).at(a,0));
             //printf("%f\n",(*ds.basin_rowy).at(a,1));
         }
     } else{
-            std::cout << "problem with loading 'Basin_Info.fluxos'" << std::endl;
+            std::cout << "problem loading 'Basin_Info.fluxos'" << std::endl;
     } 
     
     // reading qmelt 
@@ -210,7 +232,7 @@ float read_load(declavar& ds)
             tmelts_bef = tmelts;
         }
     } else{
-            std::cout << "problem with loading 'Qmelt_info.fluxos'" << std::endl;
+            std::cout << "problem loading 'Qmelt_info.fluxos'" << std::endl;
     }
     float tim = tmelts;
     return tim;
@@ -1209,7 +1231,7 @@ void wintra(declavar& ds)
             zbp =(*ds.zb).at(irow,icol);
             if(hp>ds.hdry && zbp != 9999) 
             {       
-                //deltam = (*ds.soil_mass).at(irow,icol) * (1-f) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
+                deltam = (*ds.soil_mass).at(irow,icol) * (1-f) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
                 deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
                 (*ds.soil_mass).at(irow,icol) = (*ds.soil_mass).at(irow,icol) - deltam;
                 (*ds.conc_SW).at(irow,icol) = (*ds.conc_SW).at(irow,icol) + deltam/(hp*ds.arbase);
@@ -1269,7 +1291,7 @@ int main(int argc, char** argv)
 {   
     unsigned int n_rowl, n_coll, it = 0;
     unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
-    double c0,v0,u0,hp, hpall, qmelti,ntim_days,ks_input; 
+    double c0,v0,u0,hp, hpall, qmelti,ntim_days,ks_input,zbinc; 
     bool outwritestatus;
     std::chrono::duration<double> elapsed_seconds;
     auto start = std::chrono::system_clock::now();
@@ -1304,9 +1326,12 @@ int main(int argc, char** argv)
     // timstart = 558000; // start of the simulation
         
     
+    // read model set up
+    read_modset(ds,&print_step,&ks_input,&zbinc);
+    
     // Request user input
-    std::cout << "Print step (s) = ";
-    std::cin >> print_step;
+    //std::cout << "Print step (s) = ";
+    //std::cin >> print_step;
     logFLUXOSfile << "Print step (s) = " + std::to_string(print_step) + "\n";
   
     ds.n_row = ds.m_row - 2;
@@ -1314,39 +1339,43 @@ int main(int argc, char** argv)
     
     ds.D_coef = 0.01;
     
-    std::cout << "Roughness height (m) = ";
-    std::cin >> ks_input;
+    //std::cout << "Roughness height (m) = ";
+    //std::cin >> ks_input;
     logFLUXOSfile << "Roughness height (m) = " + std::to_string(ks_input) + "\n";
     
-    std::cout << "Cell size (m) = ";
-    std::cin >> ds.dxy;
+    //std::cout << "Cell size (m) = ";
+    //std::cin >> ds.dxy;
     logFLUXOSfile << "Cell size (m) = " + std::to_string(ds.dxy) + "\n";
     
     ds.arbase = ds.dxy * ds.dxy;
     read_geo(ds,ks_input); // DEM
-    ds.ntim = read_load(ds); // snowmelt load
     
-    std::cout << "Simulation time (days) (Snowmelt input duration = " + std::to_string(ds.ntim/(3600*24)) + " days) = ";
-    std::cin >> ntim_days;
-    ds.ntim = ntim_days * 3600 * 24;
-    logFLUXOSfile << "Simulation time (days) = " + std::to_string(ntim_days) + " (= " + std::to_string(ds.ntim) + " sec)";
+    //std::cout << "Increment to basin margins (m) = ";
+    //std::cin >> zbinc;
+    logFLUXOSfile << "Increment to basin margins (m) = " + std::to_string(zbinc) + "\n";
+    ds.ntim = read_load(ds,zbinc); // snowmelt load
+    
+    //std::cout << "Simulation time (days) (Snowmelt input duration = " + std::to_string(ds.ntim/(3600*24)) + " days) = ";
+    //std::cin >> ntim_days;
+    //ds.ntim = ntim_days * 3600 * 24;
+    logFLUXOSfile << "Simulation time (days) = " + std::to_string(ds.ntim) + " (= " + std::to_string(ds.ntim) + " sec)";
    
     // Input the soil nutrient release rate
-    std::cout << "Soil release rate (1/hour) = ";
-    std::cin >> ds.soil_release_rate;
+    //std::cout << "Soil release rate (1/hour) = ";
+    //std::cin >> ds.soil_release_rate;
     logFLUXOSfile << "\nSoil release rate (1/hour) = " + std::to_string(ds.soil_release_rate);
     
     // Input the soil background concentration
-    std::cout << "Soil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = ";
-    std::cin >> ds.soil_conc_bckgrd;
+    //std::cout << "Soil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = ";
+    //std::cin >> ds.soil_conc_bckgrd;
     logFLUXOSfile << "\nSoil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = " + std::to_string(ds.soil_conc_bckgrd);
     
-    std::cout << "SWE max (cm) = ";
-    std::cin >> ds.SWEmax;
+    //std::cout << "SWE max (cm) = ";
+    //std::cin >> ds.SWEmax;
     logFLUXOSfile << "\nSWE max (cm) = " + std::to_string(ds.SWEmax);
     ds.SWEmax = ds.SWEmax/100;
-    std::cout << "SWE std (cm) = ";
-    std::cin >> ds.SWEstd;
+    //std::cout << "SWE std (cm) = ";
+    //std::cin >> ds.SWEstd;
     logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd);
     ds.SWEstd = ds.SWEstd/100;
     

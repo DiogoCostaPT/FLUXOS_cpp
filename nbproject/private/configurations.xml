@@ -36,6 +36,8 @@
         <df name="__pycache__">
         </df>
         <df name="CS_Results">
+          <df name="Plotly_graphs">
+          </df>
         </df>
         <df name="DEM_sim_3D_Results">
         </df>
@@ -3437,8 +3439,6 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
-        <gdb_signals>
-        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>

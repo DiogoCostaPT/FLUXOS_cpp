@@ -13,6 +13,7 @@ import cross_section_extract as cse
 import graphing_functions as grph
 import sys
 import vtk_generator as vtkgen
+import os
 
 '''
 General Model Settings
@@ -20,34 +21,37 @@ General Model Settings
 
 dempath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/DEM_ASCII/model_geo.csv'
 
-#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_11/Results/'
-#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_14/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_15_re-test_of_test_5_with_a_commit_earlier_-Seg_fault_with_crhono../Results/'
-#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_16/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_14/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_18/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_19/'
-#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_20/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_23_before_swapping_commit_2bf78954f3db3b07a6f3480fb515c987ee546b04/'
-#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_22/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_11/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_28/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_31/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_32/Results/'
-#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_33/Results/'
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/test_wintra_34/Results/'
+resultdir_list = [
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_43/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_44/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_45/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_46/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_47/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_48/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_49/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_50/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_51/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_52/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_53/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_54/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_55/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_56/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_57/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_58/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_59/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_60/Results/',
+]
 
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/test_wintra_35/Results/'  # Ks = 0.01
-resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/test_wintra_36/Results/'  # Ks = 0.005
-#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/test_wintra_37/Results/'  # Ks = 0.015
-#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/test_wintra_38/Results/'  # Ks = 0.005 - wintra par changed
-#resultdir = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/test_wintra_39/Results/'  # Ks = 0.002
+resultdir_vtk = '/media/dcosta/DATADRIVE1/fluxos_tests/local/SD/1/Results/'
 
 TimeStrgStart = datetime(2011, 3, 31, 0, 0, 0)
 Tinitial = 0
-Timee = 1468800
+Timee = 18000 #1468800
 t_step_read = 3600
-simnum = 972000  # simulation to plot map
+simnum = 1216800  # simulation to plot map 651600 936000 1216800
 nx = 722
 ny = 1034
 dxy = 3
@@ -77,21 +81,33 @@ if (simType == 'cs'):
 
     simType = input("Options:\n# Examine Flow (f)\n# Water Quality (wq)\n# Soil Quality (sq)\n")
 
+    #yearselect =  int(input("Simulation year (STC): "))
+
     if (simType == 'f'):
         CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS9.shp'
-        obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/0_Obs_used_in_first_2011_tests/Snowmelt_Runoff_MS9_2011_justflow.csv'  # this is the one
+        #if yearselect==2009:
+        #    obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/1_2009_Compiled/Streamflow_MS9C_2009_trimmed_for_simulation.csv'
+        #elif yearselect==2010:
+        #    obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/2_2010_Compiled/Streamflow_MS9C_2010_trimmed_to_simulation.csv'
+        #elif yearselect==2011:
+        #    obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/0_Obs_used_in_first_2011_tests/Snowmelt_Runoff_MS9_2011_justflow.csv'  # this is the one
         var_col_1 = 6  # 3-h, 6-qx, 10-C, 11 - soil mass, 12 - fn_1, 13 - fe_1
         var_col_2 = 7  # 3-h, 6-qx, 10-C, 11 - soil mass, 12 - fn_1, 13 - fe_1
     elif (simType == 'wq'):
-        CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
-        obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS12_2011_NO3event.csv'
-        # obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS9C_2011.csv'
-        var_col_1 = 10  # 3-h, 6-qx, 10-C, 11-soil
-        var_col_2 = 3  # 7-
+        #CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
+        #if yearselect == 2009:
+        #   obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/2_2009_Compiled/Streamflow_WQ_MS12_2009.csv'
+        #elif yearselect == 2010:
+        #    obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/2_2010_Compiled/Streamflow_WQ_MS12_2010.csv'
+        #elif yearselect == 2011:
+        #    obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS12_2011_NO3event.csv'
+        #    # obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS9C_2011.csv'
+            var_col_1 = 10  # 3-h, 6-qx, 10-C, 11-soil
+            var_col_2 = 3  # 7-
     elif (simType == 'sq'):
-        CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
-        obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS12_2011_NO3event.csv'
-        # obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS9C_2011.csv'
+        #CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
+        #obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS12_2011_NO3event.csv'
+        ## obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS9C_2011.csv'
         var_col_1 = 11  # 3-h, 6-qx, 10-C, 11-soil
         var_col_2 = 0  # 7-
     else:
@@ -102,53 +118,60 @@ if (simType == 'cs'):
     Call of functions (do not change)
     '''
 
-    # Extract simulation name
-    simname = dm.getsimname(resultdir,obsPath,simType)
+    # START....
 
-    # analyse the cross-section results
     # Extract Cross-Section points from the shapefile
     shp_nodes_CS = cse.lineCSshapefile(CrossSecLine_path_shapefile)  # get nodes of the shapefile with the desired cross-section
     xy_CS = cse.InterpCSpoints_from_y_CS(shp_nodes_CS)  # interpolate a continuous line between the end nodes of "shp_nodes_CS"
 
-    # Extract the results over the cross-section
-    crosecval = cse.csextract(simType,resultdir, xy_CS, Tinitial, Timee, t_step_read, var_col_1, var_col_2, nx, ny, dxy)
+    for sim in range(0, len(resultdir_list)):
+        # Extract simulation name
+        resultdir = resultdir_list[sim]
+        resfiles_list = os.listdir(resultdir)
+        #simname = dm.getsimname(resultdir,obsPath,simType)
+        simname = dm.getsimname_2(resultdir,simType)
+
+        # Extract the results over the cross-section
+        crosecval = cse.csextract(simType,resultdir,resfiles_list, xy_CS, sim, var_col_1, var_col_2, nx, ny, dxy)
+
+        dm.savereslt(simname,crosecval)
 
     # Extract Observations
-    time_col = 0  # time column
-    val_col = 1  # obs column
-    obsval = dm.obsextract(obsPath, time_col, val_col)
+    #time_col = 0  # time column
+    #val_col = 1  # obs column
+    #obsval = dm.obsextract(obsPath, time_col, val_col)
 
     # Plot cross-section data
-    grph.plotCSvals(crosecval, obsval, simname,resultdir,simType,runlag)
+    #grph.plotCSvals(crosecval, obsval, simname,resultdir_list,simType,runlag)
 
 
 elif (simType == 'im'):
 
-    simname = dm.getsimname(resultdir, '', simType)
+    simname = dm.getsimname(resultdir_list, '', simType)
 
     simType = input("Options:\n# kml for Google maps ('gm')\n# Scatter Plot 3D ('sp')\n# Quiver flowpaths ('qf')")
 
     # Google Maps
     if (simType == 'gm'):
         var_col_1 = 3
-        geklm.google_eart_animation(resultdir, simname, var_col_1, TimeStrgStart, Tinitial, Timee, t_step_read, nx, ny,
+        geklm.google_eart_animation(resultdir_list, simname, var_col_1, TimeStrgStart, Tinitial, Timee, t_step_read, nx, ny,
                                     dxy, coords, resolImage, var_1_graphymax, mapoverlay_opaqueness)
 
     # plot 3D dem and sim
     elif (simType == 'sp'):
-        grph.scatter3d_pltly(simname,resultdir,simnum,dempath,nx,ny) #  Good
+        grph.scatter3d_pltly(simname,resultdir_list,simnum,dempath,nx,ny) #  Good
         #scatter3d_matplotlib() # probablyt not working anymore
 
     # Quiver
     elif (simType == 'qf'):
-        grph.quivergen(simname,resultdir,simnum,dempath,nx,ny,dxy)
+        grph.quivergen(simname,resultdir_list,simnum,dempath,nx,ny,dxy)
 
     else:
         sys.exit("Error: Not a valid entry")
 
 elif (simType == 'vtk'):
-    simname = dm.getsimname(resultdir, '', simType)
-    vtkgen.vtk_generator(simname, resultdir, simnum, dempath, nx, ny, dxy)
+    simname = dm.getsimname(resultdir_vtk, '', simType)
+    vtkgen.vtk_generator(simname, resultdir_vtk, simnum, dempath, nx, ny, dxy)
 
 else:
     sys.exit("Error: Not a valid entry (only accepts 'cs', 'im' or 'vtk'")

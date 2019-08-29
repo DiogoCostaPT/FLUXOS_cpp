@@ -30,6 +30,7 @@ def plotCSvals(crosecval,obsval,simname,resultdir,simType,runlag):
         values_CS[values_CS == 0] = np.nan
         ymodel = np.nanmean(values_CS, axis=1)
     elif(simType=='f'): # flow
+       # values_CS[values_CS < 0] = 0
         ymodel = np.sum(values_CS, axis=1)
 
 

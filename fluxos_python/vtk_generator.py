@@ -18,7 +18,7 @@ def vtk_generator(simname,resultdir,simnum,dempath,nx,ny,dxy):
     z = xyz_columndata[:,2]
     h = xyz_columndata[:,3]
 
-    xyz_columndata_2 = dm.xyz_extract_z_column(xyz_columndata_all, 4, 5, 6, 7)  # extract relevant column (ux,uy,qx,qy)
+    xyz_columndata_2 = dm.xyz_extract_z_column(xyz_columndata_all, 4, 5, 12, 13)  # extract relevant column (ux,uy,qx,qy)
     ux = xyz_columndata_2[:, 2] * 1000 / (dxy*dxy)   # m3/s -> l/s
     uy = xyz_columndata_2[:, 3] * 1000 / (dxy*dxy)  # m3/s -> l/s
     qx = xyz_columndata_2[:, 2]  # m3/s
