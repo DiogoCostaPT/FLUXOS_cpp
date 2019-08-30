@@ -67,9 +67,15 @@ int findLastStep(const char *path) {
 // get size of the domain
 void get_domain_size(unsigned int *rown, unsigned int *coln )
 {
-    unsigned int numele;  
+
     arma::mat filedata; 
-    bool flstatus =  filedata.load("dem_ersi_grid",arma::raw_ascii);
+    
+    std::ifstream file("modset.fluxos");
+    std::string dem_file_temp;
+    std::getline(file, dem_file_temp);
+    file.close();
+    
+    bool flstatus =  filedata.load(dem_file_temp,arma::raw_ascii);
    
     *rown = 0;
     *coln = 0;
@@ -78,7 +84,7 @@ void get_domain_size(unsigned int *rown, unsigned int *coln )
         *rown = filedata.col(1).n_elem;
         *coln = filedata.row(1).n_elem;
     } else{
-        std::cout << "problem with loading 'dem_ersi_grid'" << std::endl;
+        std::cout << "problem loading file: " + dem_file_temp << std::endl;
     } 
 }
 
@@ -127,7 +133,7 @@ public:
     h0= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     ldry_prev= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
     
-    basin_rowy= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row*m_col,2));
+    basin_dem= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     qmelt = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(2000,2));
   }
     size_t n_row,n_col;
@@ -145,31 +151,41 @@ public:
         //sbm_row,sbm_col,                                  // for calc of weight of water (bed slope term) (solver_wet)
         ks, //cfri                                  // Friction (Chezy model is not being used for now)
         fe_1,fe_2,fe_3,fn_1,fn_2,fn_3,
-        conc_SW,h0,soil_mass; 
-    std::unique_ptr<arma::Mat<float>> ldry,basin_rowy,qmelt,ldry_prev;   
+        conc_SW,h0,soil_mass,basin_dem; 
+    std::unique_ptr<arma::Mat<float>> ldry,qmelt,ldry_prev;   
     double hdry,                                    //minimum water depth
         dtfl,tim,                                   // timestep for flow computation
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
+    
+    std::string dem_file, basin_file, qmelt_file;
+    
 };
 
-void read_modset(declavar& ds, unsigned int *print_step, double *ks_input, double *zbinc)
+void read_modset(declavar& ds, unsigned int *print_step, double *ks_input)
 {
     // read_modset(ds,print_step,ks_input,zbinc,ntim_days)
-    arma::mat modsetinfo; 
-    bool flstatus =  modsetinfo.load("modset.fluxos",arma::csv_ascii);
     
-    if(flstatus == true) {
-        *print_step = int(modsetinfo(0));  
-        *ks_input = modsetinfo(1);  
-        ds.dxy = modsetinfo(2);
-        *zbinc = modsetinfo(3); 
-        ds.soil_release_rate = modsetinfo(4); 
-        ds.soil_conc_bckgrd = modsetinfo(5); 
-        ds.SWEstd = modsetinfo(6); 
-        ds.SWEmax = modsetinfo(7);             
-    } else{
-            std::cout << "problem loading the model set up: file 'modset.fluxos'" << std::endl;
-    } 
+    std::ifstream file("modset.fluxos");
+    std::string str;
+    int i = 0;
+    while (std::getline(file, str)) 
+    {
+        i += 1;
+        if(i==1){ds.dem_file = str;};
+        if(i==2){ds.basin_file = str;};
+        if(i==3){ds.qmelt_file = str;};
+        if(i==4){(*print_step) = std::stoi(str);};
+        if(i==5){(*ks_input) = std::stof(str);};  
+        if(i==6){(ds.dxy) = std::stoi(str);};
+        if(i==7){(ds.soil_release_rate) = std::stof(str);}; 
+        if(i==8){(ds.soil_conc_bckgrd) = std::stof(str);};  
+        if(i==9){(ds.SWEstd) = std::stof(str);}; 
+        if(i==10){(ds.SWEmax) = std::stof(str);}; 
+        
+    }
+    file.close();
+    
+    if(i!=10){std::cout << "problem loading the model set up: file 'modset.fluxos'" << std::endl;}
     
 }
 
@@ -177,7 +193,9 @@ void read_geo(declavar& ds,double ks_input)
 {
     unsigned int icol,irow;  
     arma::mat filedata; 
-    bool flstatus =  filedata.load("dem_ersi_grid",arma::raw_ascii);
+    
+    bool flstatus =  filedata.load(ds.dem_file,arma::raw_ascii);
+ 
    
     if(flstatus == true) {
         //for(a=0;a<filedata.col(1).n_elem;a++){
@@ -185,43 +203,40 @@ void read_geo(declavar& ds,double ks_input)
         {
             for(irow=1;irow<=ds.n_row;irow++)
             {   
-                (*ds.zb).at(irow,icol) = std::abs(filedata(ds.n_row - irow,icol-1));  
+                (*ds.zb).at(irow,icol) = std::abs(filedata(ds.n_row - irow,icol-1));  // For now -99999 is set as 99999 to act like a wall using abs
                 (*ds.ks).at(irow,icol) = ks_input; 
             }
         }
         //}
     } else{
-            std::cout << "problem loading the DEM: file 'dem_ersi_grid'" << std::endl;
+            std::cout << "problem loading file: " + ds.dem_file  << std::endl;
     } 
 }
 
-float read_load(declavar& ds,float zbinc)
+float read_load(declavar& ds)
 {
     unsigned int a; 
-    int icolb,irowb;
+    unsigned int icol,irow;
     double tmelts,vmelt, tmelts_bef = 0.0f;
     
     arma::mat filedataB; 
-    bool flstatusB =  filedataB.load("Basin_Info.fluxos",arma::csv_ascii);
+    bool flstatusB =  filedataB.load(ds.basin_file,arma::raw_ascii);
     if(flstatusB == true) {
-        (*ds.zb) += zbinc;
-        for(a=0;a<filedataB.col(0).n_elem;a++){
-            irowb = filedataB(a,0);  
-            icolb = filedataB(a,1);  
-            (*ds.basin_rowy).at(a,0) = irowb;  
-            (*ds.basin_rowy).at(a,1) = icolb;  
-            (*ds.zb).at(irowb,icolb) -= zbinc;
-            //printf("%f\n",(*ds.basin_rowy).at(a,0));
-            //printf("%f\n",(*ds.basin_rowy).at(a,1));
+        for(icol=1;icol<=ds.n_col;icol++)
+        {
+            for(irow=1;irow<=ds.n_row;irow++)
+            {  
+                (*ds.basin_dem).at(irow,icol) = filedataB(ds.n_row - irow,icol-1);
+            }  
         }
     } else{
-            std::cout << "problem loading 'Basin_Info.fluxos'" << std::endl;
+            std::cout << "problem loading file: "+ ds.basin_file << std::endl;
     } 
     
     // reading qmelt 
     ds.qmelvtotal  = 0;
     arma::mat filedataQ; 
-    bool flstatusQ =  filedataQ.load("Qmelt_info.fluxos",arma::csv_ascii);
+    bool flstatusQ =  filedataQ.load(ds.qmelt_file,arma::csv_ascii);
     if(flstatusQ == true) {
         for(a=0;a<filedataQ.col(1).n_elem;a++){
             tmelts = filedataQ(a,0);  // t melt seconds
@@ -232,7 +247,7 @@ float read_load(declavar& ds,float zbinc)
             tmelts_bef = tmelts;
         }
     } else{
-            std::cout << "problem loading 'Qmelt_info.fluxos'" << std::endl;
+            std::cout << "problem loading file: "+ ds.qmelt_file << std::endl;
     }
     float tim = tmelts;
     return tim;
@@ -274,19 +289,19 @@ unsigned int initiation(declavar& ds) {
             zbne = (*ds.zb).at(irow1,icol1);
             a = 0;
             zbsum = 0;
-            if (zbsw != 9999){
+            if (std::fabs(zbsw) != 99999){
                 zbsum=zbsum + zbsw;
                 a = a + 1;
             }
-            if (zbse != 9999){
+            if (std::fabs(zbse) != 99999){
                 zbsum=zbsum + zbse;
                 a = a + 1;
             }
-            if (zbnw != 9999){
+            if (std::fabs(zbnw) != 99999){
                 zbsum=zbsum + zbnw;
                 a = a + 1;
             }
-            if (zbne != 9999){
+            if (std::fabs(zbne) != 99999){
                 zbsum=zbsum + zbne;
                 a = a + 1;
             }
@@ -301,12 +316,15 @@ unsigned int initiation(declavar& ds) {
     for(icol=1;icol<=ds.n_col;icol++)
     {
         for(irow=1;irow<=ds.n_row;irow++)
-        {  
+        {
+            if(std::abs((*ds.basin_dem)(irow,icol))!=99999)
+            {
             (*ds.h).at(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
             (*ds.z).at(irow,icol)=(*ds.zb).at(irow,icol)+(*ds.h).at(irow,icol);
             (*ds.qx).at(irow,icol)=(*ds.ux).at(irow,icol)*(*ds.h).at(irow,icol);
             (*ds.qy).at(irow,icol)=(*ds.uy).at(irow,icol)*(*ds.h).at(irow,icol);
             (*ds.soil_mass).at(irow,icol)  = ds.soil_conc_bckgrd;
+            }
         }
     }
     
@@ -970,7 +988,7 @@ void adesolver(declavar& ds, int it)
     long unsigned int ix,iy,a;//!, printlim
     arma::mat cmaxr(ds.m_row,ds.m_col); //double  cmaxr(0:mx,0:my)
     arma::mat cminr(ds.m_row,ds.m_col); //cminr(0:mx,0:my);
-    double dx,dy,dyn,hp,ie,iee,in, inn, is,iw;
+    double dx,dy,hp,ie,iee,in, inn, is,iw;
     double nt =1 ; // eddy viscosity (m2/s) = 1,
     double sigc = 0.5;
 
@@ -1009,7 +1027,7 @@ void adesolver(declavar& ds, int it)
 
     dx=ds.dxy;
     dy = ds.dxy;
-    dyn=ds.dxy; 
+    //dyn=ds.dxy; 
 
     // SPACE LOOP
     for (a=1;a<ds.n_col*ds.n_row;a++) {
@@ -1291,12 +1309,13 @@ int main(int argc, char** argv)
 {   
     unsigned int n_rowl, n_coll, it = 0;
     unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
-    double c0,v0,u0,hp, hpall, qmelti,ntim_days,ks_input,zbinc; 
+    double c0,v0,u0,hp, hpall, qmelti,ks_input; 
     bool outwritestatus;
     std::chrono::duration<double> elapsed_seconds;
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
-        
+    std::string coment_sim_str;
+   
     // Create/Open log file
     std::ofstream logFLUXOSfile ("fluxos_run.log");
    
@@ -1309,6 +1328,10 @@ int main(int argc, char** argv)
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
     std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
     logFLUXOSfile << "Simulation started... " << std::ctime(&start_time);
+    
+    std::cout << "Simulation purpose (write comment):  ";
+    std::cin >> coment_sim_str;
+    logFLUXOSfile << "Simulation purpose: " + coment_sim_str + "\n";
     
     // Initiate variables on the heap
     declavar ds(n_rowl+2,n_coll+2); 
@@ -1325,9 +1348,8 @@ int main(int argc, char** argv)
     //print_step = 3600; // in seconds
     // timstart = 558000; // start of the simulation
         
-    
     // read model set up
-    read_modset(ds,&print_step,&ks_input,&zbinc);
+    read_modset(ds,&print_step,&ks_input);
     
     // Request user input
     //std::cout << "Print step (s) = ";
@@ -1352,8 +1374,8 @@ int main(int argc, char** argv)
     
     //std::cout << "Increment to basin margins (m) = ";
     //std::cin >> zbinc;
-    logFLUXOSfile << "Increment to basin margins (m) = " + std::to_string(zbinc) + "\n";
-    ds.ntim = read_load(ds,zbinc); // snowmelt load
+    //logFLUXOSfile << "Increment to basin margins (m) = " + std::to_string(zbinc) + "\n";
+    ds.ntim = read_load(ds); // snowmelt load
     
     //std::cout << "Simulation time (days) (Snowmelt input duration = " + std::to_string(ds.ntim/(3600*24)) + " days) = ";
     //std::cin >> ntim_days;
@@ -1438,22 +1460,27 @@ int main(int argc, char** argv)
         
         qmelti = (*ds.qmelt).at(qmelt_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
         ds.qmelv_inc += qmelti;
-        for (a=0;a<(*ds.basin_rowy).col(1).n_elem;a++){
-            irow = (*ds.basin_rowy).at(a,0);
-            icol = (*ds.basin_rowy).at(a,1);
-            hp = std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0); // adesolver hp before adding snowmelt  
-            (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   
-            (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
-            if ((*ds.h)(irow,icol) <= ds.hdry)
+         for(icol=1;icol<=ds.n_col;icol++)
+        {
+            for(irow=1;irow<=ds.n_row;irow++)
             {
-                (*ds.ldry).at(irow,icol)=0.0f;
-        }
-            (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
-            if (hp!=0.)
-            {          
-                (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
+                if (std::abs((*ds.basin_dem).at(irow,icol)) != 99999)
+                {
+                    hp = std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0); // adesolver hp before adding snowmelt  
+                    (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   
+                    (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
+                    if ((*ds.h)(irow,icol) <= ds.hdry)
+                    {
+                        (*ds.ldry).at(irow,icol)=0.0f;
+                    }
+                    (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
+                    if (hp!=0.)
+                    {          
+                        (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
+                    }
+                }
             }
-          }
+         }
                 
         // FLOW SOLVERS
         if (hpall!=0) 

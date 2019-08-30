@@ -1,0 +1,13 @@
+FLUXOS 
+Simulation started... Fri Aug 30 12:12:26 2019
+Simulation purpose: tests
+Print step (s) = 3600
+Roughness height (m) = 0.006000
+Cell size (m) = 3
+Simulation time (days) = 1468800 (= 1468800 sec)
+Soil release rate (1/hour) = 0.080000
+Soil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = 20000.000000
+SWE max (cm) = 6.500000
+SWE std (cm) = 9.500000
+-----------------------------------------------
+
