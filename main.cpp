@@ -60,18 +60,18 @@ int findLastStep(const char *path) {
    //free(filename_i);
    free(entry);
    //free(dir);
-   std::cout << "Start time (s): " << timestart << " (initial conditions available)" << std::endl;
+   //std::cout << "Start time (s): " << timestart << " (initial conditions available)" << std::endl;
    return timestart;
 }
 
 // get size of the domain
-void get_domain_size(unsigned int *rown, unsigned int *coln )
+void get_domain_size(unsigned int *rown, unsigned int *coln, std::ofstream& logFLUXOSfile)
 {
 
     arma::mat filedata; 
     
     std::ifstream file("modset.fluxos");
-    std::string dem_file_temp;
+    std::string dem_file_temp, msg;
     std::getline(file, dem_file_temp);
     file.close();
     
@@ -83,9 +83,9 @@ void get_domain_size(unsigned int *rown, unsigned int *coln )
     if(flstatus == true) {
         *rown = filedata.col(1).n_elem;
         *coln = filedata.row(1).n_elem;
-    } else{
-        std::cout << "problem loading file: " + dem_file_temp << std::endl;
-    } 
+    }
+     
+    
 }
 
 
@@ -161,12 +161,15 @@ public:
     
 };
 
-void read_modset(declavar& ds, unsigned int *print_step, double *ks_input)
+void read_modset(declavar& ds, unsigned int *print_step, double *ks_input,std::ofstream& logFLUXOSfile)
 {
     // read_modset(ds,print_step,ks_input,zbinc,ntim_days)
     
-    std::ifstream file("modset.fluxos");
-    std::string str;
+    std::string str, modset_flname, msg;
+    modset_flname = "modset.fluxos";
+    
+    std::ifstream file(modset_flname);
+    
     int i = 0;
     while (std::getline(file, str)) 
     {
@@ -185,14 +188,21 @@ void read_modset(declavar& ds, unsigned int *print_step, double *ks_input)
     }
     file.close();
     
-    if(i!=10){std::cout << "problem loading the model set up: file 'modset.fluxos'" << std::endl;}
+    if(i==10){
+        msg = "Successful loading of MODSET file: " + modset_flname;
+    } else{
+        msg = "PROBLEM loading of MODSET file: " + modset_flname;
+    } 
+     std::cout << msg  << std::endl;
+     logFLUXOSfile << msg + "\n";
     
 }
 
-void read_geo(declavar& ds,double ks_input)
+void read_geo(declavar& ds,double ks_input,std::ofstream& logFLUXOSfile)
 {
     unsigned int icol,irow;  
     arma::mat filedata; 
+    std::string msg;
     
     bool flstatus =  filedata.load(ds.dem_file,arma::raw_ascii);
  
@@ -208,16 +218,20 @@ void read_geo(declavar& ds,double ks_input)
             }
         }
         //}
+        msg = "Successful loading of DEM file: " + ds.dem_file;
     } else{
-            std::cout << "problem loading file: " + ds.dem_file  << std::endl;
+        msg = "PROBLEM loading of DEM file: " + ds.dem_file;       
     } 
+    std::cout << msg << std::endl;
+    logFLUXOSfile << msg + "\n" ;
 }
 
-float read_load(declavar& ds)
+float read_load(declavar& ds,std::ofstream& logFLUXOSfile)
 {
     unsigned int a; 
     unsigned int icol,irow;
     double tmelts,vmelt, tmelts_bef = 0.0f;
+    std::string msg;
     
     arma::mat filedataB; 
     bool flstatusB =  filedataB.load(ds.basin_file,arma::raw_ascii);
@@ -229,9 +243,12 @@ float read_load(declavar& ds)
                 (*ds.basin_dem).at(irow,icol) = filedataB(ds.n_row - irow,icol-1);
             }  
         }
+        msg = "Successful loading of Basin-DEM file: " + ds.basin_file;
     } else{
-            std::cout << "problem loading file: "+ ds.basin_file << std::endl;
+        msg = "PROBLEM loading of Basin-DEM file: " + ds.basin_file;       
     } 
+    std::cout << msg  << std::endl;
+    logFLUXOSfile << msg + "\n";
     
     // reading qmelt 
     ds.qmelvtotal  = 0;
@@ -246,14 +263,18 @@ float read_load(declavar& ds)
             ds.qmelvtotal += vmelt /(1000.*3600.*24.) * (tmelts - tmelts_bef); 
             tmelts_bef = tmelts;
         }
+       msg = "Successful loading of Qmelt file: " + ds.qmelt_file;
     } else{
-            std::cout << "problem loading file: "+ ds.qmelt_file << std::endl;
-    }
+        msg = "PROBLEM loading of Qmelt file: " + ds.qmelt_file;       
+    } 
+    std::cout << msg  << std::endl;
+    logFLUXOSfile << msg + "\n";
+    
     float tim = tmelts;
     return tim;
 }
 
-unsigned int initiation(declavar& ds) {
+unsigned int initiation(declavar& ds,std::ofstream& logFLUXOSfile) {
     
     std::unique_ptr<double[]> zbs1(new double[ds.m_row]);   
     double zbsw,zbnw,zbse,zbne,zbsum;
@@ -331,7 +352,11 @@ unsigned int initiation(declavar& ds) {
     timstart = findLastStep("Results/"); // list the results files to get the last time step
     
     arma::mat filedata; 
-    bool flstatus = filedata.load("Results/" + std::to_string(timstart) + ".txt",arma::csv_ascii);
+    std::string init_file, msg;
+    
+    init_file = "Results/" + std::to_string(timstart) + ".txt";
+    
+    bool flstatus = filedata.load(init_file,arma::csv_ascii);
 
     if(flstatus == true) 
     {
@@ -350,9 +375,11 @@ unsigned int initiation(declavar& ds) {
             (*ds.soil_mass).at(irow,icol) = filedata(a,11);
             (*ds.ldry).at(irow,icol) = 0.0f;
         }
+        msg = "Successful loading of initial conditions file: " + init_file;
     } else
     {
-        std::cout << "No initial conditions (output files '*.txt' not found). All variables set to zero.'" << std::endl;
+        msg = "NO INITIAL CONDITIONS FOUND: All variables set to zero";  
+
          for(icol=1;icol<=ds.n_col;icol++)
         {
             for(irow=1;irow<=ds.n_row;irow++)
@@ -368,7 +395,9 @@ unsigned int initiation(declavar& ds) {
             }
         }
     }
-
+    std::cout << msg << std::endl;
+    logFLUXOSfile << msg + "\n";
+    
     // BOUNDARY VALUES (initial set up)
         for(icol=0;icol<=n_col1;icol++)
         {
@@ -1318,11 +1347,6 @@ int main(int argc, char** argv)
    
     // Create/Open log file
     std::ofstream logFLUXOSfile ("fluxos_run.log");
-   
-     // Get the size of the domain (nrow and ncol)
-    get_domain_size(&n_rowl, &n_coll);
-     // Input the duration of the simulation
-    
     std::cout << "FLUXOS"  << std::endl;
     logFLUXOSfile << "FLUXOS \n";
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
@@ -1331,8 +1355,13 @@ int main(int argc, char** argv)
     
     std::cout << "Simulation purpose (write comment):  ";
     std::cin >> coment_sim_str;
-    logFLUXOSfile << "Simulation purpose: " + coment_sim_str + "\n";
+    logFLUXOSfile << "Simulation purpose: " + coment_sim_str + "\n\n";
     
+    
+     // Get the size of the domain (nrow and ncol)
+    get_domain_size(&n_rowl, &n_coll,logFLUXOSfile);
+     // Input the duration of the simulation
+        
     // Initiate variables on the heap
     declavar ds(n_rowl+2,n_coll+2); 
     
@@ -1349,7 +1378,7 @@ int main(int argc, char** argv)
     // timstart = 558000; // start of the simulation
         
     // read model set up
-    read_modset(ds,&print_step,&ks_input);
+    read_modset(ds,&print_step,&ks_input,logFLUXOSfile);
     
     // Request user input
     //std::cout << "Print step (s) = ";
@@ -1370,12 +1399,12 @@ int main(int argc, char** argv)
     logFLUXOSfile << "Cell size (m) = " + std::to_string(ds.dxy) + "\n";
     
     ds.arbase = ds.dxy * ds.dxy;
-    read_geo(ds,ks_input); // DEM
+    read_geo(ds,ks_input,logFLUXOSfile); // DEM
     
     //std::cout << "Increment to basin margins (m) = ";
     //std::cin >> zbinc;
     //logFLUXOSfile << "Increment to basin margins (m) = " + std::to_string(zbinc) + "\n";
-    ds.ntim = read_load(ds); // snowmelt load
+    ds.ntim = read_load(ds,logFLUXOSfile); // snowmelt load
     
     //std::cout << "Simulation time (days) (Snowmelt input duration = " + std::to_string(ds.ntim/(3600*24)) + " days) = ";
     //std::cin >> ntim_days;
@@ -1398,10 +1427,10 @@ int main(int argc, char** argv)
     ds.SWEmax = ds.SWEmax/100;
     //std::cout << "SWE std (cm) = ";
     //std::cin >> ds.SWEstd;
-    logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd);
+    logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd) + "\n";
     ds.SWEstd = ds.SWEstd/100;
     
-    timstart = initiation(ds);
+    timstart = initiation(ds,logFLUXOSfile);
     
     // INITIATION
     ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
