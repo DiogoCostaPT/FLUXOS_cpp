@@ -14,6 +14,9 @@ import graphing_functions as grph
 import sys
 import vtk_generator as vtkgen
 import os
+from joblib import Parallel, delayed
+import multiprocessing
+from tqdm import tqdm
 
 '''
 General Model Settings
@@ -22,7 +25,6 @@ General Model Settings
 dempath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/DEM_ASCII/model_geo.csv'
 
 resultdir_list = [
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/l_1/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41/Results/',
@@ -44,9 +46,8 @@ resultdir_list = [
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_58/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_59/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_60/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/l_1/Results/',
 ]
-
-resultdir_vtk = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/l_1/Results/'
 
 TimeStrgStart = datetime(2011, 3, 31, 0, 0, 0)
 Tinitial = 0
@@ -176,12 +177,13 @@ elif (simType == 'vtk'):
         resultdir = resultdir_list[sim]
         resfiles_list = os.listdir(resultdir)
         print("    " + resultdir)
-        for res_i in range(0,len(resfiles_list)):
-
-            #simname = dm.getsimname(resultdir,obsPath,simType)
-            simname = dm.getsimname_2(resultdir,simType)
-            vtkgen.vtk_generator(simname, resultdir, resfiles_list[res_i], dempath, nx, ny, dxy)
-            print("        " + resfiles_list[res_i] + " (Complete)")
+        try:
+            os.mkdir(resultdir + "vtk/")
+            print("     vtk directory: CREATE")
+        except:
+            print("     vtk directory: ALREADY EXISTS")
+        num_cores = multiprocessing.cpu_count()
+        Parallel(n_jobs=num_cores)(delayed(vtkgen.vtk_generator)(simType, resultdir, resfiles_list[res_i], dempath, nx, ny, dxy) for res_i in tqdm(range(0,len(resfiles_list))))
 
 else:
     sys.exit("Error: Not a valid entry (only accepts 'cs', 'im' or 'vtk'")

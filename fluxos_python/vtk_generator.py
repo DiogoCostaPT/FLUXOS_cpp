@@ -3,7 +3,9 @@ import vtktools
 import pandas as pd
 import data_management as dm
 
-def vtk_generator(simname,resultdir,resfile_i,dempath,nx,ny,dxy):
+def vtk_generator(simType,resultdir,resfile_i,dempath,nx,ny,dxy):
+
+    #simname = dm.getsimname_2(resultdir, simType)
 
     vtk_writer = vtktools.VTK_XML_Serial_Unstructured()
 
@@ -30,7 +32,7 @@ def vtk_generator(simname,resultdir,resfile_i,dempath,nx,ny,dxy):
     conc_sw = xyz_columndata_3[:, 2]
     conc_soil = xyz_columndata_3[:, 3]
 
-    outputnam = "vtk/" + simname[0] + "_" + resfile_i[0:len(resfile_i)-4]
+    outputnam = resultdir + "vtk/" + resfile_i[0:len(resfile_i)-4]
 
     #vtk_writer.snapshot(outputnam + ".vtu", x, y, z, h, ux, uy, qx, qy, conc_sw, conc_soil)
     vtk_writer.snapshot(outputnam + ".vtu", x, y, z, h, ux, uy, qy, qx, conc_sw, conc_soil)
