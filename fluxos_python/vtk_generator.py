@@ -3,11 +3,11 @@ import vtktools
 import pandas as pd
 import data_management as dm
 
-def vtk_generator(simname,resultdir,simnum,dempath,nx,ny,dxy):
+def vtk_generator(simname,resultdir,resfile_i,dempath,nx,ny,dxy):
 
     vtk_writer = vtktools.VTK_XML_Serial_Unstructured()
 
-    simpath = resultdir + str(simnum) + '.txt'
+    simpath = resultdir + resfile_i
     #simpath = 'model_geo.txt'
     xyz_columndata_all = pd.read_csv(simpath)
     xyz_columndata_all = xyz_columndata_all.values
@@ -30,7 +30,7 @@ def vtk_generator(simname,resultdir,simnum,dempath,nx,ny,dxy):
     conc_sw = xyz_columndata_3[:, 2]
     conc_soil = xyz_columndata_3[:, 3]
 
-    outputnam = "vtk/" + simname + "_" + str(simnum)
+    outputnam = "vtk/" + simname[0] + "_" + resfile_i[0:len(resfile_i)-4]
 
     #vtk_writer.snapshot(outputnam + ".vtu", x, y, z, h, ux, uy, qx, qy, conc_sw, conc_soil)
     vtk_writer.snapshot(outputnam + ".vtu", x, y, z, h, ux, uy, qy, qx, conc_sw, conc_soil)

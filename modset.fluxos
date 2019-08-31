@@ -1,9 +1,10 @@
-ersi_grid_dem_alldomain_denoised
-ersi_grid_dem_basin
-Qmelt_info_2009.fluxos
+### Initial setting up of LON ###
+dem_ersi_grid_LON
+ersi_grid_dem_LON_basin
+Qmelt_info_LON_2016.fluxos
 3600
-0.005
-3
+0.002
+1
 0.08
 20000
 9.5

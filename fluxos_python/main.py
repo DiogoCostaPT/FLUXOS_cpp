@@ -22,6 +22,7 @@ General Model Settings
 dempath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/DEM_ASCII/model_geo.csv'
 
 resultdir_list = [
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/l_1/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41/Results/',
@@ -45,13 +46,12 @@ resultdir_list = [
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_60/Results/',
 ]
 
-resultdir_vtk = '/media/dcosta/DATADRIVE1/fluxos_tests/local/SD/1/Results/'
+resultdir_vtk = '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/l_1/Results/'
 
 TimeStrgStart = datetime(2011, 3, 31, 0, 0, 0)
 Tinitial = 0
 Timee = 18000 #1468800
 t_step_read = 3600
-simnum = 1216800  # simulation to plot map 651600 936000 1216800
 nx = 722
 ny = 1034
 dxy = 3
@@ -170,8 +170,18 @@ elif (simType == 'im'):
         sys.exit("Error: Not a valid entry")
 
 elif (simType == 'vtk'):
-    simname = dm.getsimname(resultdir_vtk, '', simType)
-    vtkgen.vtk_generator(simname, resultdir_vtk, simnum, dempath, nx, ny, dxy)
+    print ("Running VTK generator...")
+    for sim in range(0, len(resultdir_list)):
+        # Extract simulation name
+        resultdir = resultdir_list[sim]
+        resfiles_list = os.listdir(resultdir)
+        print("    " + resultdir)
+        for res_i in range(0,len(resfiles_list)):
+
+            #simname = dm.getsimname(resultdir,obsPath,simType)
+            simname = dm.getsimname_2(resultdir,simType)
+            vtkgen.vtk_generator(simname, resultdir, resfiles_list[res_i], dempath, nx, ny, dxy)
+            print("        " + resfiles_list[res_i] + " (Complete)")
 
 else:
     sys.exit("Error: Not a valid entry (only accepts 'cs', 'im' or 'vtk'")

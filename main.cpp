@@ -73,6 +73,7 @@ void get_domain_size(unsigned int *rown, unsigned int *coln, std::ofstream& logF
     std::ifstream file("modset.fluxos");
     std::string dem_file_temp, msg;
     std::getline(file, dem_file_temp);
+    std::getline(file, dem_file_temp);
     file.close();
     
     bool flstatus =  filedata.load(dem_file_temp,arma::raw_ascii);
@@ -157,7 +158,7 @@ public:
         dtfl,tim,                                   // timestep for flow computation
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
     
-    std::string dem_file, basin_file, qmelt_file;
+    std::string dem_file, basin_file, qmelt_file,sim_purp ;
     
 };
 
@@ -174,21 +175,22 @@ void read_modset(declavar& ds, unsigned int *print_step, double *ks_input,std::o
     while (std::getline(file, str)) 
     {
         i += 1;
-        if(i==1){ds.dem_file = str;};
-        if(i==2){ds.basin_file = str;};
-        if(i==3){ds.qmelt_file = str;};
-        if(i==4){(*print_step) = std::stoi(str);};
-        if(i==5){(*ks_input) = std::stof(str);};  
-        if(i==6){(ds.dxy) = std::stoi(str);};
-        if(i==7){(ds.soil_release_rate) = std::stof(str);}; 
-        if(i==8){(ds.soil_conc_bckgrd) = std::stof(str);};  
-        if(i==9){(ds.SWEstd) = std::stof(str);}; 
-        if(i==10){(ds.SWEmax) = std::stof(str);}; 
+        if(i==1){ds.sim_purp = str;};
+        if(i==2){ds.dem_file = str;};
+        if(i==3){ds.basin_file = str;};
+        if(i==4){ds.qmelt_file = str;};
+        if(i==5){(*print_step) = std::stoi(str);};
+        if(i==6){(*ks_input) = std::stof(str);};  
+        if(i==7){(ds.dxy) = std::stoi(str);};
+        if(i==8){(ds.soil_release_rate) = std::stof(str);}; 
+        if(i==9){(ds.soil_conc_bckgrd) = std::stof(str);};  
+        if(i==10){(ds.SWEstd) = std::stof(str);}; 
+        if(i==11){(ds.SWEmax) = std::stof(str);}; 
         
     }
     file.close();
     
-    if(i==10){
+    if(i==11){
         msg = "Successful loading of MODSET file: " + modset_flname;
     } else{
         msg = "PROBLEM loading of MODSET file: " + modset_flname;
@@ -1349,15 +1351,11 @@ int main(int argc, char** argv)
     std::ofstream logFLUXOSfile ("fluxos_run.log");
     std::cout << "FLUXOS"  << std::endl;
     logFLUXOSfile << "FLUXOS \n";
+    logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
     std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
     logFLUXOSfile << "Simulation started... " << std::ctime(&start_time);
-    
-    std::cout << "Simulation purpose (write comment):  ";
-    std::cin >> coment_sim_str;
-    logFLUXOSfile << "Simulation purpose: " + coment_sim_str + "\n\n";
-    
-    
+        
      // Get the size of the domain (nrow and ncol)
     get_domain_size(&n_rowl, &n_coll,logFLUXOSfile);
      // Input the duration of the simulation
@@ -1380,11 +1378,17 @@ int main(int argc, char** argv)
     // read model set up
     read_modset(ds,&print_step,&ks_input,logFLUXOSfile);
     
+    //std::cout << "Simulation purpose (write comment):  ";
+    //std::cin >> coment_sim_str;
+    //logFLUXOSfile << "Simulation: " + ds.sim_purp + "\n\n";
+    
     // Request user input
     //std::cout << "Print step (s) = ";
     //std::cin >> print_step;
     logFLUXOSfile << "Print step (s) = " + std::to_string(print_step) + "\n";
-  
+    
+    
+    
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;
     
