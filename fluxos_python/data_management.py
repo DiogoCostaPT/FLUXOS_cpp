@@ -68,7 +68,6 @@ def obsextract(obsPath,time_col,val_col):
 
     return obsval_noNAN
 
-def savereslt(simname,crosecval):
-    filename = 'CS_Results/' + simname[0] + '.out'
-    np.savetxt(filename, crosecval, delimiter=',')
+def savereslt(output_dir,crosecval):
+    np.savetxt(output_dir, crosecval, delimiter=',')
 

@@ -14,6 +14,7 @@ import graphing_functions as grph
 import sys
 import vtk_generator as vtkgen
 import os
+import numpy as np
 from joblib import Parallel, delayed
 import multiprocessing
 from tqdm import tqdm
@@ -26,6 +27,7 @@ dempath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/DEM_
 
 resultdir_list = [
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_66/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_43/Results/',
@@ -46,8 +48,21 @@ resultdir_list = [
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_58/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_59/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_60/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_64/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_65/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/SD/1/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/l_1/Results/',
-]
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36_wq_1/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36_wq_2/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36_wq_3/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40_wq_1/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40_wq_2/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40_wq_3/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41_wq_1/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41_wq_2/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41_wq_3/Results/',
+                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/l_1/Results/',
+                ]
 
 TimeStrgStart = datetime(2011, 3, 31, 0, 0, 0)
 Tinitial = 0
@@ -76,11 +91,11 @@ Map3d_Dem_and_sim_plotly = False # plot 3d maps of dem and sim results in plotly
 GoogleEarthSim = False # export kml to google earth
 Quiver_flowpaths = True
 
-simType = input("Options:\n# Analyse a cross-section (type 'cs')\n# Inundation map ('im')\n# VTK generator ('vtk)\n")
+simType = input("Options:\n# Analyse a cross-section (type 'cs')\n# Inundation map ('im')\n# VTK generator ('vtk)\n Answer: ")
 
 if (simType == 'cs'):
 
-    simType = input("Options:\n# Examine Flow (f)\n# Water Quality (wq)\n# Soil Quality (sq)\n")
+    simType = input("Options:\n# Examine Flow (f)\n# Water Quality (wq)\n# Soil Quality (sq)\n Answer: ")
 
     #yearselect =  int(input("Simulation year (STC): "))
 
@@ -121,6 +136,8 @@ if (simType == 'cs'):
 
     # START....
 
+    Overwrite_csfile = input("Overwrite *.out files if existent?\n# Yes (y)\n# No, append new time steps to existing *.out file\n Answer: ")
+
     # Extract Cross-Section points from the shapefile
     shp_nodes_CS = cse.lineCSshapefile(CrossSecLine_path_shapefile)  # get nodes of the shapefile with the desired cross-section
     xy_CS = cse.InterpCSpoints_from_y_CS(shp_nodes_CS)  # interpolate a continuous line between the end nodes of "shp_nodes_CS"
@@ -128,14 +145,63 @@ if (simType == 'cs'):
     for sim in range(0, len(resultdir_list)):
         # Extract simulation name
         resultdir = resultdir_list[sim]
-        resfiles_list = os.listdir(resultdir)
-        #simname = dm.getsimname(resultdir,obsPath,simType)
-        simname = dm.getsimname_2(resultdir,simType)
+        try:
+            resfiles_list = [x for x in os.listdir(resultdir) if x not in 'vtk' if x not in 'cs'] # listing the files in folder
+            print("    " + resultdir + "(found)")
+        except:
+            print("    " + resultdir + " (NOT found; simulation skipped)")
+            continue
+        try:
+            os.mkdir(resultdir + "cs/")
+            print("     cs directory: CREATED")
+        except:
+            print("     cs directory: ALREADY EXISTS")
+
+
+        # read cs file if it exists
+        simname = resultdir + "cs/"
+        filenam = simType + ".out"
+        output_dir = simname + filenam
+
+        if (Overwrite_csfile != 'y'):
+            try:
+                output_dir_file = [x for x in os.listdir(simname) if x in filenam]
+                csfile = open(output_dir)
+                crosecval_list_exist = csfile.readlines()
+                crosecval_exist = np.array([float(x) for x in crosecval_list_exist[0].split(",")])
+                for i in range(1,len(crosecval_list_exist)):
+                    filcontent_cs_i = np.array([float(x) for x in crosecval_list_exist[i].split(",")])
+                    crosecval_exist = np.vstack((crosecval_exist, filcontent_cs_i))
+                crosecval_exist_time = np.transpose(crosecval_exist)[0][:]
+                csfile.close()
+                # remove existing time steps in cs file from the list of output files to load
+                for x in range(0, len(crosecval_exist_time)):
+                    resfiles_list.remove(str(int(crosecval_exist_time[x])) + ".txt")
+                file_cs_exists = True
+            except:
+                file_cs_exists = False
+        else:
+            file_cs_exists = False
+            #simname = dm.getsimname(resultdir,obsPath,simType)
+            #simname = dm.getsimname_2(resultdir,simType)
+
+        if (len(resfiles_list) == 0):
+            continue
 
         # Extract the results over the cross-section
         crosecval = cse.csextract(simType,resultdir,resfiles_list, xy_CS, sim, var_col_1, var_col_2, nx, ny, dxy)
+        #crosecval_time = resfiles_list
+        #crosecval_time = [s.strip('.txt') for s in crosecval_time]
+        #crosecval_time = np.array(list(map(float, crosecval_time)))
+        #crosecval = np.transpose(np.vstack((crosecval_time, np.transpose(crosecval))))
 
-        dm.savereslt(simname,crosecval)
+        # stack existig and new crosecval
+        if file_cs_exists:
+            crosecval = np.vstack((crosecval_exist, crosecval))
+
+        crosecval = crosecval[np.argsort(crosecval[:, 0])][:] # sort results (parallel returns it unsorted)
+
+        dm.savereslt(output_dir,crosecval)
 
     # Extract Observations
     #time_col = 0  # time column
@@ -175,8 +241,14 @@ elif (simType == 'vtk'):
     for sim in range(0, len(resultdir_list)):
         # Extract simulation name
         resultdir = resultdir_list[sim]
-        resfiles_list = os.listdir(resultdir)
-        print("    " + resultdir)
+
+        try:
+            resfiles_list = [x for x in os.listdir(resultdir) if x not in 'vtk' if x not in 'cs']
+            print("    " + resultdir + "(found)")
+        except:
+            print("    " + resultdir + " (NOT found; simulation skipped)")
+            continue
+
         try:
             os.mkdir(resultdir + "vtk/")
             print("     vtk directory: CREATE")

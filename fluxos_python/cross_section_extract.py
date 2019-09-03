@@ -24,17 +24,21 @@ def csextract(simType,resultdir,resfiles_list, xy_CS,  sim, var_col_1, var_col_2
     geom_CS, xy_CS_cor = getanglesCS(xy_CS)
 
     num_cores = multiprocessing.cpu_count()
-    crosecvals = np.vstack(Parallel(n_jobs=num_cores)(delayed(Extract_File_Res)(simType,resultdir,resfiles_list,ntimstp, xy_CS_cor, geom_CS, nx, ny, sim, var_col_1, var_col_2) for t in tqdm(range(0, ntimstp))))
+    crosecvals = np.vstack(Parallel(n_jobs=num_cores)(delayed(Extract_File_Res)(simType,resultdir,resfiles_list,t_int, xy_CS_cor, geom_CS, nx, ny, sim, var_col_1, var_col_2) for t_int in tqdm(range(0, ntimstp))))
 
     return crosecvals
 
 # Extract the values for the cross-section (each time step)
-def Extract_File_Res(simType,resultdir,resfilepath_all, ntimstp,xy_CS_cor, geom_CS, nx, ny, sim, var_col_1, var_col_2):  # Loop over the result files
+def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, geom_CS, nx, ny, sim, var_col_1, var_col_2):  # Loop over the result files
 
     # generate the file name string
     crosecvals_t = np.zeros(((len(xy_CS_cor)) + 1))  # + 1 because the first column is time
     #timei = timevec[t]
-    resfilepath = resultdir + resfilepath_all[ntimstp-1]
+    refile = resfilepath_all[t_int-1]
+    resfilepath = resultdir + refile
+
+    refile_time = refile[0:len(refile)-4]
+    crosecval_time = int(refile_time)
 
     # open result file
     if os.path.exists(resfilepath):
@@ -93,6 +97,7 @@ def Extract_File_Res(simType,resultdir,resfilepath_all, ntimstp,xy_CS_cor, geom_
     else:
         print("File does not exist: " + resfilepath)
 
+    crosecvals_t = np.hstack((crosecval_time,crosecvals_t))
     return crosecvals_t
 
 #  Get geometry of cross-section (for computation of perpendicular flow)
