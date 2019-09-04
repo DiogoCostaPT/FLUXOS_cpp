@@ -38,66 +38,71 @@ def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, geom_CS
     resfilepath = resultdir + refile
 
     refile_time = refile[0:len(refile)-4]
-    crosecval_time = int(refile_time)
+    try:
+        crosecval_time = int(refile_time)
 
-    # open result file
-    if os.path.exists(resfilepath):
-        with open(resfilepath, 'r') as fid:  # open the result file x
-            # read the result file x
-            try:
-                dataraw = np.genfromtxt(resfilepath, delimiter=',')
+        # open result file
+        if os.path.exists(resfilepath):
+            with open(resfilepath, 'r') as fid:  # open the result file x
+                # read the result file x
+                try:
+                    dataraw = np.genfromtxt(resfilepath, delimiter=',')
 
-                if (simType == 'sq'): # SQ case (soil concentrations)
-                    # Var 1 only
-                    xyz_columndata = dm.xyz_extract_z_column(dataraw, 0, 1, var_col_1,0)  # extract relevant column
-                    xyz_matrix_var_1 = dm.xyz_to_matrix(xyz_columndata, nx, ny)  # convert into matrix
-                else:
-                    xyz_columndata = dm.xyz_extract_z_column(dataraw, 0, 1, var_col_1, var_col_2)  # extract relevant column
-                    xyz_matrix_var_1 = dm.xyz_to_matrix(xyz_columndata[:, [0, 1, 2]], nx, ny)  # convert into matrix (var 1)
-                    xyz_matrix_var_2 = dm.xyz_to_matrix(xyz_columndata[:, [0, 1, 3]], nx, ny)  # convert into matrix (var 2)
+                    if (simType == 'sq'): # SQ case (soil concentrations)
+                        # Var 1 only
+                        xyz_columndata = dm.xyz_extract_z_column(dataraw, 0, 1, var_col_1,0)  # extract relevant column
+                        xyz_matrix_var_1 = dm.xyz_to_matrix(xyz_columndata, nx, ny)  # convert into matrix
+                    else:
+                        xyz_columndata = dm.xyz_extract_z_column(dataraw, 0, 1, var_col_1, var_col_2)  # extract relevant column
+                        xyz_matrix_var_1 = dm.xyz_to_matrix(xyz_columndata[:, [0, 1, 2]], nx, ny)  # convert into matrix (var 1)
+                        xyz_matrix_var_2 = dm.xyz_to_matrix(xyz_columndata[:, [0, 1, 3]], nx, ny)  # convert into matrix (var 2)
 
-                fid.close()
+                    fid.close()
 
-                # Get geometry of the cross-section to calculate parallel and ortogonal flow (with respect to the cross-section)
-                a = geom_CS[0]
-                a = a.astype(int)
-                b = geom_CS[1]
-                b = b.astype(int)
-                alpha_h = geom_CS[2]
+                    # Get geometry of the cross-section to calculate parallel and ortogonal flow (with respect to the cross-section)
+                    a = geom_CS[0]
+                    a = a.astype(int)
+                    b = geom_CS[1]
+                    b = b.astype(int)
+                    alpha_h = geom_CS[2]
 
-                # extract the values of the cross section
-                #crosecvals_t[0] = timei
+                    # extract the values of the cross section
+                    #crosecvals_t[0] = timei
 
-                for segi in range(0, len(xy_CS_cor)):
-                    xi = xy_CS_cor[segi, 0].astype(int)
-                    yi = xy_CS_cor[segi, 1].astype(int)
-                    if simType == 'sq':  # Water levels or concentrations
-                        crosecvals_t[segi+1] = xyz_matrix_var_1[yi, xi]  # cross-section values
-                    elif simType == 'wq':
-                        crosecvals_t[segi + 1] = xyz_matrix_var_1[yi, xi]#/xyz_matrix_var_2[yi, xi]  # cross-section values
-                    else:  # calculation of the ortogonal flow to the cross section
-                        p_flow = xyz_matrix_var_1[yi, xi]
-                        q_flow = xyz_matrix_var_2[yi, xi]
-                        # different conditions (see notes)
-                        if a == 0:  # perfectly horizontal cross-section
-                            crosecvals_t[segi+1] = q_flow
-                        elif b == 0:  # perfectly vertical cross-section
-                            crosecvals_t[segi+1] = 0
-                        else:  # general case
-                         # crosecvals_t[segi + 1] = q_flow * np.cos(alpha_h) + p_flow * np.sin(alpha_h)
-                         #crosecvals_t[segi + 1] = max(q_flow * np.cos(alpha_h) + p_flow * np.sin(alpha_h),0)
-                            crosecvals_t[segi + 1] = max(q_flow * np.cos(alpha_h), 0) + max(p_flow * np.sin(alpha_h), 0)
-                            #crosecvals_t[segi+1] = q_flow * np.cos(alpha_h) #+ abs(p_flow * np.sin(alpha_h))
-                           # crosecvals_t[segi + 1] = abs(q_flow * np.cos(alpha_h))
-                            #crosecvals_t[segi + 1] = abs(p_flow * np.sin(alpha_h))
-                            #crosecvals_t[segi + 1] = q_flow + p_flow
-            except:
-                print("Cannot open file:" + resfilepath + "or exception in function <Extract_File_Res>")
+                    for segi in range(0, len(xy_CS_cor)):
+                        xi = xy_CS_cor[segi, 0].astype(int)
+                        yi = xy_CS_cor[segi, 1].astype(int)
+                        if simType == 'sq':  # Water levels or concentrations
+                            crosecvals_t[segi+1] = xyz_matrix_var_1[yi, xi]  # cross-section values
+                        elif simType == 'wq':
+                            crosecvals_t[segi + 1] = xyz_matrix_var_1[yi, xi]#/xyz_matrix_var_2[yi, xi]  # cross-section values
+                        else:  # calculation of the ortogonal flow to the cross section
+                            p_flow = xyz_matrix_var_1[yi, xi]
+                            q_flow = xyz_matrix_var_2[yi, xi]
+                            # different conditions (see notes)
+                            if a == 0:  # perfectly horizontal cross-section
+                                crosecvals_t[segi+1] = q_flow
+                            elif b == 0:  # perfectly vertical cross-section
+                                crosecvals_t[segi+1] = 0
+                            else:  # general case
+                             # crosecvals_t[segi + 1] = q_flow * np.cos(alpha_h) + p_flow * np.sin(alpha_h)
+                             #crosecvals_t[segi + 1] = max(q_flow * np.cos(alpha_h) + p_flow * np.sin(alpha_h),0)
+                                crosecvals_t[segi + 1] = max(q_flow * np.cos(alpha_h), 0) + max(p_flow * np.sin(alpha_h), 0)
+                                #crosecvals_t[segi+1] = q_flow * np.cos(alpha_h) #+ abs(p_flow * np.sin(alpha_h))
+                               # crosecvals_t[segi + 1] = abs(q_flow * np.cos(alpha_h))
+                                #crosecvals_t[segi + 1] = abs(p_flow * np.sin(alpha_h))
+                                #crosecvals_t[segi + 1] = q_flow + p_flow
+                except:
+                    print("Cannot open file:" + resfilepath + "or exception in function <Extract_File_Res>")
 
-    else:
-        print("File does not exist: " + resfilepath)
+        else:
+            print("File does not exist: " + resfilepath)
+        crosecvals_t = np.hstack((crosecval_time, crosecvals_t))
 
-    crosecvals_t = np.hstack((crosecval_time,crosecvals_t))
+    except:
+        print("Invalid result file found: " + refile_time)
+        crosecvals_t = np.hstack((0,crosecvals_t))
+
     return crosecvals_t
 
 #  Get geometry of cross-section (for computation of perpendicular flow)

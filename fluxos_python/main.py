@@ -61,7 +61,6 @@ resultdir_list = [
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41_wq_1/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41_wq_2/Results/',
                 '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41_wq_3/Results/',
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/l_1/Results/',
                 ]
 
 TimeStrgStart = datetime(2011, 3, 31, 0, 0, 0)
@@ -110,7 +109,7 @@ if (simType == 'cs'):
         var_col_1 = 6  # 3-h, 6-qx, 10-C, 11 - soil mass, 12 - fn_1, 13 - fe_1
         var_col_2 = 7  # 3-h, 6-qx, 10-C, 11 - soil mass, 12 - fn_1, 13 - fe_1
     elif (simType == 'wq'):
-        #CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
+        CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
         #if yearselect == 2009:
         #   obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/2_2009_Compiled/Streamflow_WQ_MS12_2009.csv'
         #elif yearselect == 2010:
@@ -118,10 +117,10 @@ if (simType == 'cs'):
         #elif yearselect == 2011:
         #    obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS12_2011_NO3event.csv'
         #    # obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS9C_2011.csv'
-            var_col_1 = 10  # 3-h, 6-qx, 10-C, 11-soil
-            var_col_2 = 3  # 7-
+        var_col_1 = 10  # 3-h, 6-qx, 10-C, 11-soil
+        var_col_2 = 3  # 7-
     elif (simType == 'sq'):
-        #CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
+        CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
         #obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS12_2011_NO3event.csv'
         ## obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS9C_2011.csv'
         var_col_1 = 11  # 3-h, 6-qx, 10-C, 11-soil
@@ -136,7 +135,7 @@ if (simType == 'cs'):
 
     # START....
 
-    Overwrite_csfile = input("Overwrite *.out files if existent?\n# Yes (y)\n# No, append new time steps to existing *.out file\n Answer: ")
+    Overwrite_csfile = input("Overwrite *.out files if existent?\n# Yes (y)\n# No (n), append new time steps to existing *.out file \n Answer: ")
 
     # Extract Cross-Section points from the shapefile
     shp_nodes_CS = cse.lineCSshapefile(CrossSecLine_path_shapefile)  # get nodes of the shapefile with the desired cross-section
