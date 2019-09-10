@@ -1281,7 +1281,7 @@ void wintra(declavar& ds)
             if(hp>ds.hdry && zbp != 9999) 
             {       
                 deltam = (*ds.soil_mass).at(irow,icol) * (1-f) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
-                deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
+                //deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
                 (*ds.soil_mass).at(irow,icol) = (*ds.soil_mass).at(irow,icol) - deltam;
                 (*ds.conc_SW).at(irow,icol) = (*ds.conc_SW).at(irow,icol) + deltam/(hp*ds.arbase);
             }
@@ -1380,7 +1380,7 @@ int main(int argc, char** argv)
     
     //std::cout << "Simulation purpose (write comment):  ";
     //std::cin >> coment_sim_str;
-    //logFLUXOSfile << "Simulation: " + ds.sim_purp + "\n\n";
+    logFLUXOSfile << "Simulation: " + ds.sim_purp + "\n\n";
     
     // Request user input
     //std::cout << "Print step (s) = ";

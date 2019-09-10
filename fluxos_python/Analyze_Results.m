@@ -1,77 +1,75 @@
 
 %%%%%%%%%%% OBSERVATIONS %%%%%%%%%%%%%%%%%% 
 yearselect = 2009;
+ResType = 1; %1-flow, 2-WQ, 3-SQ
+Obs_col = 2;      % FLOW: Obs_col = 2 
+                  % NH4: Obs: Obs_col = 2 
+                  % DOC: Obs_col = 3
+                  % SUSPC: Obs_col = 4 	
+                  % TOC: Obs_col = 5
+                  % NO3NO2: Obs_col = 6 
+                  % SUSPN: Obs_col = 7 
+                  % TDN: Obs_col = 8
+                  % TN: Obs_col = 9
+                  % SUSPP: Obs_col = 10 	
+                  % TP: Obs_col = 11
+                  % TDP: Obs_col = 12 
+                  % SRP: Obs_col = 13
+                  % TSS: Obs_col = 14
+lag = 8; % in hours
+
+FLUXOS_res_dir = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/';
+batch_dir = 'batch_1';
+
+
+if ResType == 1
+    outfilenam = 'f.out';
+elseif ResType == 2
+    outfilenam = 'wq.out';
+elseif ResType == 3
+    outfilenam = 'sq.out';
+end
+
+if (yearselect==2009)
+   fluxos_timestart = 39913.01042 + 695422 - lag/24; 
+elseif (yearselect==2010)
+   fluxos_timestart = 40252.03125 + 695422 - lag/24;       
+elseif (yearselect==2011)
+    fluxos_timestart = 40633 + 695422 - lag/24;  
+end
+
+[resultdir_list, obsPath] = get_resultdir_list(FLUXOS_res_dir,batch_dir,yearselect,ResType);
 
 % Load Obs
-if (yearselect==2009)
-	obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/1_2009_Compiled/Streamflow_MS9C_2009_trimmed_for_simulation.csv';
-elseif (yearselect==2010)
-    obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/2_2010_Compiled/Streamflow_MS9C_2010_trimmed_to_simulation.csv';
-elseif (yearselect==2011)
-    obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/0_Obs_used_in_first_2011_tests/Snowmelt_Runoff_MS9_2011_justflow.csv';
-end
 obsdata = importdata(obsPath);
-
-% Obs
-time_obs = cumsum([0; diff(obsdata.data(:,1))])*24; % days -> hour
-data_obs = obsdata.data(:,2);
+%time_obs = cumsum([0; diff(obsdata.data(:,1))])*24; % days -> hour
+time_obs = obsdata.data(:,1) +  695422;
+data_obs = obsdata.data(:,Obs_col);
 
 %%%%%%%%% MODEL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if (yearselect==2009)
-	resultdir_list = {...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_55/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_52/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_45/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_57/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_46/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_59/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_49/Results/',...
-                };
-elseif (yearselect==2010)
-    resultdir_list = {...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_56/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_53/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_44/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_58/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_47/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_60/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_50/Results/',...
-                };
-elseif (yearselect==2011)
-   resultdir_list = {...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_39/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_54/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_43/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_35/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_48/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_37/Results/',...
-                '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_51/Results/',...
-                };
-end
-
 
 figure
 resultdir_legend = {};
 plot(time_obs,data_obs,'ok')
 hold on
+timmod_min = [];
+timmod_max = [];
 for i = 1:numel(resultdir_list)
 
 % load FLUXOS cs results
 try
-    res = importdata([resultdir_list{i},'/cs/f.out']);
+    res = importdata([resultdir_list{i},'/cs/',outfilenam]);
     resultdir_legend = [resultdir_legend,resultdir_list{i}];
 catch
-    print(['Result (f.out) not found for: ',resultdir_list{i},' (SKIPPED)'])
+    disp(['Result (f.out) not found for: "',resultdir_list{i},'" (SKIPPED)'])
     continue
 end
 
 % Results
-time_mod = res(:,1)/3600; % sec -> hour
+time_mod = fluxos_timestart + res(:,1)/(3600*24); % sec -> hour
 data_mod = res(:,2:end);
-
+timmod_min = min([timmod_min; time_mod]);
+timmod_max = max([timmod_max; time_mod]);
 
 %subplot(211)
 %time_surf = repmat(time_mod',numel(data_mod(1,:)),1)';
@@ -82,14 +80,23 @@ data_mod = res(:,2:end);
 %alpha 0.8
 %view(0,90)
 %subplot(212)
-plot(time_mod,(sum(data_mod'))','linewidth',2)
+plot(time_mod,(sum(data_mod'))','linewidth',2,'Color',[0 0 0]+1/(numel(resultdir_list)+5) * i)
 hold on
 
 end
-xlabel('Time [hour]')
-ylabel('Flow [m3/s]')
-axis tight
-grid on
-legend(['obs',resultdir_list],'interpreter','none')
-title(yearselect)
+%xlabel('Time [hour]')
+if ResType == 1
+    ylabel('Flow [m3/s]')
+    ylim([0 1.8])
+elseif ResType == 2
+    ylabel('Conc [mg/l]')
+    ylim([0 1.8])
+end
 
+axis tight
+
+xlim([timmod_min timmod_max])
+grid on
+legend(['obs',resultdir_legend],'interpreter','none')
+title(yearselect)
+datetick('x','dd-mmm','keeplimits','keepticks')

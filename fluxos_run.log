@@ -1,18 +1,21 @@
 FLUXOS 
-Simulation started... Fri Aug 30 15:08:21 2019
+
+-----------------------------------------------
+
+Simulation started... Fri Sep  6 10:13:01 2019
 Successful loading of MODSET file: modset.fluxos
 Print step (s) = 3600
-Roughness height (m) = 0.002000
-Cell size (m) = 1
-Successful loading of DEM file: dem_ersi_grid_LON
-Successful loading of Basin-DEM file: ersi_grid_dem_LON_basin
-Successful loading of Qmelt file: Qmelt_info_LON_2016.fluxos
-Simulation time (days) = 690300 (= 690300 sec)
+Roughness height (m) = 0.005000
+Cell size (m) = 3
+Successful loading of DEM file: ersi_grid_dem_alldomain_denoised
+Successful loading of Basin-DEM file: ersi_grid_dem_basin
+Successful loading of Qmelt file: Qmelt_info_2011.fluxos
+Simulation time (days) = 1468800 (= 1468800 sec)
 Soil release rate (1/hour) = 0.080000
 Soil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = 20000.000000
 SWE max (cm) = 6.500000
 SWE std (cm) = 9.500000
-NO INITIAL CONDITIONS FOUND: All variables set to zero
+Successful loading of initial conditions file: Results/0.txt
 
 -----------------------------------------------
 

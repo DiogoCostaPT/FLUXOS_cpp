@@ -1,10 +1,10 @@
-### Initial setting up of LON ###
-dem_ersi_grid_LON
-ersi_grid_dem_LON_basin
-Qmelt_info_LON_2016.fluxos
+### Batch_2 - hydraulic tests (changing roughness height, initial conditions and impermeable watershed borders) ###
+ersi_grid_dem_alldomain_denoised
+ersi_grid_dem_basin
+Qmelt_info_2011.fluxos
 3600
-0.002
-1
+0.005
+3
 0.08
 20000
 9.5
