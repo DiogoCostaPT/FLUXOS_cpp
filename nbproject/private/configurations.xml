@@ -109,38 +109,6 @@
             <in>xls_delete_sheets.m</in>
             <in>xticklabel_rotate.m</in>
           </df>
-          <df name="Cross_Section_Results">
-            <df name="for_redistribution">
-            </df>
-            <df name="for_redistribution_files_only">
-            </df>
-            <df name="for_testing">
-            </df>
-          </df>
-          <df name="Cross_Section_Results_New">
-            <df name="for_redistribution">
-            </df>
-            <df name="for_redistribution_files_only">
-            </df>
-            <df name="for_testing">
-            </df>
-          </df>
-          <df name="FLUXOS_to_VisIT_format_parallel">
-            <df name="for_redistribution">
-            </df>
-            <df name="for_redistribution_files_only">
-            </df>
-            <df name="for_testing">
-            </df>
-          </df>
-          <df name="FLUXOS_to_VisIT_format_parallel_temp">
-            <df name="for_redistribution">
-            </df>
-            <df name="for_redistribution_files_only">
-            </df>
-            <df name="for_testing">
-            </df>
-          </df>
           <in>Connectivity_analyzer.m</in>
           <in>Cross_Section_Results.m</in>
           <in>Cross_Section_Results_New.m</in>
@@ -3409,7 +3377,8 @@
         <df name="vtk">
         </df>
         <in>Analyze_Results.m</in>
-        <in>Varia_support.m</in>
+        <in>Varia_support_FLUXOS.m</in>
+        <in>get_resultdir_list.m</in>
       </df>
       <df name="Results">
       </df>

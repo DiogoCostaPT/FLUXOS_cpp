@@ -25,56 +25,22 @@ General Model Settings
 
 dempath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/DEM_ASCII/model_geo.csv'
 
-sim_batch_dir = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_2/'
+#sim_batch_dir = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/'
 
 try:
     resultdir_list_raw = [x[0] for x in os.walk(sim_batch_dir)]
-    resultdir_list = []cs
+    resultdir_list = []
     for i in range(0,len(resultdir_list_raw)):
-        resultdir_list_candidate = resultdir_list_raw[i];
+        resultdir_list_candidate = resultdir_list_raw[i]
         if (resultdir_list_candidate[len(resultdir_list_candidate)-7:len(resultdir_list_candidate)]=='Results'):
             resultdir_list.append(resultdir_list_candidate + '/')
 
 
 except:
     resultdir_list = [
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_37/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_48/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_39/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_66/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40/Results/',
-                    '/media/dcosta/DATADR IVE1/fluxos_tests/local/STC/t_41/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_43/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_44/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_45/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_46/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_47/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_49/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_50/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_51/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_52/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_53/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_54/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_55/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_56/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_57/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_58/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_59/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_60/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_64/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_65/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/SD/1/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/l_1/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36_wq_1/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36_wq_2/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_36_wq_3/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40_wq_1/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40_wq_2/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_40_wq_3/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41_wq_1/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41_wq_2/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/local/STC/t_41_wq_3/Results/',
+                    '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_36/Results/',
+                    '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_49/Results/',
+                    '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_65/Results/',
                     ]
 
 TimeStrgStart = datetime(2011, 3, 31, 0, 0, 0)
