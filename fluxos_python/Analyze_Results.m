@@ -4,7 +4,7 @@ MedianMax_velocity_flag = 0;
 
 if CrossSections_outFiles_flag
      %%%%%%%%%% 
-    yearselect = 2009;
+    yearselect = 2011;
     ResType = 1; %1-flow, 2-WQ, 3-SQ
     Obs_col = 2;      % FLOW: Obs_col = 2 
                       % NH4: Obs: Obs_col = 2 
@@ -23,7 +23,7 @@ if CrossSections_outFiles_flag
     lag = 8; % in hours
 
     FLUXOS_res_dir = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/';
-    batch_dir = 'batch_1';
+    batch_dir = 'batch_2';
 
 
     if ResType == 1
@@ -58,7 +58,9 @@ if CrossSections_outFiles_flag
     hold on
     timmod_min = [];
     timmod_max = [];
-    for i = 1:numel(resultdir_list)
+    hw = waitbar(0,'Calculating...');
+    numloop = numel(resultdir_list);
+    for i = 1:numloop
 
     % load FLUXOS cs results
     try
@@ -86,7 +88,7 @@ if CrossSections_outFiles_flag
     %subplot(212)
     p(i+1) = plot(time_mod,(sum(data_mod'))','linewidth',1.5,'Color',[0.65 0.65 0.65])%[0 0 0]+1/(numel(resultdir_list)+5) * i)
     hold on
-
+    waitbar(i / numloop)
     end
     %xlabel('Time [hour]')
     axis tight

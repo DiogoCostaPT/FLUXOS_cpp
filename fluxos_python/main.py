@@ -25,7 +25,7 @@ General Model Settings
 
 dempath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/DEM_ASCII/model_geo.csv'
 
-#sim_batch_dir = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/'
+sim_batch_dir = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_2/'
 
 try:
     resultdir_list_raw = [x[0] for x in os.walk(sim_batch_dir)]
