@@ -3,5 +3,8 @@ CMakefiles/
 .gitignore
 .vscode
 CMakeCache
-MakeFile
+Makefile
 Tests/
+cmake_install.cmake
+logFLUXOS.out
+fluxos_cpp
