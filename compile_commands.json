@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp",
-  "command": "/usr/bin/g++    -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos_cpp.dir/main.cpp.o -c /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/main.cpp",
-  "file": "/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/main.cpp"
-}
-]

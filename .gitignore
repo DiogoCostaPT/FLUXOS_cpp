@@ -1,4 +1,7 @@
 Results/
 CMakefiles/
 .gitignore
+.vscode
 CMakeCache
+MakeFile
+Tests/
