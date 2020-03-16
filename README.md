@@ -7,7 +7,6 @@ The original code (named as FLUXOS) was written in FORTRAN and consisted of the 
 	* Removed: MODFLOW and MT3DMS (currently there is no baseflow)
 	* WINTRA algorithm was integrated for calculation of runoff-soil interactions and nutrient release: https://onlinelibrary.wiley.com/doi/full/10.1002/hyp.11346
 
-
 # Branches
 * master: All changes made in adesolver and adesolver_wintra have been merged into master
 * adesolver: Adection-Dispersion-Reaction equation solver was converted to C++ and debugged
@@ -25,4 +24,14 @@ The original code (named as FLUXOS) was written in FORTRAN and consisted of the 
 	* DEM available
 	* DEM of the basin (sub-set of the main DEM that FLUXOS used to know the boundaries of the basin)
 	* Snowmelt timeseries
+
+# Visualization of results (stored inside "Results" folder)
+* visit: https://wci.llnl.gov/simulation/computer-codes/visit/
+
+# Supporting scripts (post-processing)
+* "fluxos_python" folder
+
+# Working example
+* "Working_example" folder
+
 
