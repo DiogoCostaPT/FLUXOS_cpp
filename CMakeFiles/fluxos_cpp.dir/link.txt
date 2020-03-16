@@ -1,5 +1,0 @@
-<<<<<<< HEAD
-/usr/bin/c++  -g3 -Wall -pedantic -fopenmp   CMakeFiles/fluxos_cpp.dir/main.cpp.o  -o fluxos_cpp /usr/lib/libarmadillo.so 
-=======
-/usr/bin/g++  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   CMakeFiles/fluxos_cpp.dir/main.cpp.o  -o fluxos_cpp /usr/lib/libarmadillo.so 
->>>>>>> adesolver_wintra

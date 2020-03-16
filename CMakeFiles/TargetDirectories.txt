@@ -1,3 +1,0 @@
-/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/CMakeFiles/rebuild_cache.dir
-/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/CMakeFiles/fluxos_cpp.dir
-/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/CMakeFiles/edit_cache.dir
