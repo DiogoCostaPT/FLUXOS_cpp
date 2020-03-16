@@ -1,6 +1,12 @@
 # FLUXOS-SnoWHAT
-* Soure code for the FLUXOS-SnoWHAT model (FLUXOS-Snowmelt * Watershed Hydrodynamic And Transport model).
-The original code (named as FLUXOS) was written in FORTRAN and consisted of the coupling of 2dmb, +QeS2, MODFLOW and MT3DMS.
+* Soure code for the FLUXOS-SnoWHAT model (FLUXOS-Snowmelt Watershed Hydrodynamic And Transport model). The original code (named as FLUXOS) was written in FORTRAN and consisted of the coupling of 2dmb, +QeS2, MODFLOW and MT3DMS.
+
+* Modifications (from FLUXOS to FLUXOS-SnoWHAT):
+	* Converted to C++
+	* Uses: Armadillo template-based C++ library for linear algebra 
+	* Removed: MODFLOW and MT3DMS (currently there is no baseflow)
+	* WINTRA algorithm was integrated for calculation of runoff-soil interactions and nutrient release: https://onlinelibrary.wiley.com/doi/full/10.1002/hyp.11346
+
 * Reading material:
 	* Theoretical background (original FLUXOS):
 		* EMS paper: https://www.sciencedirect.com/science/article/pii/S1364815216306193?via%3Dihub
@@ -8,14 +14,9 @@ The original code (named as FLUXOS) was written in FORTRAN and consisted of the 
 	* Applications (original FLUXOS):
 		* STC paper: https://www.sciencedirect.com/science/article/pii/S0169772216300948?via%3Dihub
 		* JCH paper: https://www.sciencedirect.com/science/article/pii/S0169772216300948?via%3Dihub
-		* JAWRA: https://www.researchgate.net/publication/278038609_Changing_the_Course_of_Rivers_in_an_Asian_City_Linking_Landscapes_to_Human_Benefits_through_Iterative_Modeling_and_Design
+		* JAWRA: https://onlinelibrary.wiley.com/doi/full/10.1111/1752-1688.12316
 	* FLUXOS-SnoWHAT
 		* Poster: https://www.researchgate.net/publication/333324452_Hydrodynamic_modelling_of_snowmelt_flooding_events_and_nutrient_transport_in_the_Canadian_Prairies_using_the_FLUXOS_model?channel=doi&linkId=5ce70f0a458515712ebda98b&showFulltext=true
-* Modifications:
-	* Converted to C++
-	* Uses: Armadillo template-based C++ library for linear algebra 
-	* Removed: MODFLOW and MT3DMS (currently there is no baseflow)
-	* WINTRA algorithm was integrated for calculation of runoff-soil interactions and nutrient release: https://onlinelibrary.wiley.com/doi/full/10.1002/hyp.11346
 
 # Branches
 * master: All changes made in adesolver and adesolver_wintra have been merged into master
