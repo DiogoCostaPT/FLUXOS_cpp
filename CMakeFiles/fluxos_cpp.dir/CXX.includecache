@@ -9,6 +9,8 @@
 /media/dcosta/DATADRIVE1/MegaSync/FLUXOS/FLUXOS_cpp/main.cpp
 iostream
 -
+fstream
+-
 math.h
 -
 armadillo
@@ -16,5 +18,15 @@ armadillo
 string
 -
 memory
+-
+chrono
+-
+ctime
+-
+vector
+-
+dirent.h
+-
+sys/types.h
 -
 
