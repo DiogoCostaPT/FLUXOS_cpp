@@ -32,7 +32,7 @@ class VTK_XML_Serial_Unstructured:
             string = string + repr(a[i]) + ' '
         return string
 
-    def snapshot(self, fileName, x, y, z, h, ux, uy, qx, qy, conc_sw, conc_soil):
+    def snapshot(self, fileName, x, y, z, h, ux, uy, qx, qy, conc_sw, conc_soil,timeconnect_h):
         """
         ARGUMENTS:
         fileName        file name and/or path/filename
@@ -236,6 +236,17 @@ class VTK_XML_Serial_Unstructured:
         string = self.array_to_string(conc_soil)
         concsoilData = doc.createTextNode(string)
         concsoilNode.appendChild(concsoilData)
+
+        # timeconnect_h
+        timeconnectNode = doc.createElementNS("VTK", "DataArray")
+        timeconnectNode.setAttribute("Name", "timeconnect_h")
+        timeconnectNode.setAttribute("type", "Float32")
+        timeconnectNode.setAttribute("format", "ascii")
+        point_data.appendChild(timeconnectNode)
+
+        string = self.array_to_string(timeconnect_h)
+        timeconnectData = doc.createTextNode(string)
+        timeconnectNode.appendChild(timeconnectData)
 
         # if len(colors) > 0:
         #     # Particle colors

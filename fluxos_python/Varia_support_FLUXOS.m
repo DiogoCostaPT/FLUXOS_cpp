@@ -4,7 +4,8 @@
 % delete Results folder inside simulation folders and add 0.txt if desired
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-simfolder_dir_path = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_2/';
+%simfolder_dir_path = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_2/';
+simfolder_dir_path = '/media/dcosta/data/megasync/my_server/batch_2_SD/';
 
 % Tool 1: remove the Results files 
 simfolder_names_cell = dir(simfolder_dir_path);
@@ -65,7 +66,7 @@ end
 
 
 % Tool 5: copy fluxo_cpp executable (or any other file) from one location to all simulation folders
-fluxos_cpp_folder_path = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/0_fluxos_graham/build/fluxos_cpp';
+fluxos_cpp_folder_path = '/media/dcosta/data/megasync/my_server/batch_1_SD/SD_550/fluxos_cpp';
 %fluxos_cpp_folder_path = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/job.sh';
 
 simfolder_names_cell = dir(simfolder_dir_path);
@@ -102,6 +103,23 @@ for f=1:numel(files_2_delete)
         catch
             disp(['problem at: ',path_results, '(file or folder dont exist'])
         end
+    end
+end
+
+
+% Tool 7 - SLURM - generate the submission of jobs
+simfolder_names_cell = dir(simfolder_dir_path);
+sim_folder_names = {simfolder_names_cell.name};
+folder_base_loc = strfind(simfolder_dir_path,'/');
+folder_base = simfolder_dir_path(folder_base_loc(end-1)+1:end-1);
+comand = [];
+sim_num = 0;
+for i=1:numel(sim_folder_names)
+    sim_folder_names_i = sim_folder_names{i};
+    if numel(sim_folder_names_i) > 2 && strcmp(sim_folder_names_i(1:2),'SD')
+        comand_i = ['cd ~; cd scratch/',folder_base,'/',sim_folder_names_i,';sbatch job.sh;'];
+        comand = [comand,comand_i]; 
+        sim_num = sim_num + 1;
     end
 end
 

@@ -127,8 +127,9 @@ public:
     fn_1= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     fn_2= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     fn_3= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
+    twetimetracer= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col)); // connectivity-hours
     ldry= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
-    
+        
     conc_SW= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     soil_mass= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     h0= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
@@ -151,7 +152,7 @@ public:
         dh,dqx ,dqy,                                  // changes in h[irow][icol], p[irow][icol] and q[irow][icol]
         //sbm_row,sbm_col,                                  // for calc of weight of water (bed slope term) (solver_wet)
         ks, //cfri                                  // Friction (Chezy model is not being used for now)
-        fe_1,fe_2,fe_3,fn_1,fn_2,fn_3,
+        fe_1,fe_2,fe_3,fn_1,fn_2,fn_3,twetimetracer,
         conc_SW,h0,soil_mass,basin_dem; 
     std::unique_ptr<arma::Mat<float>> ldry,qmelt,ldry_prev;   
     double hdry,                                    //minimum water depth
@@ -375,6 +376,7 @@ unsigned int initiation(declavar& ds,std::ofstream& logFLUXOSfile) {
             (*ds.us).at(irow,icol) = filedata(a,9);
             (*ds.conc_SW).at(irow,icol) = filedata(a,10);
             (*ds.soil_mass).at(irow,icol) = filedata(a,11);
+            (*ds.twetimetracer).at(irow,icol) = filedata(a,14);
             (*ds.ldry).at(irow,icol) = 0.0f;
         }
         msg = "Successful loading of initial conditions file: " + init_file;
@@ -472,7 +474,7 @@ void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
         (*ds.dqy).at(irow,icol)=0.0f;
         (*ds.qxf).at(irow,icol)=0.0f;
         (*ds.qyf).at(irow,icol)=0.0f;
-    (*ds.qx).at(irow,icol)=0.0f;
+        (*ds.qx).at(irow,icol)=0.0f;
         (*ds.qy).at(irow,icol)=0.0f;   
         return;
     }
@@ -944,7 +946,8 @@ void flow_solver(declavar& ds)
               (*ds.ldry).at(irow,icol) = 1.0f;;          
             } else
             {
-              (*ds.ldry).at(irow,icol) = 0.0f;         
+              (*ds.ldry).at(irow,icol) = 0.0f;  
+              (*ds.twetimetracer).at(irow,icol) += dtl/3600; 
             }
         }
     }
@@ -1281,8 +1284,8 @@ void wintra(declavar& ds)
             if(hp>ds.hdry && zbp != 9999) 
             {       
                 //deltam = (*ds.soil_mass).at(irow,icol) * (1-f) * ds.soil_release_rate/3600 * ds.dtfl; // exponential mass release
-                deltam = ds.soil_release_rate/3600 * ds.dtfl; // linear mass release 
-                //deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
+                //deltam = ds.soil_release_rate/3600 * ds.dtfl; // linear mass release 
+                deltam = (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
                 (*ds.soil_mass).at(irow,icol) = (*ds.soil_mass).at(irow,icol) - deltam;
                 (*ds.conc_SW).at(irow,icol) = (*ds.conc_SW).at(irow,icol) + deltam/(hp*ds.arbase);
             }
@@ -1301,7 +1304,7 @@ bool write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
     std::string filext(".txt");
     tprint += filext;
 
-    arma::mat filedataR(ds.n_row*ds.n_col,14); 
+    arma::mat filedataR(ds.n_row*ds.n_col,15); 
     
     for(icol=1;icol<=ds.n_col;icol++)
     {
@@ -1325,13 +1328,14 @@ bool write_results(declavar& ds, int print_tag, unsigned int print_step, std::ch
                 filedataR(a,11) = (*ds.soil_mass).at(irow,icol); // adesolver
                 filedataR(a,12) = (*ds.fe_1).at(irow,icol);
                 filedataR(a,13) = (*ds.fn_1).at(irow,icol);
+                filedataR(a,14) = (*ds.twetimetracer).at(irow,icol);
                 a = a + 1;
             }
         }
     }
    
     arma::mat filedata(std::max(0,a-1),14); 
-    filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,13));
+    filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,14));
     
     bool outwritestatus =  filedata.save(tprint,arma::csv_ascii);
     return outwritestatus;
@@ -1372,7 +1376,7 @@ int main(int argc, char** argv)
     //betas = 2. // Chezy (parameter)
     //ksfirow = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
     ds.cvdef = 0.07; // for turbulent stress calc
-    ds.nuem = 1.2e-6; // molecular viscosity (for turbulent stress calc)
+    ds.nuem = 1.793e-6; // molecular dynamic viscosity (for turbulent stress calc)
     //print_step = 3600; // in seconds
     // timstart = 558000; // start of the simulation
         

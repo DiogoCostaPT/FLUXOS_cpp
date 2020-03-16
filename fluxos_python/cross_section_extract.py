@@ -143,10 +143,10 @@ def InterpCSpoints_from_y_CS(shp_nodes_CS):
 
 
 
-    x_start = round(shp_nodes_CS[0, 0])
-    x_end = round(shp_nodes_CS[0, 1])
-    y_start = round(shp_nodes_CS[1, 0])
-    y_end = round(shp_nodes_CS[1, 1])
+    x_start = int(round(shp_nodes_CS[0, 0]))
+    x_end = int(round(shp_nodes_CS[0, 1]))
+    y_start = int(round(shp_nodes_CS[1, 0]))
+    y_end = int(round(shp_nodes_CS[1, 1]))
 
     # Fix the xy_CS_x (all values between the CS end nodes) - step is 1 (all grid cells)
     numcells = abs(x_start - x_end) + 1

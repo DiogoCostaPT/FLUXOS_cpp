@@ -25,7 +25,7 @@ General Model Settings
 
 dempath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/DEM_ASCII/model_geo.csv'
 
-sim_batch_dir = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_2/'
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/'
 
 try:
     resultdir_list_raw = [x[0] for x in os.walk(sim_batch_dir)]
@@ -37,11 +37,16 @@ try:
 
 
 except:
+    # resultdir_list = [
+    #                '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_36/Results/',
+    #                '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_49/Results/',
+    #                '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_65/Results/',
+    #                ]
     resultdir_list = [
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_36/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_49/Results/',
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_65/Results/',
-                    ]
+        '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_36_paper_crhm/Results/',
+        '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_49_paper_crhm/Results/',
+        '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_65_paper_crhm/Results/',
+    ]
 
 TimeStrgStart = datetime(2011, 3, 31, 0, 0, 0)
 Tinitial = 0
@@ -79,7 +84,7 @@ if (simType == 'cs'):
     #yearselect =  int(input("Simulation year (STC): "))
 
     if (simType == 'f'):
-        CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS9.shp'
+        CrossSecLine_path_shapefile = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/STC_data_pre-processing/00_Cross_Sections/MS9.shp'
         #if yearselect==2009:
         #    obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/1_2009_Compiled/Streamflow_MS9C_2009_trimmed_for_simulation.csv'
         #elif yearselect==2010:
@@ -89,7 +94,7 @@ if (simType == 'cs'):
         var_col_1 = 6  # 3-h, 6-qx, 10-C, 11 - soil mass, 12 - fn_1, 13 - fe_1
         var_col_2 = 7  # 3-h, 6-qx, 10-C, 11 - soil mass, 12 - fn_1, 13 - fe_1
     elif (simType == 'wq'):
-        CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
+        CrossSecLine_path_shapefile = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
         #if yearselect == 2009:
         #   obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/2_2009_Compiled/Streamflow_WQ_MS12_2009.csv'
         #elif yearselect == 2010:
@@ -100,7 +105,7 @@ if (simType == 'cs'):
         var_col_1 = 10  # 3-h, 6-qx, 10-C, 11-soil
         var_col_2 = 3  # 7-
     elif (simType == 'sq'):
-        CrossSecLine_path_shapefile = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
+        CrossSecLine_path_shapefile = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/STC_data_pre-processing/00_Cross_Sections/MS_lake.shp'
         #obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS12_2011_NO3event.csv'
         ## obsPath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/3_2011_Compiled/Streamflow_WQ_MS9C_2011.csv'
         var_col_1 = 11  # 3-h, 6-qx, 10-C, 11-soil

@@ -2,6 +2,10 @@
 CrossSections_outFiles_flag = 1;
 MedianMax_velocity_flag = 0;
 
+
+FLUXOS_res_dir = '/media/dcosta/data/megasync/my_server/fluxos/';
+batch_dir = 'batch_1_selected_paper_CRHM';
+    
 if CrossSections_outFiles_flag
      %%%%%%%%%% 
     yearselect = 2011;
@@ -21,10 +25,6 @@ if CrossSections_outFiles_flag
                       % SRP: Obs_col = 13
                       % TSS: Obs_col = 14
     lag = 8; % in hours
-
-    FLUXOS_res_dir = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/';
-    batch_dir = 'batch_2';
-
 
     if ResType == 1
         outfilenam = 'f.out';
@@ -112,11 +112,13 @@ end
 
 
 if MedianMax_velocity_flag
-
+    
+    newdir = [FLUXOS_res_dir,batch_dir];
+    
      resultdir_list = {
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_49/Results/', % 2009
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_65/Results/', % 2010
-                    '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_1/t_36/Results/', % 2011
+                    [newdir,'/t_49_paper/Results/'], % 2009
+                    [newdir,'/t_65_paper/Results/'], % 2010
+                    [newdir,'/t_36_paper/Results/'], % 2011
                     };               
                 
      fn_1_col = 13;
@@ -175,6 +177,10 @@ if MedianMax_velocity_flag
             qy = dataraw(:,fe_1_col);
             h = dataraw(:,h_col);
             qmag = (qx.^2+qy.^2).^0.5;
+            %iloc = qmag>0;
+            %qmag = qmag(iloc);
+            %h = h(iloc);
+            
             vmag = qmag./h;
             
             qmag_median = [qmag_median,median(qmag)];
@@ -310,7 +316,8 @@ if MedianMax_velocity_flag
                     yyaxis right
                     ymax = ymax_all(f,2);
                 end
-                plot(time,results{i},'color',color_list(vi,:),'linewidth',linewidth_list(vi),'linestyle',style_list{vi});
+                ressplie = csaps(time,results{i},time);
+                plot(time,ressplie,'color',color_list(vi,:),'linewidth',linewidth_list(vi),'linestyle',style_list{vi});
                 hold on
                 title(num2str(years(i)))
                 datetick('x','dd-mmm','keeplimits','keepticks')
