@@ -40,19 +40,23 @@
 #include "WINTRAsolver_calc.h"
 #include "write_results.h"
 
-int main(int argc, char** argv) 
+int main(int argc, char* argv[]) 
 {   
     unsigned int n_rowl, n_coll, it = 0;
     unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
     double c0,v0,u0,hp, hpall, qmelti,ks_input; 
     bool outwritestatus;
+
     std::chrono::duration<double> elapsed_seconds;
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
     std::string coment_sim_str;
+
+    std::string modset_flname (argv[1]);
+    std::string dirpath = SplitFilename (modset_flname);
    
     // Create/Open log file
-    std::ofstream logFLUXOSfile ("fluxos_run.log");
+    std::ofstream logFLUXOSfile (dirpath + "/fluxos_run.log");
     std::cout << "FLUXOS"  << std::endl;
     logFLUXOSfile << "FLUXOS \n";
     logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
@@ -61,7 +65,7 @@ int main(int argc, char** argv)
     logFLUXOSfile << "Simulation started... " << std::ctime(&start_time);
         
      // Get the size of the domain (nrow and ncol)
-    get_domain_size(&n_rowl, &n_coll,logFLUXOSfile);
+    get_domain_size(&n_rowl,&n_coll, modset_flname, dirpath, logFLUXOSfile);
      // Input the duration of the simulation
         
     // Initiate variables on the heap
@@ -80,7 +84,7 @@ int main(int argc, char** argv)
     // timstart = 558000; // start of the simulation
         
     // read model set up
-    read_modset(ds,&print_step,&ks_input,logFLUXOSfile);
+    read_modset(ds,modset_flname,dirpath,&print_step,&ks_input,logFLUXOSfile);
     
     //std::cout << "Simulation purpose (write comment):  ";
     //std::cin >> coment_sim_str;
@@ -90,8 +94,6 @@ int main(int argc, char** argv)
     //std::cout << "Print step (s) = ";
     //std::cin >> print_step;
     logFLUXOSfile << "Print step (s) = " + std::to_string(print_step) + "\n";
-    
-    
     
     ds.n_row = ds.m_row - 2;
     ds.n_col = ds.m_col - 2;

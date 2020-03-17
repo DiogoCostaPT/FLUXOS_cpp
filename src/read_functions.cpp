@@ -5,23 +5,25 @@
 
 #include "read_functions.h"
 
-void read_modset(GlobVar& ds, unsigned int *print_step, double *ks_input,std::ofstream& logFLUXOSfile)
+void read_modset(GlobVar& ds, const std::string& filename, 
+                const std::string& pathfile, unsigned int *print_step, 
+                double *ks_input,
+                std::ofstream& logFLUXOSfile)
 {
     // read_modset(ds,print_step,ks_input,zbinc,ntim_days)
     
-    std::string str, modset_flname, msg;
-    modset_flname = "modset.fluxos";
+    std::string str, msg;
     
-    std::ifstream file(modset_flname);
+    std::ifstream file(filename);
     
     int i = 0;
     while (std::getline(file, str)) 
     {
         i += 1;
         if(i==1){ds.sim_purp = str;};
-        if(i==2){ds.dem_file = str;};
-        if(i==3){ds.basin_file = str;};
-        if(i==4){ds.qmelt_file = str;};
+        if(i==2){ds.dem_file = pathfile + "/" + str;};
+        if(i==3){ds.basin_file = pathfile + "/" + str;};
+        if(i==4){ds.qmelt_file = pathfile + "/" + str;};
         if(i==5){(*print_step) = std::stoi(str);};
         if(i==6){(*ks_input) = std::stof(str);};  
         if(i==7){(ds.dxy) = std::stoi(str);};
@@ -32,11 +34,13 @@ void read_modset(GlobVar& ds, unsigned int *print_step, double *ks_input,std::of
         
     }
     file.close();
+
+    (ds.results_dir) = pathfile + "/Results";
     
     if(i==11){
-        msg = "Successful loading of MODSET file: " + modset_flname;
+        msg = "Successful loading of MODSET file: " + filename;
     } else{
-        msg = "PROBLEM loading of MODSET file: " + modset_flname;
+        msg = "PROBLEM loading of MODSET file: " + filename;
     } 
      std::cout << msg  << std::endl;
      logFLUXOSfile << msg + "\n";

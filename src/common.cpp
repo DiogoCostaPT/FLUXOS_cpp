@@ -8,6 +8,13 @@
 
 #include "common.h"
 
+std::string SplitFilename (const std::string& str)
+{
+  size_t found;
+  found=str.find_last_of("/\\");
+  return str.substr(0,found);
+
+}
 
 // read file names in Results directory
 int findLastStep(const char *path) 
@@ -48,18 +55,20 @@ int findLastStep(const char *path)
 
 
 // get size of the domain
-void get_domain_size(unsigned int *rown, unsigned int *coln, std::ofstream& logFLUXOSfile)
+void get_domain_size(unsigned int *rown, unsigned int *coln, 
+                    const std::string& filename, const std::string& pathfile,
+                    std::ofstream& logFLUXOSfile)
 {
 
     arma::mat filedata; 
     
-    std::ifstream file("modset.fluxos");
+    std::ifstream file(filename);
     std::string dem_file_temp, msg;
     std::getline(file, dem_file_temp);
     std::getline(file, dem_file_temp);
     file.close();
     
-    bool flstatus =  filedata.load(dem_file_temp,arma::raw_ascii);
+    bool flstatus =  filedata.load(pathfile + "/" + dem_file_temp,arma::raw_ascii);
    
     *rown = 0;
     *coln = 0;

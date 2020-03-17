@@ -71,7 +71,7 @@ public:
         dtfl,tim,                                   // timestep for flow computation
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
     
-    std::string dem_file, basin_file, qmelt_file,sim_purp ;
+    std::string dem_file, basin_file, qmelt_file,sim_purp,results_dir ;
     
 };
 
