@@ -16,12 +16,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include<iostream>
-#include<fstream>
-#include<math.h>
-#include<armadillo>
-#include<string>
-#include<memory> 
+#include <iostream>
+#include <fstream>
+#include <math.h>
+#include <armadillo>
+#include <string>
+#include <memory> 
 #include <chrono>
 #include <ctime>  
 
@@ -29,74 +29,15 @@
 #include <dirent.h>
 #include <sys/types.h>
 
-// read file names in Results directory
-int findLastStep(const char *path) {
+#include "common.h"
 
-   struct dirent *entry;
-   int i, timestart, filenum = 0, simnum;
-   std::vector<char*> filenames; //stringvec filenames, filename_i;
-   const char *filename_i;
-   char *simnum_str_i;
-   DIR *dir = opendir(path);
-   
-   if (dir != NULL) {
-        while ((entry = readdir(dir)) != NULL) {
-        filenames.push_back(entry->d_name); // storing the file names
-        filenum = filenum + 1;
-        }
-   }
-   closedir(dir);
-   
-   timestart = 0;
-   for(i=2;i<filenum;i++){
-       filename_i = filenames[i]; //.assign(filenames[i]); //strcpy(filename_i,(char *)(&filenames[i]));
-        simnum_str_i = (char*) malloc(sizeof(filename_i)-2);
-        strncpy (simnum_str_i, filename_i, sizeof(filename_i)-2);
-        simnum = atoi(simnum_str_i);
-        timestart = std::max(timestart,simnum);
-        free(simnum_str_i);
-   }
-   
-   //free(filename_i);
-   free(entry);
-   //free(dir);
-   //std::cout << "Start time (s): " << timestart << " (initial conditions available)" << std::endl;
-   return timestart;
-}
-
-// get size of the domain
-void get_domain_size(unsigned int *rown, unsigned int *coln, std::ofstream& logFLUXOSfile)
-{
-
-    arma::mat filedata; 
-    
-    std::ifstream file("modset.fluxos");
-    std::string dem_file_temp, msg;
-    std::getline(file, dem_file_temp);
-    std::getline(file, dem_file_temp);
-    file.close();
-    
-    bool flstatus =  filedata.load(dem_file_temp,arma::raw_ascii);
-   
-    *rown = 0;
-    *coln = 0;
-    
-    if(flstatus == true) {
-        *rown = filedata.col(1).n_elem;
-        *coln = filedata.row(1).n_elem;
-    }
-     
-    
-}
-
-
-class declavar
+class GlobVar
 {
 public:
-  declavar() {
+  GlobVar() {
 
   }
-  declavar(size_t m_row, size_t m_col) {
+  GlobVar(size_t m_row, size_t m_col) {
     this->m_row = m_row;
     this->m_col = m_col;
 
@@ -163,7 +104,7 @@ public:
     
 };
 
-void read_modset(declavar& ds, unsigned int *print_step, double *ks_input,std::ofstream& logFLUXOSfile)
+void read_modset(GlobVar& ds, unsigned int *print_step, double *ks_input,std::ofstream& logFLUXOSfile)
 {
     // read_modset(ds,print_step,ks_input,zbinc,ntim_days)
     
@@ -201,7 +142,7 @@ void read_modset(declavar& ds, unsigned int *print_step, double *ks_input,std::o
     
 }
 
-void read_geo(declavar& ds,double ks_input,std::ofstream& logFLUXOSfile)
+void read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
 {
     unsigned int icol,irow;  
     arma::mat filedata; 
@@ -229,7 +170,7 @@ void read_geo(declavar& ds,double ks_input,std::ofstream& logFLUXOSfile)
     logFLUXOSfile << msg + "\n" ;
 }
 
-float read_load(declavar& ds,std::ofstream& logFLUXOSfile)
+float read_load(GlobVar& ds,std::ofstream& logFLUXOSfile)
 {
     unsigned int a; 
     unsigned int icol,irow;
@@ -277,7 +218,7 @@ float read_load(declavar& ds,std::ofstream& logFLUXOSfile)
     return tim;
 }
 
-unsigned int initiation(declavar& ds,std::ofstream& logFLUXOSfile) {
+unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
     
     std::unique_ptr<double[]> zbs1(new double[ds.m_row]);   
     double zbsw,zbnw,zbse,zbne,zbsum;
@@ -431,7 +372,7 @@ unsigned int initiation(declavar& ds,std::ofstream& logFLUXOSfile) {
     return timstart;
 }
 
-void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
+void solver_dry(GlobVar& ds, unsigned int irow, unsigned int icol) {
     
     unsigned int iw,ie,is,in, n_rowl, n_coll;
     double fe1,fe2,fe3,fn1,fn2,fn3,zp,ze,zn,
@@ -596,7 +537,7 @@ void solver_dry(declavar& ds, unsigned int irow, unsigned int icol) {
     (*ds.fe_3).at(irow,icol)=fe3;   
 } 
 
-void solver_wet(declavar& ds, unsigned int irow, unsigned int icol){
+void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
 
     unsigned int iw,ie, is,in,inn, n_rowl, n_coll,dx,dy;
     double fe1,fe2,fe3,fn1,fn2,fn3,zw,zp,ze,zs,
@@ -911,7 +852,7 @@ void solver_wet(declavar& ds, unsigned int irow, unsigned int icol){
 } 
 
 
-void flow_solver(declavar& ds)
+void flow_solver(GlobVar& ds)
 {
            
 //-----------------------------------------------------------------------
@@ -1012,7 +953,7 @@ void flow_solver(declavar& ds)
 }
 
 // ADE solver
-void adesolver(declavar& ds, int it)
+void adesolver(GlobVar& ds, int it)
 {
 
     arma::mat qfcds(ds.m_row*ds.m_col,1);  //double qfcds(0:mx);
@@ -1264,7 +1205,7 @@ void adesolver(declavar& ds, int it)
     }
 }
 
-void wintra(declavar& ds)
+void wintra(GlobVar& ds)
 {
     unsigned int icol,irow;
     double deltam,hp,zbp, f,frac, QVolstd;
@@ -1293,7 +1234,7 @@ void wintra(declavar& ds)
     }
 }
 
-bool write_results(declavar& ds, int print_tag, unsigned int print_step, std::chrono::duration<double> elapsed_seconds)
+bool write_results(GlobVar& ds, int print_tag, unsigned int print_step, std::chrono::duration<double> elapsed_seconds)
 {
 
     unsigned int icol,irow;
@@ -1366,7 +1307,7 @@ int main(int argc, char** argv)
      // Input the duration of the simulation
         
     // Initiate variables on the heap
-    declavar ds(n_rowl+2,n_coll+2); 
+    GlobVar ds(n_rowl+2,n_coll+2); 
     
     // input/read data
     ds.cfl = 1; // Courant condition
