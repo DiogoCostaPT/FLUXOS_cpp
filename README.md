@@ -28,7 +28,7 @@
 * Library dependencies: Armadillo 
 * Cmake minimum version: 3.10
 
-# Execution (and input files needed and folder needed)
+# Execution (and input files and folder needed)
 * Create a folder with name "Results" inside the working directory where the input files and fluxos are
 * input files (see examle in Working_example folder)
 	* master input file: e.g., modset
