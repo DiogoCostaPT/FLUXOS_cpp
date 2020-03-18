@@ -68,7 +68,7 @@ void get_domain_size(unsigned int *rown, unsigned int *coln,
     std::getline(file, dem_file_temp);
     file.close();
     
-    bool flstatus =  filedata.load(pathfile + "/" + dem_file_temp,arma::raw_ascii);
+    bool flstatus =  filedata.load(dem_file_temp,arma::raw_ascii);
    
     *rown = 0;
     *coln = 0;

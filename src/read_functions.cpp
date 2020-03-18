@@ -21,9 +21,9 @@ void read_modset(GlobVar& ds, const std::string& filename,
     {
         i += 1;
         if(i==1){ds.sim_purp = str;};
-        if(i==2){ds.dem_file = pathfile + "/" + str;};
-        if(i==3){ds.basin_file = pathfile + "/" + str;};
-        if(i==4){ds.qmelt_file = pathfile + "/" + str;};
+        if(i==2){ds.dem_file = str;};
+        if(i==3){ds.basin_file = str;};
+        if(i==4){ds.qmelt_file = str;};
         if(i==5){(*print_step) = std::stoi(str);};
         if(i==6){(*ks_input) = std::stof(str);};  
         if(i==7){(ds.dxy) = std::stoi(str);};
@@ -34,13 +34,11 @@ void read_modset(GlobVar& ds, const std::string& filename,
         
     }
     file.close();
-
-    (ds.results_dir) = pathfile + "/Results";
     
     if(i==11){
-        msg = "Successful loading of MODSET file: " + filename;
+        msg = "Successful loading of *.FLUXOSprj file: " + filename;
     } else{
-        msg = "PROBLEM loading of MODSET file: " + filename;
+        msg = "PROBLEM loading of *.FLUXOSprj file: " + filename;
     } 
      std::cout << msg  << std::endl;
      logFLUXOSfile << msg + "\n";
