@@ -36,9 +36,9 @@ void read_modset(GlobVar& ds, const std::string& filename,
     file.close();
     
     if(i==11){
-        msg = "Successful loading of *.FLUXOSprj file: " + filename;
+        msg = "Successful loading of master input file: " + filename;
     } else{
-        msg = "PROBLEM loading of *.FLUXOSprj file: " + filename;
+        msg = "PROBLEM loading of master input file: " + filename;
     } 
      std::cout << msg  << std::endl;
      logFLUXOSfile << msg + "\n";

@@ -29,7 +29,7 @@
 * Cmake minimum version: 3.10
 
 # Execution
-* to execute: ./fluxos_cpp
+* to execute: ./fluxos_cpp "argument_1" (where "argument_1" is the mater input file)
 * input files (see Working Example folder)
 	* main input file: modset.fluxos
 	* DEM available
