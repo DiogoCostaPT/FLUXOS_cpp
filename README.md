@@ -31,10 +31,11 @@
 # Execution
 * to execute: ./fluxos_cpp "argument_1" (where "argument_1" is the mater input file)
 * input files (see Working Example folder)
-	* main input file: modset.fluxos
+	* main input file: modset
 	* DEM available
 	* DEM of the basin (sub-set of the main DEM that FLUXOS used to know the boundaries of the basin)
 	* Snowmelt timeseries
+	* Need to crete a folder with name "Results" where the results will be saved
 
 # Visualization of results (stored inside "Results" folder)
 * visit: https://wci.llnl.gov/simulation/computer-codes/visit/
