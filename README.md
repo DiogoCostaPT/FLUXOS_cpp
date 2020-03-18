@@ -28,14 +28,14 @@
 * Library dependencies: Armadillo 
 * Cmake minimum version: 3.10
 
-# Execution
+# Execution (and input files needed and folder needed)
+* Create a folder with name "Results" inside the working directory where the input files and fluxos are
+* input files (see examle in Working_example folder)
+	* master input file: e.g., modset
+	* DEM file (Esri ASCII-format raster with headers removed ->  this will be fixed soon)
+	* DEM of the basin (sub-set of the main DEM file for FLUXOS to know where the boundaries of the basin are)
+	* Snowmelt timeseries (time,mm/day)
 * to execute: ./fluxos_cpp "argument_1" (where "argument_1" is the mater input file)
-* input files (see Working Example folder)
-	* main input file: modset
-	* DEM available
-	* DEM of the basin (sub-set of the main DEM that FLUXOS used to know the boundaries of the basin)
-	* Snowmelt timeseries
-	* Need to crete a folder with name "Results" where the results will be saved
 
 # Visualization of results (stored inside "Results" folder)
 * visit: https://wci.llnl.gov/simulation/computer-codes/visit/
