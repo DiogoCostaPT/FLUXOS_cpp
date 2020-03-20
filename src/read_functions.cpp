@@ -20,17 +20,17 @@ void read_modset(GlobVar& ds, const std::string& filename,
     while (std::getline(file, str)) 
     {
         i += 1;
-        if(i==1){ds.sim_purp = str;};
-        if(i==2){ds.dem_file = str;};
-        if(i==3){ds.basin_file = str;};
-        if(i==4){ds.qmelt_file = str;};
-        if(i==5){(*print_step) = std::stoi(str);};
-        if(i==6){(*ks_input) = std::stof(str);};  
-        if(i==7){(ds.dxy) = std::stoi(str);};
-        if(i==8){(ds.soil_release_rate) = std::stof(str);}; 
-        if(i==9){(ds.soil_conc_bckgrd) = std::stof(str);};  
-        if(i==10){(ds.SWEstd) = std::stof(str);}; 
-        if(i==11){(ds.SWEmax) = std::stof(str);}; 
+        if(i==1){ds.sim_purp = str;}; // comment
+        if(i==2){ds.dem_file = str;}; // DEM ESRI-ArcGIS ascii
+        if(i==3){ds.basin_file = str;}; // DEM ESRI-ArcGIS ascii (just the basin for snowmelt input)
+        if(i==4){ds.qmelt_file = str;}; // snowmelt file
+        if(i==5){(*print_step) = std::stoi(str);}; // print time step
+        if(i==6){(*ks_input) = std::stof(str);};  // average roughness height (m)
+        if(i==7){(ds.dxy) = std::stoi(str);}; // grid cell size (m) - structure grid
+        if(i==8){(ds.soil_release_rate) = std::stof(str);}; //  WINTRA: soil nutrient release rate
+        if(i==9){(ds.soil_conc_bckgrd) = std::stof(str);};  // WINTRA: soil background concentration
+        if(i==10){(ds.SWEstd) = std::stof(str);}; // SWE standard deviation (snow depletion curves, Kevin's paper)
+        if(i==11){(ds.SWEmax) = std::stof(str);};  // SWE standard deviation (snow depletion curves, Kevin's paper)
         
     }
     file.close();
