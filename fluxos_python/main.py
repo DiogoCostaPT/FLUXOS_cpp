@@ -23,8 +23,8 @@ from tqdm import tqdm
 General Model Settings
 '''
 
-sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys/'
-dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys/St_Marys_DEM_corrected.asc'
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/'
+dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/Essex_DEM_ascii'
 
 try:
     resultdir_list_raw = [x[0] for x in os.walk(sim_batch_dir)]
@@ -63,7 +63,7 @@ coords = [49.339205,  # N
 
 resolImage = 200  # resolution of the images in Google Earth (in dpi)
 var_1_graphymax = 0.15
-mapoverlay_opaqueness = 0.5
+mapoverlay_opaqueness = 50
 
 '''
 Choose the functions to run

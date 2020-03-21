@@ -1,6 +1,6 @@
 
 # create png image
-def plotPNGplotly(googlefolder_sub,simname,xyz_matrix_var,nx,ny,dxy,timei,resolImage,var_1_graphymax):
+def plotPNGplotly(googlefolder,simname,xyz_matrix_var,nx,ny,dxy,timei,resolImage,var_1_graphymax):
 
     # import plotly
     from mpl_toolkits.mplot3d import Axes3D
@@ -40,7 +40,7 @@ def plotPNGplotly(googlefolder_sub,simname,xyz_matrix_var,nx,ny,dxy,timei,resolI
 
     fig.tight_layout()
 
-    simpngname = googlefolder_sub + '/' + simname + str(timei) + '.png'
+    simpngname = googlefolder + '/' + simname + str(timei) + '.png'
     plt.savefig(simpngname, transparent=True, dpi=resolImage, bbox_inches='tight') #
 
     return simpngname
@@ -68,11 +68,7 @@ def pgncreator(resultdir, googlefolder,simname, timevec, t, var_col,nx,ny,dxy,re
 
             fid.close()
 
-            googlefolder_sub = googlefolder + '/' + simname
-            if not os.path.exists(googlefolder_sub):
-                os.makedirs(googlefolder_sub)
-
-            simpngname = plotPNGplotly(googlefolder_sub,simname,xyz_matrix_var, nx, ny, dxy, timei,resolImage,var_1_graphymax)
+            simpngname = plotPNGplotly(googlefolder,simname,xyz_matrix_var, nx, ny, dxy, timei,resolImage,var_1_graphymax)
 
           except:
             print("Cannot open file or problem parsing it:" + resfilepath)
@@ -96,7 +92,7 @@ def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,nx,ny
     from os import listdir
     from os.path import isfile, join
 
-    googlefolder = 'GOOGLE_EARTH'
+    googlefolder = resultdir + 'GOOGLE_EARTH'
     if not os.path.exists(googlefolder):
         os.makedirs(googlefolder)
 
