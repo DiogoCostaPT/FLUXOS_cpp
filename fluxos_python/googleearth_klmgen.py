@@ -112,7 +112,7 @@ def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,nx,ny
     cwd = os.getcwd()
 
     # write klm
-    kmlfullname = googlefolder + '/' + simname + '/' + simname + '.kml'
+    kmlfullname = googlefolder + '/' + simname + '.kml'
     with open(kmlfullname, 'w') as fid:
         fid.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fid.write('<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">\n')
