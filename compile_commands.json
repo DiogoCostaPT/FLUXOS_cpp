@@ -1,52 +1,52 @@
 [
 {
   "directory": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos",
-  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/ADEsolver_calc.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/ADEsolver_calc.cpp",
+  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -O3 -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/ADEsolver_calc.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/ADEsolver_calc.cpp",
   "file": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/ADEsolver_calc.cpp"
 },
 {
   "directory": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos",
-  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/WINTRAsolver_calc.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/WINTRAsolver_calc.cpp",
+  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -O3 -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/WINTRAsolver_calc.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/WINTRAsolver_calc.cpp",
   "file": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/WINTRAsolver_calc.cpp"
 },
 {
   "directory": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos",
-  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/common.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/common.cpp",
+  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -O3 -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/common.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/common.cpp",
   "file": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/common.cpp"
 },
 {
   "directory": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos",
-  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/hydrodynamics_calc.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/hydrodynamics_calc.cpp",
+  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -O3 -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/hydrodynamics_calc.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/hydrodynamics_calc.cpp",
   "file": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/hydrodynamics_calc.cpp"
 },
 {
   "directory": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos",
-  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/initiate.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/initiate.cpp",
+  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -O3 -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/initiate.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/initiate.cpp",
   "file": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/initiate.cpp"
 },
 {
   "directory": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos",
-  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/main.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/main.cpp",
+  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -O3 -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/main.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/main.cpp",
   "file": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/main.cpp"
 },
 {
   "directory": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos",
-  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/read_functions.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/read_functions.cpp",
+  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -O3 -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/read_functions.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/read_functions.cpp",
   "file": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/read_functions.cpp"
 },
 {
   "directory": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos",
-  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/solver_drydomain.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/solver_drydomain.cpp",
+  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -O3 -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/solver_drydomain.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/solver_drydomain.cpp",
   "file": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/solver_drydomain.cpp"
 },
 {
   "directory": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos",
-  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/solver_wetdomain.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/solver_wetdomain.cpp",
+  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -O3 -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/solver_wetdomain.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/solver_wetdomain.cpp",
   "file": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/solver_wetdomain.cpp"
 },
 {
   "directory": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos",
-  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -g3 -Wall -pedantic -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/write_results.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/write_results.cpp",
+  "command": "/usr/bin/c++   -I/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos  -O3 -fopenmp -g3 -gdwarf-2   -std=gnu++11 -o CMakeFiles/fluxos.dir/src/write_results.cpp.o -c /media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/write_results.cpp",
   "file": "/media/dcosta/data/megasync/ec_main/models/fluxos/code_fluxos/src/write_results.cpp"
 }
 ]

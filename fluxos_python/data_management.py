@@ -1,20 +1,26 @@
 
 # import libraries
 import numpy as np
+import re
 
 # Extract the simulation name
 def getsimname(resultdir,obsPath,simType):
 
-    namstart = resultdir.find('STC/')
-    nameend = resultdir.find('Results/')
+    # namstart = resultdir.find("/")
+    nameend = resultdir.find('Results')
 
-    Csectiom_nstart = obsPath.find('MS')
-    Csectiom_nend = obsPath.find('20')
+    # Csectiom_nstart = obsPath.find('MS')
+    # Csectiom_nend = obsPath.find('20')
 
-    simname = resultdir[namstart:nameend - 1] + '_' + obsPath[Csectiom_nstart:Csectiom_nstart+4]
+    resultdir_i = resultdir[0:nameend-1]
 
-    locbrack = simname.find('/')
-    simname = simname[0:locbrack] + '_' + simname[locbrack+1:len(simname)] + '_' + simType
+    res = [i.start() for i in re.finditer("/", resultdir_i)]
+    namstart = res[len(res) - 1]
+
+    simname = resultdir_i[namstart+1:len(resultdir_i)]
+
+    # locbrack = simname.find('/')
+    # simname = simname[0:locbrack] + '_' + simname[locbrack+1:len(simname)] + '_' + simType
 
     return simname
 

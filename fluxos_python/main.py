@@ -23,9 +23,8 @@ from tqdm import tqdm
 General Model Settings
 '''
 
-dempath = '/media/dcosta/DATADRIVE1/MegaSync/FLUXOS/STC_data_pre-processing/DEM_ASCII/model_geo.csv'
-
-sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/'
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys/'
+dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys/St_Marys_DEM_corrected.asc'
 
 try:
     resultdir_list_raw = [x[0] for x in os.walk(sim_batch_dir)]
@@ -52,8 +51,7 @@ TimeStrgStart = datetime(2011, 3, 31, 0, 0, 0)
 Tinitial = 0
 Timee = 18000 #1468800
 t_step_read = 3600
-nx = 722
-ny = 1034
+
 dxy = 3
 runlag = 32400 # lag factor to account for the fact that we the model is being forced using streamflow time series
 
@@ -64,18 +62,24 @@ coords = [49.339205,  # N
           -98.402657]  # W
 
 resolImage = 200  # resolution of the images in Google Earth (in dpi)
-var_1_graphymax = 5000
-mapoverlay_opaqueness = 100
+var_1_graphymax = 0.15
+mapoverlay_opaqueness = 0.5
 
 '''
 Choose the functions to run
 '''
 # Sim results analysis
 Map3d_Dem_and_sim_plotly = False # plot 3d maps of dem and sim results in plotly (interactive)
-GoogleEarthSim = False # export kml to google earth
-Quiver_flowpaths = True
+GoogleEarthSim = True # export kml to google earth
+Quiver_flowpaths = False
 
 simType = input("Options:\n# Analyse a cross-section (type 'cs')\n# Inundation map ('im')\n# VTK generator ('vtk)\n Answer: ")
+
+# Read geo to get nx and ny
+
+geomatrix = np.loadtxt(dempath, dtype='i', delimiter=' ')
+ny = geomatrix.shape[0]
+nx = geomatrix.shape[1]
 
 if (simType == 'cs'):
 
@@ -198,27 +202,29 @@ if (simType == 'cs'):
 
 elif (simType == 'im'):
 
-    simname = dm.getsimname(resultdir_list, '', simType)
+    for sim in range(0, len(resultdir_list)):
 
-    simType = input("Options:\n# kml for Google maps ('gm')\n# Scatter Plot 3D ('sp')\n# Quiver flowpaths ('qf')")
+        simname = dm.getsimname(resultdir_list[sim], '', simType)
 
-    # Google Maps
-    if (simType == 'gm'):
-        var_col_1 = 3
-        geklm.google_eart_animation(resultdir_list, simname, var_col_1, TimeStrgStart, Tinitial, Timee, t_step_read, nx, ny,
-                                    dxy, coords, resolImage, var_1_graphymax, mapoverlay_opaqueness)
+        simType = input("Options:\n# kml for Google maps ('gm')\n# Scatter Plot 3D ('sp')\n# Quiver flowpaths ('qf')")
 
-    # plot 3D dem and sim
-    elif (simType == 'sp'):
-        grph.scatter3d_pltly(simname,resultdir_list,simnum,dempath,nx,ny) #  Good
-        #scatter3d_matplotlib() # probablyt not working anymore
+        # Google Maps
+        if (simType == 'gm'):
+            var_col_1 = 3
+            geklm.google_eart_animation(resultdir_list[sim], simname, var_col_1, TimeStrgStart, Tinitial, nx, ny,
+                                        dxy, coords, resolImage, var_1_graphymax, mapoverlay_opaqueness)
 
-    # Quiver
-    elif (simType == 'qf'):
-        grph.quivergen(simname,resultdir_list,simnum,dempath,nx,ny,dxy)
+        # plot 3D dem and sim
+        elif (simType == 'sp'):
+            grph.scatter3d_pltly(simname,resultdir_list[sim],simnum,dempath,nx,ny) #  Good
+            #scatter3d_matplotlib() # probablyt not working anymore
 
-    else:
-        sys.exit("Error: Not a valid entry")
+        # Quiver
+        elif (simType == 'qf'):
+            grph.quivergen(simname,resultdir_list[sim],simnum,dempath,nx,ny,dxy)
+
+        else:
+            sys.exit("Error: Not a valid entry")
 
 elif (simType == 'vtk'):
     print ("Running VTK generator...")

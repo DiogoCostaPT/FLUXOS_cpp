@@ -11,9 +11,6 @@ def plotPNGplotly(googlefolder_sub,simname,xyz_matrix_var,nx,ny,dxy,timei,resolI
     from matplotlib.colors import BoundaryNorm
     from matplotlib.ticker import MaxNLocator
 
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-
     # Make data.
     x = np.linspace(0, nx*dxy, nx)
     y = np.linspace(0, ny*dxy, ny)
@@ -25,7 +22,7 @@ def plotPNGplotly(googlefolder_sub,simname,xyz_matrix_var,nx,ny,dxy,timei,resolI
 
     # x and y are bounds, so z should be the value *inside* those bounds.
     # Therefore, remove the last value from the z array.
-    z = z[:-1, :-1]
+    # z = z[:-1, :-1]
     levels = MaxNLocator(nbins=50).tick_values(0, var_1_graphymax)
 
     # pick the desired colormap, sensible levels, and define a normalization
@@ -62,24 +59,24 @@ def pgncreator(resultdir, googlefolder,simname, timevec, t, var_col,nx,ny,dxy,re
     # open result file
     if os.path.exists(resfilepath):
         with open(resfilepath, 'r') as fid:  # open the result file x
-            # read the result file x
-            try:
-                dataraw = np.genfromtxt(resfilepath, delimiter=',')
+        # read the result file x
+          try:
+            dataraw = np.genfromtxt(resfilepath, delimiter=',')
 
-                xyz_columndata = dm.xyz_extract_z_column(dataraw, 0, 1, var_col,0)  # extract relevant column
-                xyz_matrix_var = dm.xyz_to_matrix(xyz_columndata[:, [0, 1, 2]], nx,ny)  # convert into matrix (var 1)
+            xyz_columndata = dm.xyz_extract_z_column(dataraw, 0, 1, var_col,0)  # extract relevant column
+            xyz_matrix_var = dm.xyz_to_matrix(xyz_columndata[:, [0, 1, 2]], ny,nx)  # convert into matrix (var 1)
 
-                fid.close()
+            fid.close()
 
-                googlefolder_sub = googlefolder + '/' + simname
-                if not os.path.exists(googlefolder_sub):
-                    os.makedirs(googlefolder_sub)
+            googlefolder_sub = googlefolder + '/' + simname
+            if not os.path.exists(googlefolder_sub):
+                os.makedirs(googlefolder_sub)
 
-                simpngname = plotPNGplotly(googlefolder_sub,simname,xyz_matrix_var, nx, ny, dxy, timei,resolImage,var_1_graphymax)
+            simpngname = plotPNGplotly(googlefolder_sub,simname,xyz_matrix_var, nx, ny, dxy, timei,resolImage,var_1_graphymax)
 
-            except:
-                print("Cannot open file:" + resfilepath)
-                simpngname = ''
+          except:
+            print("Cannot open file or problem parsing it:" + resfilepath)
+            simpngname = ''
 
     else:
         print("File does not exist: " + resfilepath)
@@ -88,7 +85,7 @@ def pgncreator(resultdir, googlefolder,simname, timevec, t, var_col,nx,ny,dxy,re
     return simpngname
 
 #% Google Earth KLM generator
-def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,Timee,t_step_read,nx,ny,dxy,coords,resolImage,var_1_graphymax,mapoverlay_opaqueness):
+def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,nx,ny,dxy,coords,resolImage,var_1_graphymax,mapoverlay_opaqueness):
 
     from joblib import Parallel, delayed
     import multiprocessing
@@ -96,20 +93,25 @@ def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,Timee
     import os
     from datetime import timedelta, datetime
     import numpy as np
+    from os import listdir
+    from os.path import isfile, join
 
     googlefolder = 'GOOGLE_EARTH'
     if not os.path.exists(googlefolder):
         os.makedirs(googlefolder)
 
-    #
-    ntimstp = round((Timee - Tinitial + 1) / t_step_read)  # number of time steps
-    timevec = np.linspace(Tinitial, Timee, num=ntimstp)  # time of simulation
-    timevec = timevec.astype(int)
+    resultfiles = [f for f in listdir(resultdir) if isfile(join(resultdir, f))]
+    resultfiles_notxt = list(map(lambda x: x.replace('.txt',''),resultfiles))
+    for i in range(0, len(resultfiles_notxt)):
+        resultfiles_notxt[i] = int(resultfiles_notxt[i])
+
+    resultfiles_notxt.sort()
 
     num_cores = multiprocessing.cpu_count()
+
     pgn_filepaths = np.vstack(Parallel(n_jobs=num_cores)(
-        delayed(pgncreator)(resultdir, googlefolder, simname, timevec, t, var_col,nx,ny,dxy,resolImage,var_1_graphymax) for t in
-        tqdm(range(0, ntimstp))))
+        delayed(pgncreator)(resultdir, googlefolder, simname, resultfiles_notxt, t, var_col,nx,ny,dxy,resolImage,var_1_graphymax) for t in
+        tqdm(range(0, len(resultfiles_notxt)))))
 
     cwd = os.getcwd()
 
@@ -145,6 +147,7 @@ def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,Timee
             fid.write('<TimeSpan >\n')
 
             # Get time as string
+            t_step_read = resultfiles_notxt[1] - resultfiles_notxt[0]
             timediff = row * t_step_read
             timestr_start = TimeStrgStart + timedelta(hours=timediff)
             timestr_end = timestr_start + timedelta(hours=1)
