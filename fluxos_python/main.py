@@ -26,8 +26,8 @@ General Model Settings
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/'
 #dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/Essex_DEM_ascii'
 
-sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys/'
-dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys/St_Marys_DEM_corrected.asc'
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys_2/'
+dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys_2/St_Marys_DEM_corrected.asc'
 
 try:
     resultdir_list_raw = [x[0] for x in os.walk(sim_batch_dir)]
@@ -64,6 +64,8 @@ runlag = 32400 # lag factor to account for the fact that we the model is being f
 #          -98.342849,  # E
 #          -98.402657]  # W
 #rotation = 0  # in degrees
+#nanrow = []
+#nancol = []
 
 # Coordinates for Essex (Janina)
 #coords = [42.135017,  # N
@@ -71,6 +73,8 @@ runlag = 32400 # lag factor to account for the fact that we the model is being f
 #          -82.790974,  # E
 #          -82.795857]  # W
 #rotation = 0  # in degrees
+#nanrow = []
+#nancol = []
 
 # Coordinates for St Mary's (Janina)
 coords = [43.341240, # N
@@ -79,6 +83,8 @@ coords = [43.341240, # N
           -81.142515, # W
           ]
 rotation = 0  # in degrees
+trimrow = np.linspace(0,90,num=91).astype(int)
+trimcol = np.linspace(0,0,num=0).astype(int)
 
 resolImage = 200  # resolution of the images in Google Earth (in dpi)
 var_1_graphymax = 0.12
@@ -231,7 +237,8 @@ elif (simType == 'im'):
         if (simType == 'gm'):
             var_col_1 = 3
             geklm.google_eart_animation(resultdir_list[sim], simname, var_col_1, TimeStrgStart, Tinitial, nx, ny,
-                                        dxy, coords, rotation, resolImage, var_1_graphymax, mapoverlay_opaqueness)
+                                        dxy, coords, rotation, resolImage, var_1_graphymax, mapoverlay_opaqueness,
+                                        trimrow,trimcol)
 
         # plot 3D dem and sim
         elif (simType == 'sp'):

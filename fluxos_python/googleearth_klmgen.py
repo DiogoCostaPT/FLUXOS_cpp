@@ -1,4 +1,6 @@
 
+import math
+
 # create png image
 def plotPNGplotly(googlefolder,simname,xyz_matrix_var,nx,ny,dxy,timei,resolImage,var_1_graphymax):
 
@@ -47,7 +49,7 @@ def plotPNGplotly(googlefolder,simname,xyz_matrix_var,nx,ny,dxy,timei,resolImage
 
 
 # PNG image creator for klm (Google Earth)
-def pgncreator(resultdir, googlefolder,simname, timevec, t, var_col,nx,ny,dxy,resolImage,var_1_graphymax):
+def pgncreator(resultdir, googlefolder,simname, timevec, t, var_col,nx,ny,dxy,resolImage,var_1_graphymax,trimrow,trimcol):
     import os
     import numpy as np
     import data_management as dm
@@ -66,6 +68,11 @@ def pgncreator(resultdir, googlefolder,simname, timevec, t, var_col,nx,ny,dxy,re
             xyz_columndata = dm.xyz_extract_z_column(dataraw, 0, 1, var_col,0)  # extract relevant column
             xyz_matrix_var = dm.xyz_to_matrix(xyz_columndata[:, [0, 1, 2]], ny,nx)  # convert into matrix (var 1)
 
+            #np.where(xyz_matrix_var==0, 1, xyz_matrix_var)
+
+            xyz_matrix_var[trimrow,:] = math.nan
+            xyz_matrix_var[:,trimcol] = math.nan
+
             fid.close()
 
             simpngname = plotPNGplotly(googlefolder,simname,xyz_matrix_var, nx, ny, dxy, timei,resolImage,var_1_graphymax)
@@ -81,7 +88,7 @@ def pgncreator(resultdir, googlefolder,simname, timevec, t, var_col,nx,ny,dxy,re
     return simpngname
 
 #% Google Earth KLM generator
-def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,nx,ny,dxy,coords,rotation,resolImage,var_1_graphymax,mapoverlay_opaqueness):
+def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,nx,ny,dxy,coords,rotation,resolImage,var_1_graphymax,mapoverlay_opaqueness,trimrow,trimcol):
 
     from joblib import Parallel, delayed
     import multiprocessing
@@ -106,7 +113,7 @@ def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,nx,ny
     num_cores = multiprocessing.cpu_count()
 
     pgn_filepaths = np.vstack(Parallel(n_jobs=num_cores)(
-        delayed(pgncreator)(resultdir, googlefolder, simname, resultfiles_notxt, t, var_col,nx,ny,dxy,resolImage,var_1_graphymax) for t in
+        delayed(pgncreator)(resultdir, googlefolder, simname, resultfiles_notxt, t, var_col,nx,ny,dxy,resolImage,var_1_graphymax,trimrow,trimcol) for t in
         tqdm(range(0, len(resultfiles_notxt)))))
 
     cwd = os.getcwd()
