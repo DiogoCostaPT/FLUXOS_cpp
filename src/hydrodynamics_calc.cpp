@@ -24,6 +24,7 @@ void hydrodynamics_calc(GlobVar& ds)
 
     unsigned int irow, icol;
     double hp, dtl;
+    float cell_neumann;
 
     dtl = ds.dtfl;
     
@@ -57,10 +58,11 @@ void hydrodynamics_calc(GlobVar& ds)
         {
             for(irow=1;irow<=ds.n_row;irow++)
             {  
-                if((*ds.ldry).at(irow,icol) == 1.0f)
+                cell_neumann = (*ds.innerNeumannBCWeir).at(irow,icol);
+                if((*ds.ldry).at(irow,icol) == 1.0f && cell_neumann == 0.0f) 
                 {
                     solver_dry(ds,irow,icol);
-                } else
+                } else if (cell_neumann == 0.0f)
                 {
                     solver_wet(ds,irow,icol);
                 }
@@ -73,11 +75,21 @@ void hydrodynamics_calc(GlobVar& ds)
     {
         for(irow=1;irow<=ds.n_row;irow++)
         {  
-            (*ds.dh).at(irow,icol)=(((*ds.fe_1).at(irow-1,icol)-(*ds.fe_1).at(irow,icol))/ds.dxy +((*ds.fn_1).at(irow,icol-1)-(*ds.fn_1).at(irow,icol))/ds.dxy)*dtl;
-            (*ds.dqx).at(irow,icol)=(((*ds.fe_2).at(irow-1,icol)-(*ds.fe_2).at(irow,icol))/ds.dxy +((*ds.fn_2).at(irow,icol-1)-(*ds.fn_2).at(irow,icol))/ds.dxy)*dtl;
-            (*ds.dqy).at(irow,icol)=(((*ds.fe_3).at(irow-1,icol)-(*ds.fe_3).at(irow,icol))/ds.dxy +((*ds.fn_3).at(irow,icol-1)-(*ds.fn_3).at(irow,icol))/ds.dxy)*dtl;
-            (*ds.qxf).at(irow,icol)=(*ds.fe_1).at(irow,icol)*dtl;
-            (*ds.qyf).at(irow,icol)=(*ds.fn_1).at(irow,icol)*dtl;
+             cell_neumann = (*ds.innerNeumannBCWeir).at(irow,icol);
+             if (cell_neumann == 0.0f){
+                (*ds.dh).at(irow,icol) = (((*ds.fe_1).at(irow-1,icol)-(*ds.fe_1).at(irow,icol))/ds.dxy +((*ds.fn_1).at(irow,icol-1)-(*ds.fn_1).at(irow,icol))/ds.dxy)*dtl;
+                (*ds.dqx).at(irow,icol) = (((*ds.fe_2).at(irow-1,icol)-(*ds.fe_2).at(irow,icol))/ds.dxy +((*ds.fn_2).at(irow,icol-1)-(*ds.fn_2).at(irow,icol))/ds.dxy)*dtl;
+                (*ds.dqy).at(irow,icol) = (((*ds.fe_3).at(irow-1,icol)-(*ds.fe_3).at(irow,icol))/ds.dxy +((*ds.fn_3).at(irow,icol-1)-(*ds.fn_3).at(irow,icol))/ds.dxy)*dtl;
+                (*ds.qxf).at(irow,icol) = (*ds.fe_1).at(irow,icol)*dtl;
+                (*ds.qyf).at(irow,icol) = (*ds.fn_1).at(irow,icol)*dtl;
+             }else
+             {
+                (*ds.dh).at(irow,icol) = 0.0f;
+                (*ds.dqx).at(irow,icol) = 0.0f;
+                (*ds.dqy).at(irow,icol) = 0.0f;
+                (*ds.qxf).at(irow,icol) = 0.0f;
+                (*ds.qyf).at(irow,icol) = 0.0f;
+             }  
         }
     }
 
@@ -89,8 +101,9 @@ void hydrodynamics_calc(GlobVar& ds)
             (*ds.z).at(irow,icol)=(*ds.z).at(irow,icol)+(*ds.dh).at(irow,icol);
             hp=std::fmax(0.0f,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
             (*ds.h).at(irow,icol)=hp;
+            cell_neumann = (*ds.innerNeumannBCWeir).at(irow,icol);
             
-            if(hp<ds.hdry) 
+            if(hp<ds.hdry || cell_neumann == 1.0f) 
             {
                 (*ds.qx).at(irow,icol)= 0.0f;
                 (*ds.qy).at(irow,icol)= 0.0f;

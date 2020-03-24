@@ -48,19 +48,37 @@ void read_modset(GlobVar& ds, const std::string& filename,
 void read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
 {
     unsigned int icol,irow;  
+    float zbp,zbp_corr,zbn,zbs,zbe,zbw;
     arma::mat filedata; 
     std::string msg;
     
     bool flstatus =  filedata.load(ds.dem_file,arma::raw_ascii);
  
-   
     if(flstatus == true) {
         //for(a=0;a<filedata.col(1).n_elem;a++){
         for(icol=1;icol<=ds.n_col;icol++)
         {
             for(irow=1;irow<=ds.n_row;irow++)
             {   
-                (*ds.zb).at(irow,icol) = std::abs(filedata(ds.n_row - irow,icol-1));  // For now -99999 is set as 99999 to act like a wall using abs
+                zbp = filedata(ds.n_row - irow,icol-1);
+                zbn = filedata(ds.n_row - irow,icol-1);
+                zbs = filedata(ds.n_row - irow,icol-1);
+                zbe = filedata(ds.n_row - irow,icol-1);
+                zbw = filedata(ds.n_row - irow,icol-1);
+                zbp_corr = 0.0f;
+                if (zbp<0){ // check if zb=-99999 -> if yes, then it will behave as a weir
+                    (*ds.innerNeumannBCWeir).at(irow,icol) = 1.0f;
+                    if (zbn>0) zbp_corr = zbn;
+                    if (zbs>0) zbp_corr = (zbp_corr + zbs)/2;
+                    if (zbe>0) zbp_corr = 2/3*zbp_corr + 1/3*zbe;
+                    if (zbw>0) zbp_corr = 3/4*zbp_corr + 1/4*zbw;
+                    if (zbp_corr == 0.0f) zbp_corr = zbp;
+                }else
+                {
+                    (*ds.innerNeumannBCWeir).at(irow,icol) = 0.0f;
+                    zbp_corr = zbp;
+                }
+                (*ds.zb).at(irow,icol) = std::abs(zbp_corr);  // For now -99999 is set as 99999 to act like a wall using abs
                 (*ds.ks).at(irow,icol) = ks_input; 
             }
         }

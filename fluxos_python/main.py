@@ -23,8 +23,11 @@ from tqdm import tqdm
 General Model Settings
 '''
 
-sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/'
-dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/Essex_DEM_ascii'
+#sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/'
+#dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/Essex_DEM_ascii'
+
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys/'
+dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys/St_Marys_DEM_corrected.asc'
 
 try:
     resultdir_list_raw = [x[0] for x in os.walk(sim_batch_dir)]
@@ -56,13 +59,29 @@ dxy = 3
 runlag = 32400 # lag factor to account for the fact that we the model is being forced using streamflow time series
 
 # Coordinates for STC (3m resolution) - GOOGLE EARTH
-coords = [49.339205,  # N
-          49.317788,  # S
-          -98.342849,  # E
-          -98.402657]  # W
+#coords = [49.339205,  # N
+#          49.317788,  # S
+#          -98.342849,  # E
+#          -98.402657]  # W
+#rotation = 0  # in degrees
+
+# Coordinates for Essex (Janina)
+#coords = [42.135017,  # N
+#          42.128802,  # S
+#          -82.790974,  # E
+#          -82.795857]  # W
+#rotation = 0  # in degrees
+
+# Coordinates for St Mary's (Janina)
+coords = [43.341240, # N
+          43.333936, # S
+          -81.134184, # E
+          -81.142515, # W
+          ]
+rotation = 0  # in degrees
 
 resolImage = 200  # resolution of the images in Google Earth (in dpi)
-var_1_graphymax = 0.15
+var_1_graphymax = 0.12
 mapoverlay_opaqueness = 50
 
 '''

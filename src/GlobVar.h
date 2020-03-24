@@ -41,6 +41,7 @@ public:
     fn_3= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     twetimetracer= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col)); // connectivity-hours
     ldry= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
+    innerNeumannBCWeir= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(m_row,m_col));
         
     conc_SW= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
     soil_mass= std::unique_ptr<arma::Mat<double>>( new  arma::mat(m_row,m_col));
@@ -66,7 +67,7 @@ public:
         ks, //cfri                                  // Friction (Chezy model is not being used for now)
         fe_1,fe_2,fe_3,fn_1,fn_2,fn_3,twetimetracer,
         conc_SW,h0,soil_mass,basin_dem; 
-    std::unique_ptr<arma::Mat<float>> ldry,qmelt,ldry_prev;   
+    std::unique_ptr<arma::Mat<float>> ldry,innerNeumannBCWeir,qmelt,ldry_prev;   
     double hdry,                                    //minimum water depth
         dtfl,tim,                                   // timestep for flow computation
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
