@@ -212,7 +212,7 @@ elif (simType == 'im'):
         if (simType == 'gm'):
             var_col_1 = 3
             geklm.google_eart_animation(resultdir_list[sim], simname, var_col_1, TimeStrgStart, Tinitial, nx, ny,
-                                        dxy, coords, resolImage, var_1_graphymax, mapoverlay_opaqueness)
+                                        dxy, coords, rotation, resolImage, var_1_graphymax, mapoverlay_opaqueness)
 
         # plot 3D dem and sim
         elif (simType == 'sp'):

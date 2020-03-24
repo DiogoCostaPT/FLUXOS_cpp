@@ -81,7 +81,7 @@ def pgncreator(resultdir, googlefolder,simname, timevec, t, var_col,nx,ny,dxy,re
     return simpngname
 
 #% Google Earth KLM generator
-def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,nx,ny,dxy,coords,resolImage,var_1_graphymax,mapoverlay_opaqueness):
+def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,nx,ny,dxy,coords,rotation,resolImage,var_1_graphymax,mapoverlay_opaqueness):
 
     from joblib import Parallel, delayed
     import multiprocessing
@@ -164,6 +164,7 @@ def google_eart_animation(resultdir,simname,var_col,TimeStrgStart,Tinitial,nx,ny
             fid.write('<south>' + str(coords[1]) + '</south>\n')
             fid.write('<east>' + str(coords[2]) + '</east>\n')
             fid.write('<west>' + str(coords[3]) + '</west>\n')
+            fid.write('<rotation>'+ str(rotation) + '</rotation>\n')
             fid.write('</LatLonBox>\n')
             fid.write('</GroundOverlay>\n')
 
