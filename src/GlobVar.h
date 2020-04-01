@@ -51,7 +51,7 @@ public:
     qmelt = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(2000,2));
   }
     size_t NROWS,NCOLS;
-    size_t MROWS,MCOLS,dxy,arbase, 
+    size_t MROWS,MCOLS,dxy,arbase,
         ntim;                                       // maximum time step (seconds)
     float gacc = 9.80665,                           // gravitational acceleration 
         cfl,                                        // Courant condition
@@ -72,6 +72,8 @@ public:
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
     
     std::string dem_file, qmelt_file,sim_purp;
+
+    int NODATA_VALUE;
     
 };
 
