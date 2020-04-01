@@ -1,8 +1,9 @@
 ### Batch_1 - additional tests for paper ###
-bin/Essex_DEM_ascii_original
+bin/Essex_DEM_ascii_original_noheader
 bin/Qmelt_synthetic.fluxos
 3600
 0.005
+3
 0.08
 1
 9.5
