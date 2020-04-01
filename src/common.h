@@ -5,9 +5,6 @@
 #include <string.h>
 
 std::string SplitFilename (const std::string& str);
-
-int getIntNumberFromString(std::string s);
-
 // read file names in Results directory
 int findLastStep(const char *path);
 void get_domain_size(unsigned int *rown, unsigned int *coln, 

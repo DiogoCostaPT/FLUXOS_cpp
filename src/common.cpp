@@ -16,20 +16,6 @@ std::string SplitFilename (const std::string& str)
 
 }
 
-int getIntNumberFromString(std::string s){
-   std::stringstream str_strm;
-   str_strm << s; //convert the string s into stringstream
-   std::string temp_str;
-   int temp_int;
-   while(!str_strm.eof()) {
-      str_strm >> temp_str; //take words into temp_str one by one
-      if(std::stringstream(temp_str) >> temp_int) { //try to convert string to int
-         return temp_int;
-      }
-      temp_str = ""; //clear temp string
-   }
-}
-
 // read file names in Results directory
 int findLastStep(const char *path) 
 {
@@ -74,39 +60,23 @@ void get_domain_size(unsigned int *rown, unsigned int *coln,
                     std::ofstream& logFLUXOSfile)
 {
 
-    // Read DEM file fom modset
+    arma::mat filedata; 
+    
     std::ifstream file(filename);
     std::string dem_file_temp, msg;
     std::getline(file, dem_file_temp);
     std::getline(file, dem_file_temp);
     file.close();
-
-    unsigned int linei,numi;
-    std::string line, stri; 
-    std::ifstream myfile (dem_file_temp); //opening the file.
-
-    std::string str_nrows = "NROWS";
-    std::string str_ncols = "NCOLS";
-
-    if (myfile.is_open()) //if the file is open
-    {
-
-        for(linei=1;linei<=2;linei++) // Just need to read the first 2 lines
-        {
-            getline (myfile,line); //get one line from the file
-            stri = line.substr(0,5);
-            numi = getIntNumberFromString(line);
-
-            if (stri.compare(str_nrows)==0){
-                *rown = numi;
-            }else if(stri.compare(str_ncols)==0){
-                *coln = numi;
-            }
-        }
-
-        myfile.close(); //closing the file
-    }
-    else std::cout << "Unable to open file: " + filename << std::endl; //if the file is not open output
     
+    bool flstatus =  filedata.load(dem_file_temp,arma::raw_ascii);
+   
+    *rown = 0;
+    *coln = 0;
+    
+    if(flstatus == true) {
+        *rown = filedata.col(1).n_elem;
+        *coln = filedata.row(1).n_elem;
+    }
+ 
 }
 

@@ -48,6 +48,7 @@ public:
     h0= std::unique_ptr<arma::Mat<double>>( new  arma::mat(MROWS,MCOLS));
     ldry_prev= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(MROWS,MCOLS));
     
+    basin_dem= std::unique_ptr<arma::Mat<double>>( new  arma::mat(MROWS,MCOLS));
     qmelt = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(2000,2));
   }
     size_t NROWS,NCOLS;
@@ -65,13 +66,13 @@ public:
         //sbMROWS,sbMCOLS,                                  // for calc of weight of water (bed slope term) (solver_wet)
         ks, //cfri                                  // Friction (Chezy model is not being used for now)
         fe_1,fe_2,fe_3,fn_1,fn_2,fn_3,twetimetracer,
-        conc_SW,h0,soil_mass; 
+        conc_SW,h0,soil_mass,basin_dem; 
     std::unique_ptr<arma::Mat<float>> ldry,innerNeumannBCWeir,qmelt,ldry_prev;   
     double hdry,                                    //minimum water depth
         dtfl,tim,                                   // timestep for flow computation
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
     
-    std::string dem_file, qmelt_file,sim_purp;
+    std::string dem_file, qmelt_file,basin_file,sim_purp;
 
     int NODATA_VALUE;
     

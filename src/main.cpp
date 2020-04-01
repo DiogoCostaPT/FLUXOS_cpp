@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
         {
             for(irow=1;irow<=ds.NROWS;irow++)
             {
-                if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
+                if (std::abs((*ds.basin_dem).at(irow,icol)) != 99999)
                 {
                     hp = std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0); // adesolver hp before adding snowmelt  
                     (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   
@@ -217,11 +217,7 @@ int main(int argc, char* argv[])
                     {          
                         (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
                     }
-                }else
-                {
-                    (*ds.ldry).at(irow,icol)=0.0f;
                 }
-                
             }
          }
                 
