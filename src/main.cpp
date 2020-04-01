@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
         {
             for(irow=1;irow<=ds.n_row;irow++)
             {
-                if (std::abs((*ds.basin_dem).at(irow,icol)) != 99999)
+                if (std::abs((*ds.zb).at(irow,icol)) != 99999)
                 {
                     hp = std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0); // adesolver hp before adding snowmelt  
                     (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   

@@ -5,6 +5,7 @@
 
 #include "read_functions.h"
 
+
 void read_modset(GlobVar& ds, const std::string& filename, 
                 const std::string& pathfile, unsigned int *print_step, 
                 double *ks_input,
@@ -22,20 +23,19 @@ void read_modset(GlobVar& ds, const std::string& filename,
         i += 1;
         if(i==1){ds.sim_purp = str;}; // comment
         if(i==2){ds.dem_file = str;}; // DEM ESRI-ArcGIS ascii
-        if(i==3){ds.basin_file = str;}; // DEM ESRI-ArcGIS ascii (just the basin for snowmelt input)
-        if(i==4){ds.qmelt_file = str;}; // snowmelt file
-        if(i==5){(*print_step) = std::stoi(str);}; // print time step
-        if(i==6){(*ks_input) = std::stof(str);};  // average roughness height (m)
-        if(i==7){(ds.dxy) = std::stoi(str);}; // grid cell size (m) - structure grid
-        if(i==8){(ds.soil_release_rate) = std::stof(str);}; //  WINTRA: soil nutrient release rate
-        if(i==9){(ds.soil_conc_bckgrd) = std::stof(str);};  // WINTRA: soil background concentration
-        if(i==10){(ds.SWEstd) = std::stof(str);}; // SWE standard deviation (snow depletion curves, Kevin's paper)
-        if(i==11){(ds.SWEmax) = std::stof(str);};  // SWE standard deviation (snow depletion curves, Kevin's paper)
+        if(i==3){ds.qmelt_file = str;}; // snowmelt file
+        if(i==4){(*print_step) = std::stoi(str);}; // print time step
+        if(i==5){(*ks_input) = std::stof(str);};  // average roughness height (m)
+        if(i==6){(ds.dxy) = std::stoi(str);}; // grid cell size (m) - structure grid
+        if(i==7){(ds.soil_release_rate) = std::stof(str);}; //  WINTRA: soil nutrient release rate
+        if(i==8){(ds.soil_conc_bckgrd) = std::stof(str);};  // WINTRA: soil background concentration
+        if(i==9){(ds.SWEstd) = std::stof(str);}; // SWE standard deviation (snow depletion curves, Kevin's paper)
+        if(i==10){(ds.SWEmax) = std::stof(str);};  // SWE standard deviation (snow depletion curves, Kevin's paper)
         
     }
     file.close();
     
-    if(i==11){
+    if(i==10){
         msg = "Successful loading of master input file: " + filename;
     } else{
         msg = "PROBLEM loading of master input file: " + filename;
@@ -97,24 +97,7 @@ float read_load(GlobVar& ds,std::ofstream& logFLUXOSfile)
     unsigned int icol,irow;
     double tmelts,vmelt, tmelts_bef = 0.0f;
     std::string msg;
-    
-    arma::mat filedataB; 
-    bool flstatusB =  filedataB.load(ds.basin_file,arma::raw_ascii);
-    if(flstatusB == true) {
-        for(icol=1;icol<=ds.n_col;icol++)
-        {
-            for(irow=1;irow<=ds.n_row;irow++)
-            {  
-                (*ds.basin_dem).at(irow,icol) = filedataB(ds.n_row - irow,icol-1);
-            }  
-        }
-        msg = "Successful loading of Basin-DEM file: " + ds.basin_file;
-    } else{
-        msg = "PROBLEM loading of Basin-DEM file: " + ds.basin_file;       
-    } 
-    std::cout << msg  << std::endl;
-    logFLUXOSfile << msg + "\n";
-    
+        
     // reading qmelt 
     ds.qmelvtotal  = 0;
     arma::mat filedataQ; 
