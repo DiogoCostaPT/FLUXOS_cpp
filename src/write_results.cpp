@@ -21,11 +21,11 @@ bool write_results(GlobVar& ds, int print_tag, unsigned int print_step, std::chr
     std::string filext(".txt");
     tprint += filext;
 
-    arma::mat filedataR(ds.n_row*ds.n_col,15); 
+    arma::mat filedataR(ds.NROWS*ds.NCOLS,15); 
     
-    for(icol=1;icol<=ds.n_col;icol++)
+    for(icol=1;icol<=ds.NCOLS;icol++)
     {
-        for(irow=1;irow<=ds.n_row;irow++)
+        for(irow=1;irow<=ds.NROWS;irow++)
         {
             if ((*ds.h).at(irow,icol)>0.0f)
             {

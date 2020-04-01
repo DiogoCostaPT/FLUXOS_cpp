@@ -29,9 +29,9 @@ void hydrodynamics_calc(GlobVar& ds)
     dtl = ds.dtfl;
     
     // GET hp AND CHECK IF DRY OR WET
-    for(icol=1;icol<=ds.n_col;icol++)
+    for(icol=1;icol<=ds.NCOLS;icol++)
     {
-        for(irow=1;irow<=ds.n_row;irow++)
+        for(irow=1;irow<=ds.NROWS;irow++)
         {  
             hp=std::max(0.0,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
             (*ds.h).at(irow,icol) = hp;
@@ -54,9 +54,9 @@ void hydrodynamics_calc(GlobVar& ds)
      #pragma omp parallel
     {
         #pragma omp for collapse(2)
-        for(icol=1;icol<=ds.n_col;icol++)
+        for(icol=1;icol<=ds.NCOLS;icol++)
         {
-            for(irow=1;irow<=ds.n_row;irow++)
+            for(irow=1;irow<=ds.NROWS;irow++)
             {  
                 cell_neumann = (*ds.innerNeumannBCWeir).at(irow,icol);
                 if((*ds.ldry).at(irow,icol) == 1.0f && cell_neumann == 0.0f) 
@@ -71,9 +71,9 @@ void hydrodynamics_calc(GlobVar& ds)
     }
     
     // CALCULATE TOTAL MASS AND MOMENTUM DERIVATIVE
-    for(icol=1;icol<=ds.n_col;icol++)
+    for(icol=1;icol<=ds.NCOLS;icol++)
     {
-        for(irow=1;irow<=ds.n_row;irow++)
+        for(irow=1;irow<=ds.NROWS;irow++)
         {  
              cell_neumann = (*ds.innerNeumannBCWeir).at(irow,icol);
              if (cell_neumann == 0.0f){
@@ -94,9 +94,9 @@ void hydrodynamics_calc(GlobVar& ds)
     }
 
     // CAL NEW VALUES
-    for(icol=1;icol<=ds.n_col;icol++)
+    for(icol=1;icol<=ds.NCOLS;icol++)
     {
-        for(irow=1;irow<=ds.n_row;irow++)
+        for(irow=1;irow<=ds.NROWS;irow++)
         {  
             (*ds.z).at(irow,icol)=(*ds.z).at(irow,icol)+(*ds.dh).at(irow,icol);
             hp=std::fmax(0.0f,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));

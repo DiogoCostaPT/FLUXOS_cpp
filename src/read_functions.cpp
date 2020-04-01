@@ -2,6 +2,8 @@
 #include <memory> 
 #include <iostream>
 #include <string>
+#include <iostream>
+#include <fstream>
 
 #include "read_functions.h"
 
@@ -39,6 +41,7 @@ void read_modset(GlobVar& ds, const std::string& filename,
         msg = "Successful loading of master input file: " + filename;
     } else{
         msg = "PROBLEM loading of master input file: " + filename;
+
     } 
      std::cout << msg  << std::endl;
      logFLUXOSfile << msg + "\n";
@@ -52,19 +55,37 @@ void read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
     arma::mat filedata; 
     std::string msg;
     
+    std::string array[5]; // creates array to hold names
+    short loop=0; //short for loop for input
+    std::string line; //this will contain the data read from the file
+    std::ifstream myfile (ds.dem_file); //opening the file.
+    if (myfile.is_open()) //if the file is open
+    {
+        while (! myfile.eof() ) //while the end of file is NOT reached
+        {
+            getline (myfile,line); //get one line from the file
+            array[loop] = line;
+            std::cout << array[loop] << std::endl; //and output it
+            loop++;
+        }
+        myfile.close(); //closing the file
+    }
+    else std::cout << "Unable to open file"; //if the file is not open output
+    system("PAUSE");
+
     bool flstatus =  filedata.load(ds.dem_file,arma::raw_ascii);
  
     if(flstatus == true) {
         //for(a=0;a<filedata.col(1).n_elem;a++){
-        for(icol=1;icol<=ds.n_col;icol++)
+        for(icol=1;icol<=ds.NCOLS;icol++)
         {
-            for(irow=1;irow<=ds.n_row;irow++)
+            for(irow=1;irow<=ds.NROWS;irow++)
             {   
-                zbp = filedata(ds.n_row - irow,icol-1);
-                zbn = filedata(ds.n_row - irow,icol-1);
-                zbs = filedata(ds.n_row - irow,icol-1);
-                zbe = filedata(ds.n_row - irow,icol-1);
-                zbw = filedata(ds.n_row - irow,icol-1);
+                zbp = filedata(ds.NROWS - irow,icol-1);
+                zbn = filedata(ds.NROWS - irow,icol-1);
+                zbs = filedata(ds.NROWS - irow,icol-1);
+                zbe = filedata(ds.NROWS - irow,icol-1);
+                zbw = filedata(ds.NROWS - irow,icol-1);
                 zbp_corr = 0.0f;
                 if (zbp<0){ // check if zb=-99999 -> if yes, then it will behave as a weir
                     (*ds.innerNeumannBCWeir).at(irow,icol) = 1.0f;

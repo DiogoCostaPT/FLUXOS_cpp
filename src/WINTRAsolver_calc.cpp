@@ -16,9 +16,9 @@ void wintrasolver_calc(GlobVar& ds)
     f=tanh(1.26*(ds.qmelvtotal - ds.qmelv_inc)/QVolstd);
     
     
-    for(icol=1;icol<=ds.n_col;icol++)
+    for(icol=1;icol<=ds.NCOLS;icol++)
     {
-        for(irow=1;irow<=ds.n_row;irow++)
+        for(irow=1;irow<=ds.NROWS;irow++)
         {
             hp = (*ds.h).at(irow,icol);
             zbp =(*ds.zb).at(irow,icol);

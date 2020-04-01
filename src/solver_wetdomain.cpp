@@ -8,7 +8,7 @@
 
 void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
 
-    unsigned int iw,ie, is,in,inn, n_rowl, n_coll,dx,dy;
+    unsigned int iw,ie, is,in,inn, NROWSl, NCOLSl,dx,dy;
     double fe1,fe2,fe3,fn1,fn2,fn3,zw,zp,ze,zs,
         zn,znn,hw,he,hs,hn,hnn,fe2p,fn3p,qe,qp,qn,rw,rp,re,rn;
     double dze,dqe,dre,
@@ -23,8 +23,8 @@ void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
     float ldp,lde,ldn;
     bool lroe;
 
-    n_rowl = ds.n_row;
-    n_coll = ds.n_col;
+    NROWSl = ds.NROWS;
+    NCOLSl = ds.NCOLS;
     hdryl = ds.hdry;
     gaccl = ds.gacc;
     kspl = (*ds.ks).at(irow,icol);
@@ -33,7 +33,7 @@ void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
     
     is=icol-1;
     in=icol+1;
-    inn=fmin(icol+2,n_coll+1);
+    inn=fmin(icol+2,NCOLSl+1);
     lroe = true;
     iw=irow-1;
     ie=irow+1;
@@ -276,11 +276,11 @@ void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
     fn3=fn3c+fn3r+fn3p;
             
     // BOUNDARY CONDITIONS (WEIR DISCHARGE RATE) 
-    if (icol==1 || icol==n_coll)
+    if (icol==1 || icol==NCOLSl)
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
-    if (irow==1 || irow==n_rowl)
+    if (irow==1 || irow==NROWSl)
     {
         fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }

@@ -8,7 +8,7 @@
 
 void solver_dry(GlobVar& ds, unsigned int irow, unsigned int icol) {
     
-    unsigned int iw,ie,is,in, n_rowl, n_coll;
+    unsigned int iw,ie,is,in, NROWSl, NCOLSl;
     double fe1,fe2,fe3,fn1,fn2,fn3,zp,ze,zn,
            he,hn,qe,qp,rp,rn;
     double dze,hme,qme,dzn;
@@ -32,8 +32,8 @@ void solver_dry(GlobVar& ds, unsigned int irow, unsigned int icol) {
     ldn = (*ds.ldry).at(irow,in);
     
     gaccl = ds.gacc;
-    n_coll = ds.n_col;
-    n_rowl = ds.n_row;
+    NCOLSl = ds.NCOLS;
+    NROWSl = ds.NROWS;
 
     // CHECK IF ALL NEIGHBOUR CELLS ARE DRY
     if(ldw==1&&ldp==1&&lde==1&&lds==1&&ldn==1)
@@ -153,11 +153,11 @@ void solver_dry(GlobVar& ds, unsigned int irow, unsigned int icol) {
     }
     
     // BOUNDARY CONDITIONS (WEIR DISCHARGE RATE)
-    if (icol==1 || icol==n_coll)
+    if (icol==1 || icol==NCOLSl)
     {
         fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
-    if (irow==1 || irow==n_rowl)
+    if (irow==1 || irow==NROWSl)
     {
         fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }

@@ -9,13 +9,13 @@
 void adesolver_calc(GlobVar& ds, int it)
 {
 
-    arma::mat qfcds(ds.m_row*ds.m_col,1);  //double qfcds(0:mx);
-    arma::mat con_step(ds.m_row,ds.m_col);  //double qfcds(0:mx);
+    arma::mat qfcds(ds.MROWS*ds.MCOLS,1);  //double qfcds(0:mx);
+    arma::mat con_step(ds.MROWS,ds.MCOLS);  //double qfcds(0:mx);
     double pfw,pfe,qfs,qfn,ntp, pfce, he,fp,fe, hne, pfde,area,areae,arean,hn,qxl,qyl,fw,
        fee,fs,fn,fnn,hnue,fem,hnn,qfcn,qfdn,fnm, cvolrate,cf,cbilan,dc,cvolpot,cvolrat,con, hnew;
     long unsigned int ix,iy,a;//!, printlim
-    arma::mat cmaxr(ds.m_row,ds.m_col); //double  cmaxr(0:mx,0:my)
-    arma::mat cminr(ds.m_row,ds.m_col); //cminr(0:mx,0:my);
+    arma::mat cmaxr(ds.MROWS,ds.MCOLS); //double  cmaxr(0:mx,0:my)
+    arma::mat cminr(ds.MROWS,ds.MCOLS); //cminr(0:mx,0:my);
     double dx,dy,hp,ie,iee,in, inn, is,iw;
     double nt =1 ; // eddy viscosity (m2/s) = 1,
     double sigc = 0.5;
@@ -23,9 +23,9 @@ void adesolver_calc(GlobVar& ds, int it)
 
     if(it>1) {
     // ADJUST CONCENTRATION TO NEW DEPTH
-        for (a=1;a<=ds.n_col*ds.n_row;a++) {
-            iy= ((a-1)/ds.n_row)+1;
-            ix=a-ds.n_row*(iy-1);
+        for (a=1;a<=ds.NCOLS*ds.NROWS;a++) {
+            iy= ((a-1)/ds.NROWS)+1;
+            ix=a-ds.NROWS*(iy-1);
 
             cmaxr(ix,iy)=std::max((*ds.conc_SW)(ix-1,iy),std::max((*ds.conc_SW)(ix+1,iy),std::max((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
             cminr(ix,iy)=std::min((*ds.conc_SW)(ix-1,iy),std::min((*ds.conc_SW)(ix+1,iy),std::min((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
@@ -58,17 +58,17 @@ void adesolver_calc(GlobVar& ds, int it)
     //dyn=ds.dxy; 
 
     // SPACE LOOP
-    for (a=1;a<ds.n_col*ds.n_row;a++) {
+    for (a=1;a<ds.NCOLS*ds.NROWS;a++) {
 
-        iy= ((a-1)/ds.n_row)+1;
-        ix=a-ds.n_row*(iy-1);
+        iy= ((a-1)/ds.NROWS)+1;
+        ix=a-ds.NROWS*(iy-1);
 
         is=iy-1; 
         in=iy+1; 
-        inn=std::min(iy+2,ds.n_col+1);
+        inn=std::min(iy+2,ds.NCOLS+1);
         iw=ix-1;
         ie=ix+1;
-        iee=std::min(ix+2,ds.n_row+1);
+        iee=std::min(ix+2,ds.NROWS+1);
                      
         //  BC 
         if (ix==1) {
@@ -141,8 +141,8 @@ void adesolver_calc(GlobVar& ds, int it)
 
         fem=std::max(0.,fem);
 
-        if(ix==ds.n_row){  // if Boundary (overwrite the BC)
-            fem=(*ds.conc_SW)(ds.n_row+1,iy);
+        if(ix==ds.NROWS){  // if Boundary (overwrite the BC)
+            fem=(*ds.conc_SW)(ds.NROWS+1,iy);
         }
 
         //// advective flux - X-direction  - [m3/s]   
@@ -188,8 +188,8 @@ void adesolver_calc(GlobVar& ds, int it)
         fnm=std::max(0.,fnm);
 
         //// if Boundary (overwrite BC)
-        if(iy==ds.n_col)    {
-            fnm=(*ds.conc_SW)(ix,ds.n_col+1);
+        if(iy==ds.NCOLS)    {
+            fnm=(*ds.conc_SW)(ix,ds.NCOLS+1);
         }
 
         //// advective flux - X-direction  

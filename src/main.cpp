@@ -6,7 +6,7 @@
 // This program, FLUXOS, is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
-// (at your option) an_col later version.
+// (at your option) aNCOLS later version.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,7 +42,7 @@
 
 int main(int argc, char* argv[]) 
 {   
-    unsigned int n_rowl, n_coll, it = 0;
+    unsigned int NROWSl, NCOLSl, it = 0;
     unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
     double c0,v0,u0,hp, hpall, qmelti,ks_input; 
     bool outwritestatus;
@@ -65,11 +65,11 @@ int main(int argc, char* argv[])
     logFLUXOSfile << "Simulation started... " << std::ctime(&start_time);
         
      // Get the size of the domain (nrow and ncol)
-    get_domain_size(&n_rowl,&n_coll, modset_flname, dirpath, logFLUXOSfile);
+    get_domain_size(&NROWSl,&NCOLSl, modset_flname, dirpath, logFLUXOSfile);
      // Input the duration of the simulation
         
     // Initiate variables on the heap
-    GlobVar ds(n_rowl+2,n_coll+2); 
+    GlobVar ds(NROWSl+2,NCOLSl+2); 
     
     // input/read data
     ds.cfl = 1; // Courant condition
@@ -95,8 +95,8 @@ int main(int argc, char* argv[])
     //std::cin >> print_step;
     logFLUXOSfile << "Print step (s) = " + std::to_string(print_step) + "\n";
     
-    ds.n_row = ds.m_row - 2;
-    ds.n_col = ds.m_col - 2;
+    ds.NROWS = ds.MROWS - 2;
+    ds.NCOLS = ds.MCOLS - 2;
     
     ds.D_coef = 0.01;
     
@@ -161,9 +161,9 @@ int main(int argc, char* argv[])
         hpall = 0.0f;
         
         // SPACE LOOP
-        for(icol=1;icol<=ds.n_col;icol++)
+        for(icol=1;icol<=ds.NCOLS;icol++)
         {
-            for(irow=1;irow<=ds.n_row;irow++)
+            for(irow=1;irow<=ds.NROWS;irow++)
             {
                 hp = (*ds.h).at(irow,icol);
                 (*ds.h0)(irow,icol) = hp; // adesolver
@@ -199,9 +199,9 @@ int main(int argc, char* argv[])
         
         qmelti = (*ds.qmelt).at(qmelt_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
         ds.qmelv_inc += qmelti;
-         for(icol=1;icol<=ds.n_col;icol++)
+         for(icol=1;icol<=ds.NCOLS;icol++)
         {
-            for(irow=1;irow<=ds.n_row;irow++)
+            for(irow=1;irow<=ds.NROWS;irow++)
             {
                 if (std::abs((*ds.zb).at(irow,icol)) != 99999)
                 {

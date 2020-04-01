@@ -1,10 +1,9 @@
 ### Batch_1 - additional tests for paper ###
-ersi_grid_dem_alldomain
-ersi_grid_dem_basin
-Qmelt_info_2009
+bin/Essex_DEM_ascii_original
+Qmelt_synthetic.fluxos
 3600
 0.005
-3
+1
 0.08
 1
 9.5
