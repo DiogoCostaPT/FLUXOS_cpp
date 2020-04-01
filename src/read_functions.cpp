@@ -50,17 +50,15 @@ void read_modset(GlobVar& ds, const std::string& filename,
 
 void read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
 {
-    int icol,irow;  
+    int icol,irow,n;  
     double zbp,zbp_corr,zbn,zbs,zbe,zbw, temp_float;
     arma::mat filedata; 
     std::string msg, temp_str;
 
-    arma::mat zb_raw;
-    zb_raw = (*ds.zb);
+    arma::mat zb_raw(ds.MROWS,ds.MCOLS);
     
     std::string line; //this will contain the data read from the file
     std::ifstream myfile (ds.dem_file); //opening the file.
-    std::stringstream str_strm;
 
     getline (myfile,line); // NCOLS
     getline (myfile,line); // NROWS
@@ -79,16 +77,19 @@ void read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
         while (! myfile.eof() ) //while the end of file is NOT reached
         {
             getline (myfile,line); //get one line from the file
+            std::stringstream str_strm;
             str_strm << line; //convert the string s into stringstream
-            
+            icol = 0;
+
             while(!str_strm.eof()) {
                 str_strm >> temp_str; //take words into temp_str one by one
                 if(std::stringstream(temp_str) >> temp_float) { //try to convert string to int
-                        zb_raw.at(irow,icol) = std::abs(temp_float);  // For now -99999 is set as 99999 to act like a wall using abs
+                    zb_raw.at(irow,icol) = std::abs(temp_float);  // For now -99999 is set as 99999 to act like a wall using abs
                 }
                 icol++;
                 temp_str = ""; //clear temp string
             }
+            str_strm.clear();
             irow++;
         }
         myfile.close(); //closing the file
@@ -111,19 +112,39 @@ void read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
             zbe = zb_raw.at(irow,icol+1);
             zbw = zb_raw.at(irow,icol-1);
             zbp_corr = 0.0f;
-            if (zbp == ds.NODATA_VALUE){ // check if NODATA_VALUE -> if yes, then it will behave as a weir
+            n = 0;
+            if (zbp == ds.NODATA_VALUE || zbp== 0.0f){ // check if NODATA_VALUE -> if yes, then it will behave as a weir
                 (*ds.innerNeumannBCWeir).at(irow,icol) = 1.0f;
-                if (zbn != ds.NODATA_VALUE) zbp_corr = zbn;
-                if (zbs != ds.NODATA_VALUE) zbp_corr = (zbp_corr + zbs)/2;
-                if (zbe != ds.NODATA_VALUE) zbp_corr = 2/3*zbp_corr + 1/3*zbe;
-                if (zbw != ds.NODATA_VALUE) zbp_corr = 3/4*zbp_corr + 1/4*zbw;
-                if (zbp_corr == 0.0f) zbp_corr = zbp;
+                if (zbn != ds.NODATA_VALUE && zbn != 0.0f && irow < ds.NROWS) {
+                    zbp_corr += zbn;
+                    n++;
+                }
+                if (zbs != ds.NODATA_VALUE && zbs != 0.0f && irow > 1) {
+                    zbp_corr += zbs;
+                    n++;
+                }
+                if (zbe != ds.NODATA_VALUE && zbe != 0.0f && icol < ds.NCOLS) {
+                    zbp_corr += zbe;
+                    n++;
+                }
+                if (zbw != ds.NODATA_VALUE && zbw != 0.0f && icol > 1) {
+                    zbp_corr += zbw;
+                    n++;
+                }
+                if (zbp_corr == 0.0f) {
+                    zbp_corr = zbp;
+                }else
+                {
+                    zbp_corr /= n;
+                }
+                
             }else
             {
                 (*ds.innerNeumannBCWeir).at(irow,icol) = 0.0f;
                 zbp_corr = zbp;
             }
-            (*ds.zb).at(irow,icol) = std::abs(zbp_corr);  // For now -99999 is set as 99999 to act like a wall using abs
+            zb_raw.at(irow,icol) = zbp_corr;
+            (*ds.zb).at(irow,icol) = zbp_corr;  // For now -99999 is set as 99999 to act like a wall using abs
             (*ds.ks).at(irow,icol) = ks_input; 
         }
     }

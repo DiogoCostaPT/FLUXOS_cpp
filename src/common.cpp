@@ -97,9 +97,9 @@ void get_domain_size(unsigned int *rown, unsigned int *coln,
             stri = line.substr(0,5);
             numi = getIntNumberFromString(line);
 
-            if (stri.compare(str_nrows)){
+            if (stri.compare(str_nrows)==0){
                 *rown = numi;
-            }else if(stri.compare(str_ncols)){
+            }else if(stri.compare(str_ncols)==0){
                 *coln = numi;
             }
         }
