@@ -1,10 +1,9 @@
-### Batch_1 - additional tests for paper ###
-bin/ersi_grid_dem_LON_basin
-bin/Qmelt_synthetic.fluxos
-3600
-0.005
-3
-0.08
-1
-9.5
-9.5
+COMMNET ### Batch_1 - additional tests for paper ###
+DEM_FILE bin/ersi_grid_dem_LON_basin
+QMELT_FILE bin/Qmelt_synthetic.fluxos
+PRINT_STEP 3600
+ROUGNESS_HEIGHT 0.005
+SOIL_RELEASE_RATE 0.08
+SOIL_CONC_BACKGROUND 1
+SWE_STD 9.5
+SWE_MAX 9.5

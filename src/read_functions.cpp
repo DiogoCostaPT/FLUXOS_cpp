@@ -21,21 +21,19 @@ void read_modset(GlobVar& ds, const std::string& filename,
     while (std::getline(file, str)) 
     {
         i += 1;
-        if(i==1){ds.sim_purp = str;}; // comment
-        if(i==2){ds.dem_file = str;}; // DEM ESRI-ArcGIS ascii
-        if(i==3){ds.qmelt_file = str;}; // snowmelt file
-        if(i==4){(*print_step) = std::stoi(str);}; // print time step
-        if(i==5){(*ks_input) = std::stof(str);};  // average roughness height (m)
-        if(i==6){(ds.dxy) = std::stoi(str);}; // grid cell size (m) - structure grid
-        if(i==7){(ds.soil_release_rate) = std::stof(str);}; //  WINTRA: soil nutrient release rate
-        if(i==8){(ds.soil_conc_bckgrd) = std::stof(str);};  // WINTRA: soil background concentration
-        if(i==9){(ds.SWEstd) = std::stof(str);}; // SWE standard deviation (snow depletion curves, Kevin's paper)
-        if(i==10){(ds.SWEmax) = std::stof(str);};  // SWE standard deviation (snow depletion curves, Kevin's paper)
-        
+        if(str.find("COMMNET") != std::string::npos){ds.sim_purp = str.substr(8);}; // comment
+        if(str.find("DEM_FILE") != std::string::npos){ds.dem_file = str.substr(9);}; // DEM ESRI-ArcGIS ascii
+        if(str.find("QMELT_FILE") != std::string::npos){ds.qmelt_file = str.substr(11);}; // snowmelt file
+        if(str.find("PRINT_STEP") != std::string::npos){(*print_step) = std::stoi(str.substr(11));}; // print time step
+        if(str.find("ROUGNESS_HEIGHT") != std::string::npos){(*ks_input) = std::stof(str.substr(16));};  // average roughness height (m)
+        if(str.find("SOIL_RELEASE_RATE") != std::string::npos){(ds.soil_release_rate) = std::stof(str.substr(18));}; //  WINTRA: soil nutrient release rate
+        if(str.find("SOIL_CONC_BACKGROUND") != std::string::npos){(ds.soil_conc_bckgrd) = std::stof(str.substr(21));};  // WINTRA: soil background concentration
+        if(str.find("SWE_STD") != std::string::npos){(ds.SWEstd) = std::stof(str.substr(8));}; // SWE standard deviation (snow depletion curves, Kevin's paper)
+        if(str.find("SWE_MAX") != std::string::npos){(ds.SWEmax) = std::stof(str.substr(8));};  // SWE standard deviation (snow depletion curves, Kevin's paper)   
     }
     file.close();
     
-    if(i==10){
+    if(i==9){
         msg = "Successful loading of master input file: " + filename;
     } else{
         msg = "PROBLEM loading of master input file: " + filename;

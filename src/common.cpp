@@ -77,9 +77,16 @@ void get_domain_size(unsigned int *rown, unsigned int *coln,
      // Read DEM file fom modset
 
     std::ifstream file(filename);
-    std::string dem_file_temp, msg;
-    std::getline(file, dem_file_temp);
-    std::getline(file, dem_file_temp);
+    std::string str, dem_file_temp, msg;
+
+    while (std::getline(file, str)) 
+    {
+        if(str.find("DEM_FILE") != std::string::npos){
+            dem_file_temp = str.substr(9);
+            break; // snowmelt file
+        }
+        
+    }
     file.close();
 
     unsigned int linei,numi;
