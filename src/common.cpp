@@ -83,7 +83,6 @@ void get_domain_size(unsigned int *rown, unsigned int *coln,
     {
         if(str.find("DEM_FILE") != std::string::npos){
             dem_file_temp = str.substr(9);
-            break; // snowmelt file
         }
         
     }

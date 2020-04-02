@@ -108,8 +108,8 @@ int main(int argc, char* argv[])
     //std::cin >> ds.dxy;
     logFLUXOSfile << "Cell size (m) = " + std::to_string(ds.dxy) + "\n";
     
-    ds.arbase = ds.dxy * ds.dxy;
     read_geo(ds,ks_input,logFLUXOSfile); // DEM
+    ds.arbase = ds.dxy * ds.dxy;
     
     //std::cout << "Increment to basin margins (m) = ";
     //std::cin >> zbinc;

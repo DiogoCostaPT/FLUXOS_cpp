@@ -142,11 +142,11 @@ void read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
             }else
             {
                 (*ds.innerNeumannBCWeir).at(irow,icol) = 0.0f;
-                zbp_corr = zbp;
+                zbp_corr = std::fabs(zbp);
             }
             //zb_raw.at(irow,icol) = zbp_corr;
             (*ds.zb).at(irow,icol) = zbp_corr;  // For now -99999 is set as 99999 to act like a wall using abs
-            (*ds.z).at(irow,icol) = zbp_corr;
+            //(*ds.z).at(irow,icol) = zbp_corr;
             (*ds.ks).at(irow,icol) = ks_input; 
         }
     }
