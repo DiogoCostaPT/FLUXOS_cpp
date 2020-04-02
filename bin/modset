@@ -1,5 +1,5 @@
 COMMNET ### Batch_1 - additional tests for paper ###
-DEM_FILE bin/ersi_grid_dem_LON_basin
+DEM_FILE bin/Essex_DEM_ascii_original
 QMELT_FILE bin/Qmelt_synthetic.fluxos
 PRINT_STEP 3600
 ROUGNESS_HEIGHT 0.005

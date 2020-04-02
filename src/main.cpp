@@ -43,8 +43,8 @@
 int main(int argc, char* argv[]) 
 {   
     unsigned int NROWSl, NCOLSl, it = 0;
-    unsigned int a, irow, icol, print_step, print_next, qmelt_rowi, timstart;
-    double c0,v0,u0,hp, hpall, qmelti,ks_input; 
+    unsigned int irow, icol, print_step, print_next, timstart;
+    double c0,hp,v0,u0, hpall, ks_input; 
     bool outwritestatus;
 
     std::chrono::duration<double> elapsed_seconds;
@@ -190,36 +190,7 @@ int main(int argc, char* argv[])
           
        
         // Qmelt load
-        for (a=0;a<=(*ds.qmelt).col(0).n_elem;a++){
-            qmelt_rowi = a;
-            if ((*ds.qmelt).at(a,0) > ds.tim){       
-                break;
-            }
-        }
-        
-        qmelti = (*ds.qmelt).at(qmelt_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
-        ds.qmelv_inc += qmelti;
-         for(icol=1;icol<=ds.NCOLS;icol++)
-        {
-            for(irow=1;irow<=ds.NROWS;irow++)
-            {
-                if (std::abs((*ds.zb).at(irow,icol)) != 99999)
-                {
-                    hp = std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0); // adesolver hp before adding snowmelt  
-                    (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   
-                    (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
-                    if ((*ds.h)(irow,icol) <= ds.hdry)
-                    {
-                        (*ds.ldry).at(irow,icol)=0.0f;
-                    }
-                    (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
-                    if (hp!=0.)
-                    {          
-                        (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
-                    }
-                }
-            }
-         }
+        add_qmelt(ds);
                 
         // FLOW SOLVERS
         if (hpall!=0) 
