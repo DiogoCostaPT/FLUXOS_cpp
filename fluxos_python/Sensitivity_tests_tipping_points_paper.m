@@ -12,7 +12,7 @@ Qmelt_CRHM_analysis_SD_flag = 0; % 1) VB Kevin (reanalysis)
 
 generate_FLUXOS_files_flag = 0;
 
-gen_Qmelt_files_sens_gammadistrib_flag = 0; % obsolete
+gen_Qmelt_files_sens_gammadistrib_flag = 1; % obsolete
 
 %% CRHM-based
 if Qmelt_CRHM_analysis_STC_flag

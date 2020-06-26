@@ -8,7 +8,7 @@ batch_dir = 'batch_1_selected_paper_CRHM';
     
 if CrossSections_outFiles_flag
      %%%%%%%%%% 
-    yearselect = 2011;
+    yearselect = 2010;
     ResType = 1; %1-flow, 2-WQ, 3-SQ
     Obs_col = 2;      % FLOW: Obs_col = 2 
                       % NH4: Obs: Obs_col = 2 
