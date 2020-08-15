@@ -3,10 +3,13 @@ clear all
 
 sites = {'LON','ESS','RIS2','FW4','CMCDC2'};
 
-site_i = 4;
+site_i = 5;
 
 plot_options = {'dem_elevation','water_depth'};
 plot_i = 2;
+
+cmax_waterdepth = 25; % in cm
+add_sites = 1;
 
 %% Input data
 
@@ -37,7 +40,7 @@ elseif (strcmp(site,'ESS'))
 elseif (strcmp(site,'RIS2'))
     % Essex
     demfile = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_3/RIS2/RIS2.asc';
-    results_file = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_3/RIS2/Results/208800.txt';
+    results_file = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_3/RIS2/Results/259200.txt';
     delimiterIn = ' ';
     utm_zone = '14 T';
     ix = 2; % for simulations
@@ -45,10 +48,12 @@ elseif (strcmp(site,'RIS2'))
     x_inverse = true;
     row_i_north_utm = 4; % for DEM
     row_i_east_utm = 3; % for DEM
+    sitesshapefile_up = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/Janina_Henry_Merrin/RIS2_up.shp';
+     sitesshapefile_down = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/Janina_Henry_Merrin/RIS2_down.shp';
 elseif (strcmp(site,'FW4'))
     % Essex
-    demfile = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_3/FW4/FW4.asc';
-    results_file = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_3/FW4/Results/259200.txt';
+    demfile = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_4/FW4/FW4_extended_2.asc';
+    results_file = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_4/FW4/Results/259200.txt';
     delimiterIn = ' ';
     utm_zone = '14 U';
     ix = 2; % for simulations
@@ -56,10 +61,12 @@ elseif (strcmp(site,'FW4'))
     x_inverse = true;
     row_i_north_utm = 4; % for DEM
     row_i_east_utm = 3; % for DEM
+    sitesshapefile_up = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/Janina_Henry_Merrin/FW4_up.shp';
+    sitesshapefile_down = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/Janina_Henry_Merrin/FW4_down.shp';
 elseif (strcmp(site,'CMCDC2'))
     % Essex
-    demfile = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_3/CMCDC2/CMCDC2.asc';
-    results_file = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_3/CMCDC2/Results/90000.txt';
+    demfile = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_4/CMCDC2/CMCDC2_extended_2.asc';
+    results_file = '/media/dcosta/data/megasync/my_server/fluxos/Henry_Janina_4/CMCDC2/Results/259200.txt';
     delimiterIn = ' ';
     utm_zone = '14 U';
     ix = 2; % for simulations
@@ -67,9 +74,10 @@ elseif (strcmp(site,'CMCDC2'))
     x_inverse = true;
     row_i_north_utm = 4; % for DEM
     row_i_east_utm = 3; % for DEM
+    sitesshapefile_up = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/Janina_Henry_Merrin/CA_up.shp';
+    sitesshapefile_down = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/Janina_Henry_Merrin/CA_down.shp';
 end
 
-cmax_waterdepth = 10; % in cm
 
 %% Manipulations
 headerlinesIn = 6; % in dem
@@ -148,6 +156,25 @@ elseif plot_i == 2
     set(get(hcb,'Title'),'String','Maximum water depth [cm]')   
 end
 geobasemap satellite
-alpha(gs1,0.5)
+alpha(gs1,0.1)
 title(['Site: ',site])
+
+% adding sites
+if add_sites
+    sitesshapefile_all = {sitesshapefile_up,sitesshapefile_down};
+    styleform = {'wo','ws'};
+   for f = 1:2
+       sitesshapefile_i = sitesshapefile_all{f};
+       site_data = shaperead(sitesshapefile_i);
+       sites_XY = [[site_data.X]',[site_data.Y]'];
+       sites_lonlat = zeros(size(sites_XY));
+       for i = 1:numel(sites_lonlat(:,1))
+           [lon, lat] = utm2deg(sites_XY(i,1),sites_XY(i,2),utm_zone);
+           sites_lonlat(i,1) = lon;
+           sites_lonlat(i,2) = lat;
+       end
+       hold on
+       geoscatter(sites_lonlat(:,1),sites_lonlat(:,2),70,styleform{f},'linewidth',1.5)
+   end
+end
 
