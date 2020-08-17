@@ -83,6 +83,7 @@ function [resultdir_list, ObsPath] = get_resultdir_list(FLUXOS_res_dir,batch_dir
            resultdir_list = {...
                         't_36_paper_crhm',...
                          };
+         end
     end
     
     for i = 1:numel(resultdir_list)

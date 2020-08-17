@@ -26,8 +26,13 @@ General Model Settings
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/'
 #dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/Essex_1/Essex_DEM_ascii'
 
-sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys_2/'
-dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys_2/St_Marys_DEM_corrected.asc'
+#sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys_2/'
+#dempath = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_1/St_Marys_2/St_Marys_DEM_corrected.asc'
+
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_select_paper/'
+dempath = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_select_paper/t_36_paper/ersi_grid_dem_alldomain_basinwalls'
+
+
 
 try:
     resultdir_list_raw = [x[0] for x in os.walk(sim_batch_dir)]
@@ -102,9 +107,11 @@ simType = input("Options:\n# Analyse a cross-section (type 'cs')\n# Inundation m
 
 # Read geo to get nx and ny
 
+
 geomatrix = np.loadtxt(dempath, dtype='i', delimiter=' ')
 ny = geomatrix.shape[0]
 nx = geomatrix.shape[1]
+
 
 if (simType == 'cs'):
 

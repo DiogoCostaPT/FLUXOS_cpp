@@ -51,9 +51,10 @@ def xyz_to_matrix(xyz_columndata, nx, ny):
     # matrix dimensions: nx * ny
     # assumes that following order: x, y and z in columns 1, 2 and 3, respectively
 
-    var = np.zeros((nx, ny))
+    var = np.zeros((ny,nx))
     # loop to extract each point of the cross-section from the result file and put in the varall_1 matrix
     for row in range(1, len(xyz_columndata)):
+
         xi = xyz_columndata[row, 1] - 1
         yi = xyz_columndata[row, 0] - 1
         var_i = xyz_columndata[row, 2]

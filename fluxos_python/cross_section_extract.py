@@ -23,7 +23,7 @@ def csextract(simType,resultdir,resfiles_list, xy_CS,  sim, var_col_1, var_col_2
     # Get angle of the CS with the vertical and horizontal planes - change direction to guarantee always b1 < b2 (xy_CS_cor)
     geom_CS, xy_CS_cor = getanglesCS(xy_CS)
 
-    num_cores = multiprocessing.cpu_count()
+    num_cores = round(multiprocessing.cpu_count()*2/3)
     crosecvals = np.vstack(Parallel(n_jobs=num_cores)(delayed(Extract_File_Res)(simType,resultdir,resfiles_list,t_int, xy_CS_cor, geom_CS, nx, ny, sim, var_col_1, var_col_2) for t_int in tqdm(range(0, ntimstp))))
 
     return crosecvals
