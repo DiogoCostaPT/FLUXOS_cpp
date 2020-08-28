@@ -43,23 +43,23 @@ unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
             zbne = (*ds.zb).at(irow1,icol1);
             a = 0;
             zbsum = 0;
-            if (std::fabs(zbsw) != 99999){
+            if (zbsw != ds.NODATA_VALUE){
                 zbsum=zbsum + zbsw;
                 a = a + 1;
             }
-            if (std::fabs(zbse) != 99999){
+            if (zbse != ds.NODATA_VALUE){
                 zbsum=zbsum + zbse;
                 a = a + 1;
             }
-            if (std::fabs(zbnw) != 99999){
+            if (zbnw != ds.NODATA_VALUE){
                 zbsum=zbsum + zbnw;
                 a = a + 1;
             }
-            if (std::fabs(zbne) != 99999){
+            if (zbne != ds.NODATA_VALUE){
                 zbsum=zbsum + zbne;
                 a = a + 1;
             }
-            (*ds.zb).at(irow,icol)=(zbsum)/a;
+
             zbs1[irow1]=zbne;
             zbsw= zbse;
             zbnw= zbne;

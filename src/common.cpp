@@ -137,7 +137,7 @@ double qmelti,hp;
     {
         for(irow=1;irow<=ds.NROWS;irow++)
         {
-            if (std::abs((*ds.zb).at(irow,icol)) != 99999)
+            if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
             {
                 hp = std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0); // adesolver hp before adding snowmelt  
                 (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   

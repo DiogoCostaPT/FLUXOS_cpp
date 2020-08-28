@@ -169,7 +169,7 @@ float read_load(GlobVar& ds,std::ofstream& logFLUXOSfile)
             vmelt = filedataQ(a,1);  // value of melt
             (*ds.qmelt).at(a,0) = tmelts;  
             (*ds.qmelt).at(a,1) = vmelt;
-            ds.qmelvtotal += vmelt /(1000.*3600.*24.) * (tmelts - tmelts_bef); 
+            ds.qmelvtotal += vmelt /(1000.*3600.*24.) * (tmelts - tmelts_bef);  // input in mm/day
             tmelts_bef = tmelts;
         }
        msg = "Successful loading of Qmelt file: " + ds.qmelt_file;
