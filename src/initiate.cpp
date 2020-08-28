@@ -59,6 +59,10 @@ unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
                 zbsum=zbsum + zbne;
                 a = a + 1;
             }
+            if (a != 0)
+                (*ds.zb).at(irow,icol)=(zbsum)/a;
+            else
+                (*ds.zb).at(irow,icol)=0.0f; // this will not be used
 
             zbs1[irow1]=zbne;
             zbsw= zbse;
