@@ -70,7 +70,7 @@ function [resultdir_list, ObsPath] = get_resultdir_list(FLUXOS_res_dir,batch_dir
                         't_36_paper',...
                          };
          end
-        elseif strcmp(batch_dir,'batch_1_selected_paper_CRHM')
+    elseif strcmp(batch_dir,'batch_1_selected_paper_CRHM')
          if (yearselect==2009)
             resultdir_list = {...
                         't_49_paper_crhm',...
@@ -84,6 +84,33 @@ function [resultdir_list, ObsPath] = get_resultdir_list(FLUXOS_res_dir,batch_dir
                         't_36_paper_crhm',...
                          };
          end
+    elseif strcmp(batch_dir,'batch_1_selected_paper_additional') || strcmp(batch_dir,'batch_1_selected_paper_additional_noIC') || ...
+            strcmp(batch_dir,'batch_1_selected_paper_additional_graham') || strcmp(batch_dir,'batch_1_selected_paper_additional_noIC_graham') 
+         if (yearselect==2005)
+            resultdir_list = {...
+                        '2005',...
+                        };
+        elseif (yearselect==2006)
+            resultdir_list = {...
+                        '2006',...
+                        };
+        elseif (yearselect==2012)
+            resultdir_list = {...
+                        '2012',...
+                        };
+        elseif (yearselect==2013)
+            resultdir_list = {...
+                        '2013',...
+                        }; 
+        elseif (yearselect==2014)
+            resultdir_list = {...
+                        '2014',...
+                        }; 
+        elseif (yearselect==2015)
+            resultdir_list = {...
+                        '2015',...
+                        }; 
+         end
     end
     
     for i = 1:numel(resultdir_list)
@@ -93,18 +120,30 @@ function [resultdir_list, ObsPath] = get_resultdir_list(FLUXOS_res_dir,batch_dir
     % OBSERVATIONS
     ObsPath = '';
     dirobs = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/STC_data_pre-processing/0_Obs/1_Compiled_for_FLUXOS_validation/';
-    if (yearselect==2009 && ResType == 1)
-        ObsPath = [dirobs,'1_2009_Compiled/Streamflow_MS9C_2009_trimmed_for_simulation.csv'];
+    if (yearselect==2005 && ResType == 1)
+        ObsPath = [dirobs,'2005_Compiled/2005_trimmed.csv'];
+    elseif (yearselect==2006 && ResType == 1)
+        ObsPath = [dirobs,'2006_Compiled/2006_trimmed.csv'];
+    elseif (yearselect==2009 && ResType == 1)
+        ObsPath = [dirobs,'2009_Compiled/Streamflow_MS9C_2009_trimmed_for_simulation.csv'];
     elseif (yearselect==2010 && ResType == 1)
-        ObsPath = [dirobs,'2_2010_Compiled/Streamflow_MS9C_2010_trimmed_to_simulation.csv'];
+        ObsPath = [dirobs,'2010_Compiled/Streamflow_MS9C_2010_trimmed_to_simulation.csv'];
     elseif (yearselect==2011 && ResType == 1)
-        ObsPath = [dirobs,'/3_2011_Compiled/Snowmelt_Runoff_MS9_2011_justflow.csv'];
+        ObsPath = [dirobs,'2011_Compiled/Snowmelt_Runoff_MS9_2011_justflow.csv'];
+    elseif (yearselect==2012 && ResType == 1)
+        ObsPath = [dirobs,'2012_Compiled/2012_trimmed.csv'];
+    elseif (yearselect==2013 && ResType == 1)
+        ObsPath = [dirobs,'2013_Compiled/2013_trimmed.csv'];
+    elseif (yearselect==2014 && ResType == 1)
+        ObsPath = [dirobs,'2014_Compiled/2014_trimmed.csv'];
+    elseif (yearselect==2015 && ResType == 1)
+        ObsPath = [dirobs,'2015_Compiled/2015_trimmed.csv'];
     elseif (yearselect==2009 && ResType == 2 || ResType == 3)
-        ObsPath = [dirobs,'1_2009_Compiled/Streamflow_WQ_MS12_2009.csv'];
+        ObsPath = [dirobs,'2009_Compiled/Streamflow_WQ_MS12_2009.csv'];
     elseif (yearselect==2010 && ResType == 2 || ResType == 3)
-        ObsPath = [dirobs,'2_2010_Compiled/Streamflow_WQ_MS12_2010.csv'];
+        ObsPath = [dirobs,'2010_Compiled/Streamflow_WQ_MS12_2010.csv'];
     elseif (yearselect==2011 && ResType == 2 || ResType == 3)
-        ObsPath = [dirobs,'3_2011_Compiled/Streamflow_WQ_MS12_2011.csv'];
+        ObsPath = [dirobs,'2011_Compiled/Streamflow_WQ_MS12_2011.csv'];
     else
         disp('No match for obs file: change yearlect and/or ResType')
     end

@@ -4,8 +4,12 @@ MedianMax_velocity_flag = 0;
 
 
 FLUXOS_res_dir = '/media/dcosta/data/megasync/my_server/fluxos/';
-%batch_dir = 'batch_1_selected_paper_CRHM';
-batch_dir = 'batch_1_select_paper';
+batch_dir = 'batch_1_selected_paper_CRHM';
+%batch_dir = 'batch_1_select_paper';
+%batch_dir = 'batch_1_selected_paper_additional';
+%batch_dir = 'batch_1_selected_paper_additional_graham';
+%batch_dir = 'batch_1_selected_paper_additional_noIC';
+%batch_dir = 'batch_1_selected_paper_additional_noIC_graham';
 
 if CrossSections_outFiles_flag
      %%%%%%%%%% 
@@ -25,7 +29,7 @@ if CrossSections_outFiles_flag
                       % TDP: Obs_col = 12 
                       % SRP: Obs_col = 13
                       % TSS: Obs_col = 14
-    lag = 8; % in hours
+    lag = 0; % in hours
 
     if ResType == 1
         outfilenam = 'f.out';
@@ -35,27 +39,43 @@ if CrossSections_outFiles_flag
         outfilenam = 'sq.out';
     end
 
-    if (yearselect==2009)
+    if (yearselect==2005)
+        fluxos_timestart = 38440.8437499995 + 695422 - lag/24; 
+    elseif (yearselect==2006)
+        fluxos_timestart = 38809.1874999995 + 695422 - lag/24; 
+    elseif (yearselect==2009)
        fluxos_timestart = 39913.01042 + 695422 - lag/24; 
     elseif (yearselect==2010)
        fluxos_timestart = 40252.03125 + 695422 - lag/24;       
     elseif (yearselect==2011)
-        fluxos_timestart = 40633 + 695422 - lag/24;  
+        fluxos_timestart = 40633 + 695422 - lag/24;
+    elseif (yearselect==2012)
+        fluxos_timestart = 40979.3333333333 + 695422 - lag/24;  
+    elseif (yearselect==2013)
+        fluxos_timestart = 41389.90625 + 695422 - lag/24;  
+    elseif (yearselect==2014)
+        fluxos_timestart = 41737.1354166667 + 695422 - lag/24;  
+    elseif (yearselect==2015)
+        fluxos_timestart = 42156.0729166667 + 695422 - lag/24;  
     end
 
     [resultdir_list, obsPath] = get_resultdir_list(FLUXOS_res_dir,batch_dir,yearselect,ResType);
 
     % Load Obs
-    obsdata = importdata(obsPath);
-    %time_obs = cumsum([0; diff(obsdata.data(:,1))])*24; % days -> hour
-    time_obs = obsdata.data(:,1) +  695422;
-    data_obs = obsdata.data(:,Obs_col);
+    if ~isempty(obsPath)
+        obsdata = importdata(obsPath);
+        %time_obs = cumsum([0; diff(obsdata.data(:,1))])*24; % days -> hour
+        time_obs = obsdata.data(:,1) +  695422;
+        data_obs = obsdata.data(:,Obs_col);
+    end
 
     %%%%%%%%% MODEL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     figure
     resultdir_legend = {};
-    p(1) = plot(time_obs,data_obs,'or');
+    if ~isempty(obsPath)
+        p(1) = plot(time_obs,data_obs,'or');
+    end
     hold on
     timmod_min = [];
     timmod_max = [];
@@ -65,7 +85,7 @@ if CrossSections_outFiles_flag
 
     % load FLUXOS cs results
     try
-        res = importdata([resultdir_list{i},'/cs/',outfilenam]);
+        res = importdata([resultdir_list{i},'cs/',outfilenam]);
         resultdir_legend = [resultdir_legend,resultdir_list{i}];
     catch
         disp(['Result (f.out) not found for: "',resultdir_list{i},'" (SKIPPED)'])
@@ -78,16 +98,48 @@ if CrossSections_outFiles_flag
     timmod_min = min([timmod_min; time_mod]);
     timmod_max = max([timmod_max; time_mod]);
 
-    %subplot(211)
-    %time_surf = repmat(time_mod',numel(data_mod(1,:)),1)';
-    %crosec_surf = repmat((1:1:numel(data_mod(1,:)))',1,numel(time_mod))';
-    %surf(time_surf,crosec_surf,data_mod)
-    %axis tight
-    %shading interp
-    %alpha 0.8
-    %view(0,90)
-    %subplot(212)
-    p(i+1) = plot(time_mod,(sum(data_mod'))','linewidth',1.5,'Color',[0.65 0.65 0.65])%[0 0 0]+1/(numel(resultdir_list)+5) * i)
+    %% Model results to plot
+    fluxos_time  = time_mod;
+    fluxos_results = (sum(data_mod'))'; % summing up flow on all cells of the cross-section
+    
+    %% Calculate NSE, RMSE and Bias
+     if ~isempty(obsPath)
+        Model_data_interc = interp1(fluxos_time,fluxos_results,time_obs);
+
+        %[r2 rmse] = rsquare(Z_obs_mesh,Model_data_interc);
+
+         % remove NaNs
+         Model_data_interc_use = Model_data_interc;
+         WQ_use = data_obs;
+
+
+        nanloc = find(isnan(Model_data_interc_use));
+        Model_data_interc_use(nanloc) = [];
+        WQ_use(nanloc) = [];
+
+        nanloc = find(isnan(WQ_use));
+        Model_data_interc_use(nanloc) = [];
+        WQ_use(nanloc) = [];
+
+        % Nash
+        numerator=(WQ_use-Model_data_interc_use).^2;
+        denominator=(WQ_use-mean(WQ_use)).^2;
+        Nash =1-(sum(numerator)/sum(denominator));
+
+        % RMSE
+        Sumcal = (Model_data_interc_use-WQ_use).^2;
+        numerator = sum(Sumcal);
+        n=numel(WQ_use);
+        RMSE=(numerator/n)^(1/2);
+
+        % BIAS
+        numerator = sum(WQ_use);
+        denominator = sum(Model_data_interc_use);
+        Bias = numerator/denominator-1;
+    
+     end
+    %% Plot
+    p(i+1) = plot(fluxos_time,fluxos_results,'linewidth',1.5,'Color',[0.65 0.65 0.65])%[0 0 0]+1/(numel(resultdir_list)+5) * i)
     hold on
     waitbar(i / numloop)
     end
@@ -104,7 +156,9 @@ if CrossSections_outFiles_flag
 
 
     alpha 0.7
-    xlim([timmod_min timmod_max])
+    if ~isempty(obsPath)
+        %xlim([timmod_min timmod_max])
+    end
     grid on
     legend(['obs',resultdir_legend],'interpreter','none')
     title(yearselect)

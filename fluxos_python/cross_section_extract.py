@@ -71,7 +71,7 @@ def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, geom_CS
 
                     for segi in range(0, len(xy_CS_cor)):
                         xi = xy_CS_cor[segi, 0].astype(int)
-                        yi = xy_CS_cor[segi, 1].astype(int)
+                        yi = 721-xy_CS_cor[segi, 1].astype(int)
                         if simType == 'sq':  # Water levels or concentrations
                             crosecvals_t[segi+1] = xyz_matrix_var_1[yi, xi]  # cross-section values
                         elif simType == 'wq':
