@@ -32,7 +32,7 @@ General Model Settings
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_select_paper/'
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional/'
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_noIC/'
-sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_graham/'
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_previousFLUXOSversion/'
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_noIC_graham/'
 
 dempath = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_select_paper/t_36_paper/ersi_grid_dem_alldomain_basinwalls'

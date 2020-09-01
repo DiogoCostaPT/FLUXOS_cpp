@@ -4,7 +4,7 @@ MedianMax_velocity_flag = 0;
 
 
 FLUXOS_res_dir = '/media/dcosta/data/megasync/my_server/fluxos/';
-batch_dir = 'batch_1_selected_paper_CRHM';
+batch_dir = 'batch_1_selected_paper_additional_previousFLUXOSversion';
 %batch_dir = 'batch_1_select_paper';
 %batch_dir = 'batch_1_selected_paper_additional';
 %batch_dir = 'batch_1_selected_paper_additional_graham';
@@ -13,7 +13,7 @@ batch_dir = 'batch_1_selected_paper_CRHM';
 
 if CrossSections_outFiles_flag
      %%%%%%%%%% 
-    yearselect = 2011;
+    yearselect = 2006;
     ResType = 1; %1-flow, 2-WQ, 3-SQ
     Obs_col = 2;      % FLOW: Obs_col = 2 
                       % NH4: Obs: Obs_col = 2 
@@ -29,7 +29,7 @@ if CrossSections_outFiles_flag
                       % TDP: Obs_col = 12 
                       % SRP: Obs_col = 13
                       % TSS: Obs_col = 14
-    lag = 0; % in hours
+    lag = 8; % in hours
 
     if ResType == 1
         outfilenam = 'f.out';
