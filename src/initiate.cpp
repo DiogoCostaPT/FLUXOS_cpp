@@ -75,7 +75,7 @@ unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
     {
         for(irow=1;irow<=ds.NROWS;irow++)
         {
-            if(std::abs((*ds.zb)(irow,icol))!=99999)
+            if(std::abs((*ds.zb)(irow,icol))!=ds.NODATA_VALUE)
             {
             (*ds.h).at(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
             (*ds.z).at(irow,icol)=(*ds.zb).at(irow,icol)+(*ds.h).at(irow,icol);
