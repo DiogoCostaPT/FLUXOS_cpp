@@ -70,13 +70,13 @@ void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
     zbpe=.5*(zbe+zbp);
     // zbps=.5*(zbs+zbp);
     zbpn=.5*(zbn+zbp);
-    hp  = std::max(0.0,(*ds.z).at(irow,icol)-zbp);
-    hp0 = std::max(std::max(hdryl,hp),kspl);
-    hw=std::max(0.0,zw-zbw);
-    he=std::max(0.0,ze-zbe);
-    hs=std::max(0.0,zs-zbs);
-    hn=std::max(0.0,zn-zbn);
-    hnn=std::max(0.0,znn-zbnn);
+    hp  = std::fmax(0.0f,(*ds.z).at(irow,icol)-zbp);
+    hp0 = std::fmax(std::fmax(hdryl,hp),kspl);
+    hw=std::fmax(0.0f,zw-zbw);
+    he=std::fmax(0.0f,ze-zbe);
+    hs=std::fmax(0.0f,zs-zbs);
+    hn=std::fmax(0.0f,zn-zbn);
+    hnn=std::fmax(0.0f,znn-zbnn);
 
     // CELL FACE VALUES                    
     hme=.5*(hp+he);          
@@ -99,7 +99,7 @@ void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
     // CELLS WITH SOME DRY NEIGHBOURS     
     if(lde==1.0f) 
     { 
-        hme=std::max(0.0,zp-zbpe);
+        hme=std::fmax(0.0f,zp-zbpe);
         he=0.0f;;
         qe=0.0f;
         re=0.0f;
@@ -126,7 +126,7 @@ void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
     }
     if(ldn==1.0f) 
     {
-        hmn=std::max(0.0,zp-zbpn);
+        hmn=std::fmax(0.0f,zp-zbpn);
         hn=0.0f;
         qn=0.0f;
         rn=0.0f;
@@ -156,10 +156,10 @@ void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
     // CALC TURBULENT STRESS
     cme=sqrt(gaccl*hme);
     cmn=sqrt(gaccl*hmn);
-    ume=qme/std::max(hme,hdryl);
-    vme=rme/std::max(hme,hdryl);
-    umn=qmn/std::max(hmn,hdryl);
-    vmn=rmn/std::max(hmn,hdryl);
+    ume=qme/std::fmax(hme,hdryl);
+    vme=rme/std::fmax(hme,hdryl);
+    umn=qmn/std::fmax(hmn,hdryl);
+    vmn=rmn/std::fmax(hmn,hdryl);
     
     cnp=cvdefl*(*ds.us).at(irow,icol)*hp+nueml;
     cne=cvdefl*(*ds.us).at(ie,icol)*he+nueml;
@@ -168,15 +168,15 @@ void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
     hnn=.5*(cnp+cnn)*sqrt(hp*hn);
 
     up=qp/hp0;
-    un=qn/std::max(std::max(hn,hdryl),(*ds.ks).at(irow,in));
-    us0=(*ds.qx).at(irow,is)/std::max(std::max(hs,hdryl),(*ds.ks).at(irow,is));
-    use0=(*ds.qx).at(ie,is)/std::max(std::max((*ds.h).at(ie,is),hdryl),(*ds.ks).at(ie,is));
-    une=(*ds.qx).at(ie,in)/std::max(std::max((*ds.h).at(ie,in),hdryl),(*ds.ks).at(ie,in));
+    un=qn/std::fmax(std::fmax(hn,hdryl),(*ds.ks).at(irow,in));
+    us0=(*ds.qx).at(irow,is)/std::fmax(std::fmax(hs,hdryl),(*ds.ks).at(irow,is));
+    use0=(*ds.qx).at(ie,is)/std::fmax(std::fmax((*ds.h).at(ie,is),hdryl),(*ds.ks).at(ie,is));
+    une=(*ds.qx).at(ie,in)/std::fmax(std::fmax((*ds.h).at(ie,in),hdryl),(*ds.ks).at(ie,in));
     vp=rp/hp0;
-    ve=re/std::max(std::max(he,hdryl),(*ds.ks).at(ie,icol));
-    vw=rw/std::max(std::max(hw,hdryl),(*ds.ks).at(iw,icol));
-    vwn=(*ds.qy).at(iw,in)/std::max(std::max((*ds.h).at(iw,in),hdryl),(*ds.ks).at(iw,in));
-    ven=(*ds.qy).at(ie,in)/std::max(std::max((*ds.h).at(ie,in),hdryl),(*ds.ks).at(ie,in));
+    ve=re/std::fmax(std::fmax(he,hdryl),(*ds.ks).at(ie,icol));
+    vw=rw/std::fmax(std::max(hw,hdryl),(*ds.ks).at(iw,icol));
+    vwn=(*ds.qy).at(iw,in)/std::fmax(std::fmax((*ds.h).at(iw,in),hdryl),(*ds.ks).at(iw,in));
+    ven=(*ds.qy).at(ie,in)/std::fmax(std::fmax((*ds.h).at(ie,in),hdryl),(*ds.ks).at(ie,in));
 
     txye=hne*((ve-vp)/fabs(dx)+.25*(un+une-us0-use0)/dy);
     txyn=hnn*((un-up)/fabs(dy)+.25*(ve+ven-vw-vwn)/dx);
@@ -278,11 +278,11 @@ void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
     // BOUNDARY CONDITIONS (WEIR DISCHARGE RATE) 
     if (icol==1 || icol==NCOLSl)
     {
-        fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
+        fn1=std::fmin(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
     if (irow==1 || irow==NROWSl)
     {
-        fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
+        fe1=std::fmin(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
 
     // CHECK MASS BALANCE (restrict outflow flux to available water)        

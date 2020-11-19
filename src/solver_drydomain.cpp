@@ -61,9 +61,9 @@ void solver_dry(GlobVar& ds, unsigned int irow, unsigned int icol) {
     zp=(*ds.z).at(irow,icol);
     ze=(*ds.z).at(ie,icol);
     zn=(*ds.z).at(irow,in);
-    hp  = std::max(0.0,(*ds.z).at(irow,icol)-(*ds.z).at(irow,icol));
-    he=std::max(0.0,ze-zbe);
-    hn=std::max(0.0,zn-zbn);
+    hp  = std::fmax(0.0f,(*ds.z).at(irow,icol)-(*ds.z).at(irow,icol));
+    he=std::fmax(0.0f,ze-zbe);
+    hn=std::fmax(0.0f,zn-zbn);
     qp=(*ds.qx).at(irow,icol);
     qe=(*ds.qx).at(ie,icol);
     rp=(*ds.qy).at(irow,icol);
@@ -93,7 +93,7 @@ void solver_dry(GlobVar& ds, unsigned int irow, unsigned int icol) {
     // CELLS WITH SOME DRY NEIGHBOURS
     if (lde==0.0f)
     {
-        hme=std::max(0.0,ze-zbpe);
+        hme=std::fmax(0.0f,ze-zbpe);
         if(hme>ds.hdry) 
         {
             if(ze<=zp) 
@@ -123,7 +123,7 @@ void solver_dry(GlobVar& ds, unsigned int irow, unsigned int icol) {
     }
     if (ldn==0.0f)  
     {   
-        hmn=std::max(0.0,zn-zbpn);    
+        hmn=std::fmax(0.0f,zn-zbpn);    
         if(hmn>ds.hdry) 
         {
             if(zn<=zp) 
@@ -155,11 +155,11 @@ void solver_dry(GlobVar& ds, unsigned int irow, unsigned int icol) {
     // BOUNDARY CONDITIONS (WEIR DISCHARGE RATE)
     if (icol==1 || icol==NCOLSl)
     {
-        fn1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
+        fn1=std::fmin(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
     if (irow==1 || irow==NROWSl)
     {
-        fe1=std::min(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
+        fe1=std::fmin(volrat,sqrt(gaccl)*pow(std::fmax(hp,0.0f),1.5));
     }
     
     // SAVE MASS AND MOMENTUM FLUXES

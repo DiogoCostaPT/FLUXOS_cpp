@@ -139,9 +139,9 @@ double qmelti,hp;
         {
             if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
             {
-                hp = std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0); // adesolver hp before adding snowmelt  
+                hp = std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f); // adesolver hp before adding snowmelt  
                 (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   
-                (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
+                (*ds.h)(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
                 if ((*ds.h)(irow,icol) <= ds.hdry)
                 {
                     (*ds.ldry).at(irow,icol)=0.0f;

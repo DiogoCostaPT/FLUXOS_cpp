@@ -33,7 +33,7 @@ void hydrodynamics_calc(GlobVar& ds)
     {
         for(irow=1;irow<=ds.NROWS;irow++)
         {  
-            hp=std::max(0.0,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
+            hp=std::fmax(0.0f,(*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol));
             (*ds.h).at(irow,icol) = hp;
             
             if(hp<=ds.hdry)
