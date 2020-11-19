@@ -56,7 +56,7 @@ int findLastStep(const char *path)
         simnum_str_i = (char*) malloc(sizeof(filename_i)-2);
         strncpy (simnum_str_i, filename_i, sizeof(filename_i)-2);
         simnum = atoi(simnum_str_i);
-        timestart = std::max(timestart,simnum);
+        timestart = std::fmax(timestart,simnum);
         free(simnum_str_i);
    }
    
@@ -137,11 +137,11 @@ double qmelti,hp;
     {
         for(irow=1;irow<=ds.NROWS;irow++)
         {
-            if (std::abs((*ds.zb).at(irow,icol)) != 99999)
+            if (std::fabs((*ds.zb).at(irow,icol)) != 99999)
             {
-                hp = std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0); // adesolver hp before adding snowmelt  
+                hp = std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f); // adesolver hp before adding snowmelt  
                 (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   
-                (*ds.h)(irow,icol)=std::max((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0);
+                (*ds.h)(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
                 if ((*ds.h)(irow,icol) <= ds.hdry)
                 {
                     (*ds.ldry).at(irow,icol)=0.0f;

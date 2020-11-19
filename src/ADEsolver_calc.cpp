@@ -27,8 +27,8 @@ void adesolver_calc(GlobVar& ds, int it)
             iy= ((a-1)/ds.NROWS)+1;
             ix=a-ds.NROWS*(iy-1);
 
-            cmaxr(ix,iy)=std::max((*ds.conc_SW)(ix-1,iy),std::max((*ds.conc_SW)(ix+1,iy),std::max((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
-            cminr(ix,iy)=std::min((*ds.conc_SW)(ix-1,iy),std::min((*ds.conc_SW)(ix+1,iy),std::min((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
+            cmaxr(ix,iy)=std::fmax((*ds.conc_SW)(ix-1,iy),std::fmax((*ds.conc_SW)(ix+1,iy),std::fmax((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
+            cminr(ix,iy)=std::fmin((*ds.conc_SW)(ix-1,iy),std::fmin((*ds.conc_SW)(ix+1,iy),std::fmin((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
             hnew=(*ds.h)(ix,iy);
             
             if((*ds.ldry)(ix,iy)==0 && (*ds.ldry_prev)(ix,iy)==0) 
@@ -73,8 +73,8 @@ void adesolver_calc(GlobVar& ds, int it)
         //  BC 
         if (ix==1) {
             pfce=(*ds.conc_SW)(0,iy)*(*ds.fe_1)(0,iy)*dy;     // convective flux
-            hp=std::max((*ds.h)(1,iy),ds.hdry);                  
-            he=std::max((*ds.h)(2,iy),ds.hdry);
+            hp=std::fmax((*ds.h)(1,iy),ds.hdry);                  
+            he=std::fmax((*ds.h)(2,iy),ds.hdry);
             fp=(*ds.conc_SW)(0,iy);
             fe=(*ds.conc_SW)(1,iy);
            
@@ -117,7 +117,7 @@ void adesolver_calc(GlobVar& ds, int it)
         // X-DIRECTION
         //// diffusive flux and mean concentration at east face
         if((*ds.ldry)(ie,iy)==0) {
-            hnue=std::max(hp*nt*he*nt,.0001); 
+            hnue=std::fmax(hp*nt*he*nt,.0001); 
             hne=std::sqrt(hnue)/sigc/dx*dy*ds.D_coef; 
             pfde=-hne*(fe-fp);                     // diffusive flux
 
@@ -139,7 +139,7 @@ void adesolver_calc(GlobVar& ds, int it)
             pfde=0.;
         }
 
-        fem=std::max(0.,fem);
+        fem=std::fmax(0.,fem);
 
         if(ix==ds.NROWS){  // if Boundary (overwrite the BC)
             fem=(*ds.conc_SW)(ds.NROWS+1,iy);
@@ -155,7 +155,7 @@ void adesolver_calc(GlobVar& ds, int it)
         if(pfe<0){ 
             if((*ds.ldry)(ie,iy)==0)    {
                 cvolrate=-(fe*he)*areae/ds.dtfl; 
-                pfe=std::max(pfe,cvolrate); //limit to available material
+                pfe=std::fmax(pfe,cvolrate); //limit to available material
             }else {
                 pfe=0.;
             }
@@ -164,7 +164,7 @@ void adesolver_calc(GlobVar& ds, int it)
         // Y-DIRECTION
         //// diffusion at the present time step Y-direction (pfde, where "d" refers to diffusion)
         if((*ds.ldry)(ix,in)==0)           {
-            hnue=std::max(.0001,hp*ntp*hn*nt);
+            hnue=std::fmax(.0001,hp*ntp*hn*nt);
             hnn=std::sqrt(hnue)/sigc/dy*dx*ds.D_coef;              // [m3/s]
             qfdn=-hnn*(fn-fp);                    // diffusive flux
             if(qyl>0.0f)       {
@@ -185,7 +185,7 @@ void adesolver_calc(GlobVar& ds, int it)
             qfdn=0.;
         }
 
-        fnm=std::max(0.,fnm);
+        fnm=std::fmax(0.,fnm);
 
         //// if Boundary (overwrite BC)
         if(iy==ds.NCOLS)    {
@@ -202,7 +202,7 @@ void adesolver_calc(GlobVar& ds, int it)
         if(qfn<0)    {
             if((*ds.ldry)(ix,in)==0)    {     
                 cvolrate=-(fn*hn)*arean/ds.dtfl; 
-                qfn=std::max(qfn,cvolrate);   //limit to available material
+                qfn=std::fmax(qfn,cvolrate);   //limit to available material
             }else {
                 qfn=0.;
             }
@@ -220,22 +220,22 @@ void adesolver_calc(GlobVar& ds, int it)
                     qfn=cf*cvolrat;
                 }
             } else if(pfe>0.){
-                pfe=std::min(pfe,(cvolrat-qfn));
+                pfe=std::fmin(pfe,(cvolrat-qfn));
             } else if(qfn>0.){
-                qfn=std::min(qfn,(cvolrat-pfe));         
+                qfn=std::fmin(qfn,(cvolrat-pfe));         
             }
         }else { // bilance outflow with inflow
             if(pfe>=0.  &&  qfn<0.)  { //restrict pfe to bilan
                 cbilan=cvolrat-qfn;                
                 if(cbilan>0.) {
-                    pfe=std::min(pfe,cbilan);
+                    pfe=std::fmin(pfe,cbilan);
                 }else{
                     pfe=0.;
                 }
             } else if(pfe<0.  &&  qfn>=0.)  {
                 cbilan=cvolrat-pfe;
                 if(cbilan>0.) {
-                    qfn=std::min(qfn,cbilan);
+                    qfn=std::fmin(qfn,cbilan);
                 }else{
                     qfn=0.;
                 }
