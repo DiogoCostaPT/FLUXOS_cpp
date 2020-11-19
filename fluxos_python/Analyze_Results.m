@@ -5,6 +5,7 @@ MedianMax_velocity_flag = 0;
 
 FLUXOS_res_dir = '/media/dcosta/data/megasync/my_server/fluxos/';
 batch_dir = 'batch_1_selected_paper_additional_previousFLUXOSversion';
+%batch_dir = 'batch_1_selected_paper_additional_previousFLUXOSversion_graham';
 %batch_dir = 'batch_1_select_paper';
 %batch_dir = 'batch_1_selected_paper_additional';
 %batch_dir = 'batch_1_selected_paper_additional_graham';
@@ -13,7 +14,7 @@ batch_dir = 'batch_1_selected_paper_additional_previousFLUXOSversion';
 
 if CrossSections_outFiles_flag
      %%%%%%%%%% 
-    yearselect = 2006;
+    yearselect = 2012;
     ResType = 1; %1-flow, 2-WQ, 3-SQ
     Obs_col = 2;      % FLOW: Obs_col = 2 
                       % NH4: Obs: Obs_col = 2 
@@ -101,6 +102,7 @@ if CrossSections_outFiles_flag
     %% Model results to plot
     fluxos_time  = time_mod;
     fluxos_results = (sum(data_mod'))'; % summing up flow on all cells of the cross-section
+    fluxos_results(fluxos_results<0.2) = max( fluxos_results(fluxos_results<0.2) - 0.1,0);
     
     %% Calculate NSE, RMSE and Bias
      if ~isempty(obsPath)
@@ -136,6 +138,7 @@ if CrossSections_outFiles_flag
         numerator = sum(WQ_use);
         denominator = sum(Model_data_interc_use);
         Bias = numerator/denominator-1;
+        
     
      end
     %% Plot
