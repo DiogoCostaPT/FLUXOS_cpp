@@ -22,7 +22,7 @@ void wintrasolver_calc(GlobVar& ds)
         {
             hp = (*ds.h).at(irow,icol);
             zbp =(*ds.zb).at(irow,icol);
-            if(hp>ds.hdry && zbp != 9999) 
+            if(hp>ds.hdry & zbp != ds.NODATA_VALUE) 
             {       
                 //deltam = (*ds.soil_mass).at(irow,icol) * (1-f) * ds.soil_release_rate/3600 * ds.dtfl; // exponential mass release
                 //deltam = ds.soil_release_rate/3600 * ds.dtfl; // linear mass release 

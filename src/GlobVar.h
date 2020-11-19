@@ -73,7 +73,7 @@ public:
     
     std::string dem_file, qmelt_file,sim_purp;
 
-    int NODATA_VALUE;
+    double NODATA_VALUE;
     
 };
 

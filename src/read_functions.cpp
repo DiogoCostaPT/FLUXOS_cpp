@@ -20,6 +20,10 @@ void read_modset(GlobVar& ds, const std::string& filename,
     int i = 0;
     while (std::getline(file, str)) 
     {
+        // Continue if comment
+        if(str.find("#") != std::string::npos)
+            continue;
+
         i += 1;
         if(str.find("COMMNET") != std::string::npos){ds.sim_purp = str.substr(8);}; // comment
         if(str.find("DEM_FILE") != std::string::npos){ds.dem_file = str.substr(9);}; // DEM ESRI-ArcGIS ascii

@@ -27,7 +27,7 @@ bool write_results(GlobVar& ds, int print_tag, unsigned int print_step, std::chr
     {
         for(irow=1;irow<=ds.NROWS;irow++)
         {
-            if ((*ds.h).at(irow,icol)>0.0f)
+            if (((*ds.zb)(irow,icol)!=0.0f) && ((*ds.h).at(irow,icol)>ds.hdry))
             {
                 ux=sqrt((*ds.ux).at(irow,icol) * (*ds.ux).at(irow,icol) +
                         (*ds.uy).at(irow,icol) * (*ds.uy).at(irow,icol));
