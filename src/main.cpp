@@ -47,6 +47,8 @@ int main(int argc, char* argv[])
     double c0,hp,v0,u0, hpall, ks_input; 
     bool outwritestatus;
 
+    bool errflag = false;
+
     std::chrono::duration<double> elapsed_seconds;
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
@@ -65,8 +67,9 @@ int main(int argc, char* argv[])
     logFLUXOSfile << "Simulation started... " << std::ctime(&start_time);
         
      // Get the size of the domain (nrow and ncol)
-    get_domain_size(&NROWSl,&NCOLSl, modset_flname, dirpath, logFLUXOSfile);
-     // Input the duration of the simulation
+    errflag = get_domain_size(&NROWSl,&NCOLSl, modset_flname, dirpath, logFLUXOSfile);
+    if (errflag)
+        exit(EXIT_FAILURE);
         
     // Initiate variables on the heap
     GlobVar ds(NROWSl+2,NCOLSl+2); 
@@ -84,8 +87,10 @@ int main(int argc, char* argv[])
     // timstart = 558000; // start of the simulation
         
     // read model set up
-    read_modset(ds,modset_flname,dirpath,&print_step,&ks_input,logFLUXOSfile);
-    
+    errflag = read_modset(ds,modset_flname,dirpath,&print_step,&ks_input,logFLUXOSfile);
+    if (errflag)
+        exit(EXIT_FAILURE);
+
     //std::cout << "Simulation purpose (write comment):  ";
     //std::cin >> coment_sim_str;
     logFLUXOSfile << "Simulation: " + ds.sim_purp + "\n\n";
@@ -108,7 +113,9 @@ int main(int argc, char* argv[])
     //std::cin >> ds.dxy;
     logFLUXOSfile << "Cell size (m) = " + std::to_string(ds.dxy) + "\n";
     
-    read_geo(ds,ks_input,logFLUXOSfile); // DEM
+    errflag = read_geo(ds,ks_input,logFLUXOSfile); // DEM
+    if (errflag)
+        exit(EXIT_FAILURE);
     ds.arbase = ds.dxy * ds.dxy;
     
     //std::cout << "Increment to basin margins (m) = ";
@@ -190,7 +197,9 @@ int main(int argc, char* argv[])
           
 
         // Qmelt load
-        add_qmelt(ds);
+        errflag = add_qmelt(ds);
+        if (errflag)
+            exit(EXIT_FAILURE);
                 
         // FLOW SOLVERS
         if (hpall!=0) 

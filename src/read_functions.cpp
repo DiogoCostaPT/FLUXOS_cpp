@@ -6,7 +6,7 @@
 #include "read_functions.h"
 #include "common.h"
 
-void read_modset(GlobVar& ds, const std::string& filename, 
+bool read_modset(GlobVar& ds, const std::string& filename, 
                 const std::string& pathfile, unsigned int *print_step, 
                 double *ks_input,
                 std::ofstream& logFLUXOSfile)
@@ -14,6 +14,7 @@ void read_modset(GlobVar& ds, const std::string& filename,
     // read_modset(ds,print_step,ks_input,zbinc,ntim_days)
     
     std::string str, msg;
+    bool errflag = false;
     
     std::ifstream file(filename);
     
@@ -37,18 +38,22 @@ void read_modset(GlobVar& ds, const std::string& filename,
         msg = "Successful loading of master input file: " + filename;
     } else{
         msg = "PROBLEM loading of master input file: " + filename;
+        errflag = true;
     } 
      std::cout << msg  << std::endl;
      logFLUXOSfile << msg + "\n";
+
+     return errflag;
     
 }
 
-void read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
+bool read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
 {
     int icol,irow,n;  
     float zbp,zbp_corr,zbn,zbs,zbe,zbw,temp_float;
     arma::mat filedata; 
     std::string msg, temp_str;
+    bool errflag = false;
 
     arma::mat zb_raw; 
     zb_raw = arma::zeros<arma::mat>(ds.MROWS,ds.MCOLS);
@@ -93,7 +98,8 @@ void read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
         myfile.close(); //closing the file
         msg = "Successful loading of DEM file: " + ds.dem_file;
     } else{
-        msg = "PROBLEM loading of DEM file: " + ds.dem_file;       
+        msg = "PROBLEM loading of DEM file: " + ds.dem_file;    
+        errflag = true;   
     } 
     std::cout << msg << std::endl;
     logFLUXOSfile << msg + "\n" ;
@@ -150,6 +156,9 @@ void read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
             (*ds.ks).at(irow,icol) = ks_input; 
         }
     }
+
+    return errflag;
+
 }
 
 float read_load(GlobVar& ds,std::ofstream& logFLUXOSfile)

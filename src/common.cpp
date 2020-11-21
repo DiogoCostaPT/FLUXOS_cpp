@@ -70,7 +70,7 @@ int findLastStep(const char *path)
 
 
 // get size of the domain
-void get_domain_size(unsigned int *rown, unsigned int *coln, 
+bool get_domain_size(unsigned int *rown, unsigned int *coln, 
                     const std::string& filename, const std::string& pathfile,
                     std::ofstream& logFLUXOSfile)
 {
@@ -79,6 +79,7 @@ void get_domain_size(unsigned int *rown, unsigned int *coln,
 
     std::ifstream file(filename);
     std::string str, dem_file_temp, msg;
+    bool errflag = false;
 
     while (std::getline(file, str)) 
     {
@@ -113,17 +114,25 @@ void get_domain_size(unsigned int *rown, unsigned int *coln,
         }
 
         myfile.close(); //closing the file
+        
     }
-    else std::cout << "Unable to open file: " + filename << std::endl; //if the file is not open output
+    else {
+        std::cout << "Unable to open file: " + filename << std::endl; //if the file is not open output
+        errflag = true;
+    }
+
+    return errflag;
     
 }
 
 // Add qmelt at instant t
-void add_qmelt(GlobVar& ds){
+bool add_qmelt(GlobVar& ds){
 
 unsigned int a,irow, icol,qmelt_rowi;
 double qmelti,hp;
+bool errflag = false;
 
+try{
     for (a=0;a<=(*ds.qmelt).col(0).n_elem;a++){
         qmelt_rowi = a;
         if ((*ds.qmelt).at(a,0) > ds.tim){       
@@ -137,7 +146,7 @@ double qmelti,hp;
     {
         for(irow=1;irow<=ds.NROWS;irow++)
         {
-            if (std::fabs((*ds.zb).at(irow,icol)) != 99999)
+            if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
             {
                 hp = std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f); // adesolver hp before adding snowmelt  
                 (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   
@@ -154,5 +163,13 @@ double qmelti,hp;
             }
         }
     }
+    
+}catch (int e){
+
+    std::cout << "problem in 'add_melt' module" << std::endl; // err message
+    errflag = true;
+}
+
+return errflag;
 
 }
