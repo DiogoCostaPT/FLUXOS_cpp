@@ -31,13 +31,15 @@ General Model Settings
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_select_paper/'
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional/'
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_noIC/'
-sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_previousFLUXOSversion/'
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_previousFLUXOSversion/'
-sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_previousFLUXOSversion_graham/'
+#sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_previousFLUXOSversion/'
+#sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_previousFLUXOSversion_graham/'
 #sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_additional_noIC_graham/'
 
-dempath = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_select_paper/t_36_paper/ersi_grid_dem_alldomain_basinwalls'
+#dempath = '/media/dcosta/data/megasync/my_server/fluxos/batch_1_select_paper/t_36_paper/ersi_grid_dem_alldomain_basinwalls'
 
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/TESTS_VARIA/2'
+dempath = '/media/dcosta/data/megasync/my_server/fluxos/TESTS_VARIA/2/dem_clip_SRTM_resample_500m.asc'
 
 
 try:
@@ -114,7 +116,7 @@ simType = input("Options:\n# Analyse a cross-section (type 'cs')\n# Inundation m
 # Read geo to get nx and ny
 
 
-geomatrix = np.loadtxt(dempath, dtype='i', delimiter=' ')
+geomatrix = np.loadtxt(dempath, dtype='i', delimiter=' ', skiprows=6)
 ny = geomatrix.shape[0]
 nx = geomatrix.shape[1]
 
