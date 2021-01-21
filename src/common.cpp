@@ -80,7 +80,7 @@ bool get_domain_size(unsigned int *rown, unsigned int *coln,
     std::ifstream file(filename);
     std::string str, dem_file_temp, msg;
     bool errflag = false;
-
+    
     while (std::getline(file, str)) 
     {
         if(str.find("DEM_FILE") != std::string::npos){
@@ -103,7 +103,11 @@ bool get_domain_size(unsigned int *rown, unsigned int *coln,
         for(linei=1;linei<=2;linei++) // Just need to read the first 2 lines
         {
             getline (myfile,line); //get one line from the file
-            stri = line.substr(0,5);
+            stri = line.substr(0,5); 
+
+            // converts string to uppercase for comparison with str_nrows and str_ncols
+            std::for_each(stri.begin(), stri.end(), [](char & c) {c = ::toupper(c);});
+
             numi = getIntNumberFromString(line);
 
             if (stri.compare(str_nrows) == 0){
@@ -117,7 +121,7 @@ bool get_domain_size(unsigned int *rown, unsigned int *coln,
         
     }
     else {
-        std::cout << "Unable to open file: " + filename << std::endl; //if the file is not open output
+        std::cout << "Unable to open file: " + dem_file_temp << std::endl; //if the file is not open output
         errflag = true;
     }
 
