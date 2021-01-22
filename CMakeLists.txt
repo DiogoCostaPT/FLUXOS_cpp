@@ -21,7 +21,7 @@ include_directories(${AMRADILLO_INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Create Results folder
+# Create Results folder if non-existant
 file(MAKE_DIRECTORY Results)
 
 add_executable(fluxos
