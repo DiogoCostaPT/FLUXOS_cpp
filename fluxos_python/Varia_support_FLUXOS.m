@@ -1,7 +1,7 @@
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% delete Results folder inside simulation folders and add 0.txt if desired
+% Supporting tool
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %simfolder_dir_path = '/media/dcosta/DATADRIVE1/fluxos_tests/SIMULATIONS_sync/batch_2/';

@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS "-g3 -Wall -pedantic")
 # Packages
 find_package(Armadillo REQUIRED)
 find_package(OpenMP)
-find_package(Boost COMPONENTS system filesystem REQUIRED)
+
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
@@ -29,6 +29,4 @@ add_executable(fluxos
 
 target_link_libraries(
         fluxos
-        ${ARMADILLO_LIBRARIES}
-        ${Boost_FILESYSTEM_LIBRARY}
-        ${Boost_SYSTEM_LIBRARY})
+        ${ARMADILLO_LIBRARIES})

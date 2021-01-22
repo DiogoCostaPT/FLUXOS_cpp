@@ -116,14 +116,14 @@ if (simType == 'cs'):
     simType = input("Options:\n# Examine Flow (f)\n# Water Quality (wq)\n# Soil Quality (sq)\n Answer: ")
 
     if (simType == 'f'):
-        var_col_1 = 6  # 3-h, 6-qx, 10-C, 11 - soil mass, 12 - fn_1, 13 - fe_1
-        var_col_2 = 7  # 3-h, 6-qx, 10-C, 11 - soil mass, 12 - fn_1, 13 - fe_1
+        var_col_1 = 6  # 3-h, 6-qx, 9-C, 10 - soil mass, 11 - fn_1, 12 - fe_1
+        var_col_2 = 7  # 3-h, 6-qx, 9-C, 10 - soil mass, 11 - fn_1, 12 - fe_1
     elif (simType == 'wq'):
-        var_col_1 = 10  # 3-h, 6-qx, 10-C, 11-soil
-        var_col_2 = 3  # 7-
+        var_col_1 = 9
+        var_col_2 = 3
     elif (simType == 'sq'):
-        var_col_1 = 11  # 3-h, 6-qx, 10-C, 11-soil
-        var_col_2 = 0  # 7-
+        var_col_1 = 10
+        var_col_2 = 0
     else:
         sys.exit("Error: Not a valid entry (only accepts 'f', 'wq' or 'sq'")
 
