@@ -1,7 +1,7 @@
-# FLUXOS-SnoWHAT
-* Soure code for the FLUXOS-SnoWHAT model (FLUXOS-Snowmelt Watershed Hydrodynamic And Transport model). The original code (named as FLUXOS) was written in FORTRAN and consisted of the coupling of 2dmb, +QeS2, MODFLOW and MT3DMS.
+# FLUXOS-OVERLAND
+* Soure code for the FLUXOS-OVERLAND model. The original code (named as FLUXOS) was written in FORTRAN and consisted of the coupling of 2dmb, +QeS2, MODFLOW and MT3DMS.
 
-* Modifications (from FLUXOS to FLUXOS-SnoWHAT):
+* Modifications (from FLUXOS to FLUXOS-OVERLAND):
 	* Converted to C++
 	* Uses: Armadillo template-based C++ library for linear algebra 
 	* Removed: MODFLOW and MT3DMS (currently there is no baseflow)
@@ -15,11 +15,12 @@
 		* STC paper: https://www.sciencedirect.com/science/article/pii/S0169772216300948?via%3Dihub
 		* JCH paper: https://www.sciencedirect.com/science/article/pii/S0169772216300948?via%3Dihub
 		* JAWRA: https://onlinelibrary.wiley.com/doi/full/10.1111/1752-1688.12316
-	* FLUXOS-SnoWHAT
+	* FLUXOS-OVERLAND
 		* Poster: https://www.researchgate.net/publication/333324452_Hydrodynamic_modelling_of_snowmelt_flooding_events_and_nutrient_transport_in_the_Canadian_Prairies_using_the_FLUXOS_model?channel=doi&linkId=5ce70f0a458515712ebda98b&showFulltext=true
 
 # Branches
 * master: All changes made in adesolver and adesolver_wintra have been merged into master
+* developnment: branch used for development before merge with master
 * adesolver: Adection-Dispersion-Reaction equation solver was converted to C++ and debugged
 * adesolver_wintra: the wintra algorithm was added
 
