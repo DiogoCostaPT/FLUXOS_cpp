@@ -93,7 +93,7 @@ unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
 
     if(flstatus == true) 
     {
-        for(a=0;a<filedata.col(1).n_elem;a++)
+        for(a=1;a<filedata.col(1).n_elem;a++)
         {
             irow = filedata(a,0);  
             icol = filedata(a,1);  
@@ -103,10 +103,10 @@ unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
             (*ds.uy).at(irow,icol) = filedata(a,5);
             (*ds.qx).at(irow,icol) = filedata(a,6);
             (*ds.qy).at(irow,icol) = filedata(a,7);
-            (*ds.us).at(irow,icol) = filedata(a,9);
-            (*ds.conc_SW).at(irow,icol) = filedata(a,10);
-            (*ds.soil_mass).at(irow,icol) = filedata(a,11);
-            (*ds.twetimetracer).at(irow,icol) = filedata(a,14);
+            (*ds.us).at(irow,icol) = filedata(a,8);
+            (*ds.conc_SW).at(irow,icol) = filedata(a,9);
+            (*ds.soil_mass).at(irow,icol) = filedata(a,10);
+            (*ds.twetimetracer).at(irow,icol) = filedata(a,13);
             (*ds.ldry).at(irow,icol) = 0.0f;
         }
         msg = "Successful loading of initial conditions file: " + init_file;

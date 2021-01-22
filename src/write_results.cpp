@@ -21,7 +21,7 @@ bool write_results(GlobVar& ds, int print_tag, unsigned int print_step, std::chr
     std::string filext(".txt");
     tprint += filext;
 
-    arma::mat filedataR(ds.NROWS*ds.NCOLS,15); 
+    arma::mat filedataR(ds.NROWS*ds.NCOLS,14); 
     
     for(icol=1;icol<=ds.NCOLS;icol++)
     {
@@ -29,8 +29,6 @@ bool write_results(GlobVar& ds, int print_tag, unsigned int print_step, std::chr
         {
             if ((*ds.h).at(irow,icol)>0.0f)
             {
-                ux=sqrt((*ds.ux).at(irow,icol) * (*ds.ux).at(irow,icol) +
-                        (*ds.uy).at(irow,icol) * (*ds.uy).at(irow,icol));
                 filedataR(a,0) = irow;  
                 filedataR(a,1) = icol; 
                 filedataR(a,2) = (*ds.z).at(irow,icol); 
@@ -39,22 +37,37 @@ bool write_results(GlobVar& ds, int print_tag, unsigned int print_step, std::chr
                 filedataR(a,5) = (*ds.uy).at(irow,icol); 
                 filedataR(a,6) = (*ds.qx).at(irow,icol)*ds.dxy;
                 filedataR(a,7) = (*ds.qy).at(irow,icol)*ds.dxy;
-                filedataR(a,8) = ux; 
-                filedataR(a,9) = (*ds.us).at(irow,icol); 
-                filedataR(a,10) = (*ds.conc_SW).at(irow,icol); // adesolver
-                filedataR(a,11) = (*ds.soil_mass).at(irow,icol); // adesolver
-                filedataR(a,12) = (*ds.fe_1).at(irow,icol);
-                filedataR(a,13) = (*ds.fn_1).at(irow,icol);
-                filedataR(a,14) = (*ds.twetimetracer).at(irow,icol);
+                filedataR(a,8) = (*ds.us).at(irow,icol); 
+                filedataR(a,9) = (*ds.conc_SW).at(irow,icol); // adesolver
+                filedataR(a,10) = (*ds.soil_mass).at(irow,icol); // adesolver
+                filedataR(a,11) = (*ds.fe_1).at(irow,icol);
+                filedataR(a,12) = (*ds.fn_1).at(irow,icol);
+                filedataR(a,13) = (*ds.twetimetracer).at(irow,icol);
                 a = a + 1;
             }
         }
     }
    
-    arma::mat filedata(std::max(0,a-1),14); 
-    filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,14));
+    arma::mat filedata(std::max(0,a-1),13); 
+    filedata = filedataR(arma::span(0,std::max(0,a-1)),arma::span(0,13));
     
-    bool outwritestatus =  filedata.save(tprint,arma::csv_ascii);
+    arma::field<std::string> header(filedata.n_cols);
+    header(0) = "irow [-]";
+    header(1) = "icol [-]";
+    header(2) = "z [m]";
+    header(3) = "h [h]";
+    header(4) = "ux [m/s]";
+    header(5) = "uy [m/s]";
+    header(6) = "qx * dxy [m3/sec]";
+    header(7) = "qy * dxy [m3/sec]";
+    header(8) = "us [m/s]";
+    header(9) = "conc_SW [mg/l]";
+    header(10) = "soil_mass [g]";
+    header(11) = "fe_1 [m2/s]";
+    header(12) = "fn_1 [m2/s]";
+    header(13) = "twetimetracer [sec]";
+
+    bool outwritestatus =  filedata.save(arma::csv_name(tprint,header));
     return outwritestatus;
 }
     
