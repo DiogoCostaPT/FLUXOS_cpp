@@ -55,7 +55,7 @@ bool write_results(GlobVar& ds, int print_tag, unsigned int print_step, std::chr
     header(0) = "irow [-]";
     header(1) = "icol [-]";
     header(2) = "z [m]";
-    header(3) = "h [h]";
+    header(3) = "h [m]";
     header(4) = "ux [m/s]";
     header(5) = "uy [m/s]";
     header(6) = "qx * dxy [m3/sec]";
