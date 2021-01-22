@@ -174,7 +174,7 @@ void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
     une=(*ds.qx).at(ie,in)/std::fmax(std::fmax((*ds.h).at(ie,in),hdryl),(*ds.ks).at(ie,in));
     vp=rp/hp0;
     ve=re/std::fmax(std::fmax(he,hdryl),(*ds.ks).at(ie,icol));
-    vw=rw/std::fmax(std::max(hw,hdryl),(*ds.ks).at(iw,icol));
+    vw=rw/std::fmax(std::fmax(hw,hdryl),(*ds.ks).at(iw,icol));
     vwn=(*ds.qy).at(iw,in)/std::fmax(std::fmax((*ds.h).at(iw,in),hdryl),(*ds.ks).at(iw,in));
     ven=(*ds.qy).at(ie,in)/std::fmax(std::fmax((*ds.h).at(ie,in),hdryl),(*ds.ks).at(ie,in));
 

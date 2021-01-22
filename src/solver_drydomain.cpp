@@ -94,6 +94,7 @@ void solver_dry(GlobVar& ds, unsigned int irow, unsigned int icol) {
     if (lde==0.0f)
     {
         hme=std::fmax(0.0f,ze-zbpe);
+        
         if(hme>ds.hdry) 
         {
             if(ze<=zp) 

@@ -1,3 +1,22 @@
+# FLUXOS-OVERLAND (supporting scripts to examine the model outputs)
+# Copyright (C) 2019-2021 ECCC
+#
+# This file is part of FLUXOS-OVERLAND
+#
+# For more information see: http://www.ral.ucar.edu/projects/summa
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # import libraries
 import geopandas as gpd
@@ -71,6 +90,7 @@ def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, geom_CS
 
                     for segi in range(0, len(xy_CS_cor)):
                         xi = xy_CS_cor[segi, 0].astype(int)
+                        yi = 721-xy_CS_cor[segi, 1].astype(int)
                         yi = xy_CS_cor[segi, 1].astype(int)
                         if simType == 'sq':  # Water levels or concentrations
                             crosecvals_t[segi+1] = xyz_matrix_var_1[yi, xi]  # cross-section values
@@ -85,13 +105,7 @@ def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, geom_CS
                             elif b == 0:  # perfectly vertical cross-section
                                 crosecvals_t[segi+1] = 0
                             else:  # general case
-                             # crosecvals_t[segi + 1] = q_flow * np.cos(alpha_h) + p_flow * np.sin(alpha_h)
-                             #crosecvals_t[segi + 1] = max(q_flow * np.cos(alpha_h) + p_flow * np.sin(alpha_h),0)
                                 crosecvals_t[segi + 1] = max(q_flow * np.cos(alpha_h), 0) + max(p_flow * np.sin(alpha_h), 0)
-                                #crosecvals_t[segi+1] = q_flow * np.cos(alpha_h) #+ abs(p_flow * np.sin(alpha_h))
-                               # crosecvals_t[segi + 1] = abs(q_flow * np.cos(alpha_h))
-                                #crosecvals_t[segi + 1] = abs(p_flow * np.sin(alpha_h))
-                                #crosecvals_t[segi + 1] = q_flow + p_flow
                 except:
                     print("Cannot open file:" + resfilepath + "or exception in function <Extract_File_Res>")
 

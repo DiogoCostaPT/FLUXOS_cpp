@@ -43,27 +43,23 @@ unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
             zbne = (*ds.zb).at(irow1,icol1);
             a = 0;
             zbsum = 0;
-            if (zbsw != ds.NODATA_VALUE){
+            if (std::fabs(zbsw) != 99999){
                 zbsum=zbsum + zbsw;
                 a = a + 1;
             }
-            if (zbse != ds.NODATA_VALUE){
+            if (std::fabs(zbse) != 99999){
                 zbsum=zbsum + zbse;
                 a = a + 1;
             }
-            if (zbnw != ds.NODATA_VALUE){
+            if (std::fabs(zbnw) != 99999){
                 zbsum=zbsum + zbnw;
                 a = a + 1;
             }
-            if (zbne != ds.NODATA_VALUE){
+            if (std::fabs(zbne) != 99999){
                 zbsum=zbsum + zbne;
                 a = a + 1;
             }
-            if (a != 0)
-                (*ds.zb).at(irow,icol)=(zbsum)/a;
-            else
-                (*ds.zb).at(irow,icol)=0.0f; // this will not be used
-
+            (*ds.zb).at(irow,icol)=(zbsum)/a;
             zbs1[irow1]=zbne;
             zbsw= zbse;
             zbnw= zbne;
@@ -75,7 +71,7 @@ unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
     {
         for(irow=1;irow<=ds.NROWS;irow++)
         {
-            if((*ds.zb)(irow,icol)!=0.0f)
+            if(std::fabs((*ds.zb)(irow,icol))!=99999)
             {
             (*ds.h).at(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
             (*ds.z).at(irow,icol)=(*ds.zb).at(irow,icol)+(*ds.h).at(irow,icol);

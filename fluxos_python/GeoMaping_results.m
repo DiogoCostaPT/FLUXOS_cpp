@@ -193,38 +193,3 @@ end
 geobasemap topographic
 alpha(gs1,MarkerFaceAlpha)
 title(['Site: ',site])
-
-% adding sites
-if add_sites
-    sitesshapefile_all = {sitesshapefile_up,sitesshapefile_down};
-    styleform = {'wo','ws'};
-   for f = 1:2
-       sitesshapefile_i = sitesshapefile_all{f};
-       site_data = shaperead(sitesshapefile_i);
-       sites_XY = [[site_data.X]',[site_data.Y]'];
-       sites_lonlat = zeros(size(sites_XY));
-       for i = 1:numel(sites_lonlat(:,1))
-           [lon, lat] = utm2deg(sites_XY(i,1),sites_XY(i,2),utm_zone);
-           sites_lonlat(i,1) = lon;
-           sites_lonlat(i,2) = lat;
-       end
-       hold on
-       geoscatter(sites_lonlat(:,1),sites_lonlat(:,2),70,styleform{f},'linewidth',1.5)
-   end
-end
-
-% To delete
-KVA = [0579921,5512270];
-KVB = [0579891,5513032];
-
-STM = [43+19/60,-81+07/60];
-lon = STM(1);
-lat = STM(2);
-
-ILD = [43+30/60,-74+23/60];
-lon = ILD(1);
-lat = ILD(2);
-
-[lon, lat] = utm2deg(KVB(1),KVB(2),'14 U');
-hold on
-geoscatter(lon,lat,70,styleform{f},'linewidth',1.5)

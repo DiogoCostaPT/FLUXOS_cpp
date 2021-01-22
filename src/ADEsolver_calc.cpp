@@ -117,7 +117,7 @@ void adesolver_calc(GlobVar& ds, int it)
         // X-DIRECTION
         //// diffusive flux and mean concentration at east face
         if((*ds.ldry)(ie,iy)==0) {
-            hnue=std::max(hp*nt*he*nt,.0001); 
+            hnue=std::fmax(hp*nt*he*nt,.0001); 
             hne=std::sqrt(hnue)/sigc/dx*dy*ds.D_coef; 
             pfde=-hne*(fe-fp);                     // diffusive flux
 
@@ -139,7 +139,7 @@ void adesolver_calc(GlobVar& ds, int it)
             pfde=0.;
         }
 
-        fem=std::max(0.,fem);
+        fem=std::fmax(0.,fem);
 
         if(ix==ds.NROWS){  // if Boundary (overwrite the BC)
             fem=(*ds.conc_SW)(ds.NROWS+1,iy);
@@ -155,7 +155,7 @@ void adesolver_calc(GlobVar& ds, int it)
         if(pfe<0){ 
             if((*ds.ldry)(ie,iy)==0)    {
                 cvolrate=-(fe*he)*areae/ds.dtfl; 
-                pfe=std::max(pfe,cvolrate); //limit to available material
+                pfe=std::fmax(pfe,cvolrate); //limit to available material
             }else {
                 pfe=0.;
             }
@@ -164,7 +164,7 @@ void adesolver_calc(GlobVar& ds, int it)
         // Y-DIRECTION
         //// diffusion at the present time step Y-direction (pfde, where "d" refers to diffusion)
         if((*ds.ldry)(ix,in)==0)           {
-            hnue=std::max(.0001,hp*ntp*hn*nt);
+            hnue=std::fmax(.0001,hp*ntp*hn*nt);
             hnn=std::sqrt(hnue)/sigc/dy*dx*ds.D_coef;              // [m3/s]
             qfdn=-hnn*(fn-fp);                    // diffusive flux
             if(qyl>0.0f)       {
@@ -185,7 +185,7 @@ void adesolver_calc(GlobVar& ds, int it)
             qfdn=0.;
         }
 
-        fnm=std::max(0.,fnm);
+        fnm=std::fmax(0.,fnm);
 
         //// if Boundary (overwrite BC)
         if(iy==ds.NCOLS)    {
@@ -202,7 +202,7 @@ void adesolver_calc(GlobVar& ds, int it)
         if(qfn<0)    {
             if((*ds.ldry)(ix,in)==0)    {     
                 cvolrate=-(fn*hn)*arean/ds.dtfl; 
-                qfn=std::max(qfn,cvolrate);   //limit to available material
+                qfn=std::fmax(qfn,cvolrate);   //limit to available material
             }else {
                 qfn=0.;
             }

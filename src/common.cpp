@@ -56,12 +56,14 @@ int findLastStep(const char *path)
         simnum_str_i = (char*) malloc(sizeof(filename_i)-2);
         strncpy (simnum_str_i, filename_i, sizeof(filename_i)-2);
         simnum = atoi(simnum_str_i);
-        timestart = std::max(timestart,simnum);
+        timestart = std::fmax(timestart,simnum);
         free(simnum_str_i);
    }
    
+   if (filenum >0)
+        free(entry); 
    //free(filename_i);
-   free(entry);
+   
    //free(dir);
    //std::cout << "Start time (s): " << timestart << " (initial conditions available)" << std::endl;
    return timestart;
@@ -70,16 +72,17 @@ int findLastStep(const char *path)
 
 
 // get size of the domain
-void get_domain_size(unsigned int *rown, unsigned int *coln, 
+bool get_domain_size(unsigned int *rown, unsigned int *coln, 
                     const std::string& filename, const std::string& pathfile,
                     std::ofstream& logFLUXOSfile)
 {
 
-     // Read DEM file fom modset
+    // Read DEM file fom modset
 
     std::ifstream file(filename);
     std::string str, dem_file_temp, msg;
-
+    bool errflag = false;
+    
     while (std::getline(file, str)) 
     {
         if(str.find("DEM_FILE") != std::string::npos){
@@ -102,7 +105,11 @@ void get_domain_size(unsigned int *rown, unsigned int *coln,
         for(linei=1;linei<=2;linei++) // Just need to read the first 2 lines
         {
             getline (myfile,line); //get one line from the file
-            stri = line.substr(0,5);
+            stri = line.substr(0,5); 
+
+            // converts string to uppercase for comparison with str_nrows and str_ncols
+            std::for_each(stri.begin(), stri.end(), [](char & c) {c = ::toupper(c);});
+
             numi = getIntNumberFromString(line);
 
             if (stri.compare(str_nrows) == 0){
@@ -113,17 +120,25 @@ void get_domain_size(unsigned int *rown, unsigned int *coln,
         }
 
         myfile.close(); //closing the file
+        
     }
-    else std::cout << "Unable to open file: " + filename << std::endl; //if the file is not open output
+    else {
+        std::cout << "Unable to open file: " + dem_file_temp << std::endl; //if the file is not open output
+        errflag = true;
+    }
+
+    return errflag;
     
 }
 
 // Add qmelt at instant t
-void add_qmelt(GlobVar& ds){
+bool add_qmelt(GlobVar& ds){
 
 unsigned int a,irow, icol,qmelt_rowi;
 double qmelti,hp;
+bool errflag = false;
 
+try{
     for (a=0;a<=(*ds.qmelt).col(0).n_elem;a++){
         qmelt_rowi = a;
         if ((*ds.qmelt).at(a,0) > ds.tim){       
@@ -154,5 +169,13 @@ double qmelti,hp;
             }
         }
     }
+    
+}catch (int e){
+
+    std::cout << "problem in 'add_melt' module" << std::endl; // err message
+    errflag = true;
+}
+
+return errflag;
 
 }

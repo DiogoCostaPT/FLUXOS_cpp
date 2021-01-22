@@ -1,4 +1,4 @@
-COMMNET - Batch_1 - additional tests for paper
+COMMNET ### Batch_1 - additional tests for paper ###
 DEM_FILE bin/ersi_grid_dem_basin
 QMELT_FILE bin/Qmelt_info_2005.fluxos
 PRINT_STEP 3600
