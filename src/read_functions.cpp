@@ -173,7 +173,7 @@ float read_load(GlobVar& ds,std::ofstream& logFLUXOSfile)
     arma::mat filedataQ; 
     bool flstatusQ =  filedataQ.load(ds.qmelt_file,arma::csv_ascii);
     if(flstatusQ == true) {
-        for(a=0;a<filedataQ.col(1).n_elem;a++){
+        for(a=1;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
             tmelts = filedataQ(a,0);  // t melt seconds
             vmelt = filedataQ(a,1);  // value of melt
             (*ds.qmelt).at(a,0) = tmelts;  
