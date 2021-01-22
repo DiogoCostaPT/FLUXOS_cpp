@@ -60,8 +60,10 @@ int findLastStep(const char *path)
         free(simnum_str_i);
    }
    
+   if (filenum >0)
+        free(entry); 
    //free(filename_i);
-   free(entry);
+   
    //free(dir);
    //std::cout << "Start time (s): " << timestart << " (initial conditions available)" << std::endl;
    return timestart;
@@ -75,7 +77,7 @@ bool get_domain_size(unsigned int *rown, unsigned int *coln,
                     std::ofstream& logFLUXOSfile)
 {
 
-     // Read DEM file fom modset
+    // Read DEM file fom modset
 
     std::ifstream file(filename);
     std::string str, dem_file_temp, msg;
