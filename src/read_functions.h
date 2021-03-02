@@ -12,6 +12,8 @@ bool read_modset(GlobVar& ds, const std::string& filename,
 
 bool read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile);
 
-float read_load(GlobVar& ds,std::ofstream& logFLUXOSfile);
+float read_meteo(GlobVar& ds,std::ofstream& logFLUXOSfile);
+
+float read_inflow(GlobVar& ds,std::ofstream& logFLUXOSfile);
 
 #endif

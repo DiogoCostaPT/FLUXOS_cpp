@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
 {   
     unsigned int NROWSl, NCOLSl, it = 0;
     unsigned int irow, icol, print_step, print_next, timstart;
+    int ntim_meteo, ntim_inflow;
     double c0,hp,v0,u0, hpall, ks_input; 
     bool outwritestatus;
 
@@ -118,10 +119,12 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     ds.arbase = ds.dxy * ds.dxy;
     
-    //std::cout << "Increment to basin margins (m) = ";
-    //std::cin >> zbinc;
-    //logFLUXOSfile << "Increment to basin margins (m) = " + std::to_string(zbinc) + "\n";
-    ds.ntim = read_load(ds,logFLUXOSfile); // snowmelt load
+    // Meteo and inflow forcing
+    ntim_meteo = read_meteo(ds,logFLUXOSfile); //  load
+    ntim_inflow = read_inflow(ds,logFLUXOSfile); //  load
+
+    ds.ntim = std::max(ntim_meteo,ntim_inflow); // get the max ntim
+
     
     //std::cout << "Simulation time (days) (Snowmelt input duration = " + std::to_string(ds.ntim/(3600*24)) + " days) = ";
     //std::cin >> ntim_days;
@@ -218,7 +221,6 @@ int main(int argc, char* argv[])
             
             outwritestatus = write_results(ds,std::round(print_next),print_step,elapsed_seconds);
              
-               
             if(outwritestatus == true) 
             {
                 std::cout << "Saved: '" << print_next << ".txt' || time step (min): " << std::to_string(print_step/60) << " || Time elapsed (min): " << elapsed_seconds.count()/60 << std::endl;
