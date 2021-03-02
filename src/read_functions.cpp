@@ -28,7 +28,8 @@ bool read_modset(GlobVar& ds, const std::string& filename,
         i += 1;
         //if(str.find("COMMNET") != std::string::npos){ds.sim_purp = str.substr(8);}; // comment
         if(str.find("DEM_FILE") != std::string::npos){ds.dem_file = str.substr(9);}; // DEM ESRI-ArcGIS ascii
-        if(str.find("METEO_FILE") != std::string::npos){ds.qmelt_file = str.substr(11);}; // snowmelt file
+        if(str.find("METEO_FILE") != std::string::npos){ds.qmelt_file = str.substr(11);}; // Meteo file
+        if(str.find("INFLOW_FILE") != std::string::npos){ds.qmelt_file = str.substr(11);}; // Meteo file
         if(str.find("PRINT_STEP") != std::string::npos){(*print_step) = std::stoi(str.substr(11));}; // print time step
         if(str.find("ROUGNESS_HEIGHT") != std::string::npos){(*ks_input) = std::stof(str.substr(16));};  // average roughness height (m)
         if(str.find("SOIL_RELEASE_RATE") != std::string::npos){(ds.soil_release_rate) = std::stof(str.substr(18));}; //  WINTRA: soil nutrient release rate
