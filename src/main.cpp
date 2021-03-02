@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
     ds.nuem = 1.793e-6; // molecular dynamic viscosity (for turbulent stress calc)
     //print_step = 3600; // in seconds
     // timstart = 558000; // start of the simulation
-        
+    
     // read model set up
     errflag = read_modset(ds,modset_flname,dirpath,&print_step,&ks_input,logFLUXOSfile);
     if (errflag)
@@ -213,10 +213,10 @@ int main(int argc, char* argv[])
         // PRINT RESULTS
         if (ds.tim>=print_next)
         {
-             end = std::chrono::system_clock::now();
-             elapsed_seconds = end-start;
-             
-              outwritestatus = write_results(ds,std::round(print_next),print_step,elapsed_seconds);
+            end = std::chrono::system_clock::now();
+            elapsed_seconds = end-start;
+            
+            outwritestatus = write_results(ds,std::round(print_next),print_step,elapsed_seconds);
              
                
             if(outwritestatus == true) 
