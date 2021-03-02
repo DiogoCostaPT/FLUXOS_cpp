@@ -1,6 +1,6 @@
 COMMNET ### Batch_1 - additional tests for paper ###
-DEM_FILE bin/ersi_grid_dem_basin
-QMELT_FILE bin/Qmelt_info_2005.fluxos
+DEM_FILE bin/Rosa_2m.asc
+INFLOW_FILE bin/Flow_forcing.fluxos
 PRINT_STEP 3600
 ROUGNESS_HEIGHT 0.005
 SOIL_RELEASE_RATE 0.08

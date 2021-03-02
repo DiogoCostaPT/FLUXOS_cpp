@@ -131,23 +131,23 @@ bool get_domain_size(unsigned int *rown, unsigned int *coln,
     
 }
 
-// Add qmelt at instant t
-bool add_qmelt(GlobVar& ds){
+// Add meteo at instant t
+bool add_meteo(GlobVar& ds){
 
-unsigned int a,irow, icol,qmelt_rowi;
-double qmelti,hp;
+unsigned int a,irow, icol,meteo_rowi;
+double meteoi,hp;
 bool errflag = false;
 
 try{
-    for (a=0;a<=(*ds.qmelt).col(0).n_elem;a++){
-        qmelt_rowi = a;
-        if ((*ds.qmelt).at(a,0) > ds.tim){       
+    for (a=0;a<=(*ds.meteo).col(0).n_elem;a++){
+        meteo_rowi = a;
+        if ((*ds.meteo).at(a,0) > ds.tim){       
             break;
         }
     }
         
-    qmelti = (*ds.qmelt).at(qmelt_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
-    ds.qmelv_inc += qmelti;
+    meteoi = (*ds.meteo).at(meteo_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
+    
     for(icol=1;icol<=ds.NCOLS;icol++)
     {
         for(irow=1;irow<=ds.NROWS;irow++)
@@ -155,7 +155,7 @@ try{
             if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
             {
                 hp = std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f); // adesolver hp before adding snowmelt  
-                (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + qmelti;   
+                (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + meteoi;   
                 (*ds.h)(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
                 if ((*ds.h)(irow,icol) <= ds.hdry)
                 {
@@ -164,7 +164,7 @@ try{
                 (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
                 if (hp!=0.)
                 {          
-                    (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+qmelti*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
+                    (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+meteoi*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
                 }
             }
         }
@@ -172,7 +172,58 @@ try{
     
 }catch (int e){
 
-    std::cout << "problem in 'add_melt' module" << std::endl; // err message
+    std::cout << "problem in 'add_meteo' module" << std::endl; // err message
+    errflag = true;
+}
+
+return errflag;
+
+}
+
+
+// Add inflow at instant t
+bool add_inflow(GlobVar& ds){
+
+unsigned int a,irow, icol,inflow_rowi;
+double inflowi,hp;
+bool errflag = false;
+
+try{
+    for (a=0;a<=(*ds.inflow).col(0).n_elem;a++){
+        inflow_rowi = a;
+        if ((*ds.inflow).at(a,0) > ds.tim){       
+            break;
+        }
+    }
+
+    irow = ds.ix_inflow;
+    icol = ds.iy_inflow;
+        
+    inflowi = (*ds.inflow).at(inflow_rowi,1)*ds.dtfl/std::pow(ds.dxy,2); // added as m3/s
+
+    if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
+    {
+        hp = std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f); // adesolver hp before adding snowmelt  
+        (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + inflowi;   
+        (*ds.h)(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
+        if ((*ds.h)(irow,icol) <= ds.hdry)
+        {
+            (*ds.ldry).at(irow,icol)=0.0f;
+        }
+        (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
+        if (hp!=0.)
+        {          
+            (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+inflowi*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
+        }
+    }
+    else{
+        std::cout << "inflow ix,iy in NODATA_VALUE cell" << std::endl; // err message
+        errflag = true;
+    }
+    
+}catch (int e){
+
+    std::cout << "problem in 'add_inflow' module" << std::endl; // err message
     errflag = true;
 }
 

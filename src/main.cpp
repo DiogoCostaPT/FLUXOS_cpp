@@ -200,9 +200,13 @@ int main(int argc, char* argv[])
           
 
         // Qmelt load
-        errflag = add_qmelt(ds);
+        errflag = add_meteo(ds);
         if (errflag)
             exit(EXIT_FAILURE);
+        errflag = add_inflow(ds);
+        if (errflag)
+            exit(EXIT_FAILURE);
+
                 
         // FLOW SOLVERS
         if (hpall!=0) 

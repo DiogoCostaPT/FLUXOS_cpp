@@ -29,7 +29,7 @@ bool read_modset(GlobVar& ds, const std::string& filename,
         //if(str.find("COMMNET") != std::string::npos){ds.sim_purp = str.substr(8);}; // comment
         if(str.find("DEM_FILE") != std::string::npos){ds.dem_file = str.substr(9);}; // DEM ESRI-ArcGIS ascii
         if(str.find("METEO_FILE") != std::string::npos){ds.meteo_file = str.substr(11);}; // Meteo file
-        if(str.find("INFLOW_FILE") != std::string::npos){ds.inflow_file = str.substr(11);}; // Meteo file
+        if(str.find("INFLOW_FILE") != std::string::npos){ds.inflow_file = str.substr(12);}; // Meteo file
         if(str.find("PRINT_STEP") != std::string::npos){(*print_step) = std::stoi(str.substr(11));}; // print time step
         if(str.find("ROUGNESS_HEIGHT") != std::string::npos){(*ks_input) = std::stof(str.substr(16));};  // average roughness height (m)
         if(str.find("SOIL_RELEASE_RATE") != std::string::npos){(ds.soil_release_rate) = std::stof(str.substr(18));}; //  WINTRA: soil nutrient release rate
@@ -184,21 +184,19 @@ float read_meteo(GlobVar& ds,std::ofstream& logFLUXOSfile)
     ds.qmelvtotal  = 0;
     arma::mat filedataQ; 
     bool flstatusQ =  filedataQ.load(ds.meteo_file,arma::csv_ascii);
-    ds.ix_inflow = filedataQ(1,0);
-    ds.iy_inflow = filedataQ(1,1);
 
     if(flstatusQ == true) {
-        for(a=2;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
+        for(a=1;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
             tmeteo = filedataQ(a,0);  // t melt seconds
             vmeteo = filedataQ(a,1);  // value of melt
-            (*ds.qmelt).at(a,0) = tmeteo;  
-            (*ds.qmelt).at(a,1) = vmeteo;
+            (*ds.meteo).at(a,0) = tmeteo;  
+            (*ds.meteo).at(a,1) = vmeteo;
             ds.qmelvtotal += vmeteo /(1000.*3600.*24.) * (tmeteo - tmeteo_bef);  // input in mm/day
             tmeteo_bef = tmeteo;
         }
-       msg = "Successful loading of Qmelt file: " + ds.meteo_file;
+       msg = "Successful loading of METEO file: " + ds.meteo_file;
     } else{
-       msg = "PROBLEM loading of Qmelt file: " + ds.meteo_file;       
+       msg = "PROBLEM loading of METEO file: " + ds.meteo_file;       
     } 
     std::cout << msg  << std::endl;
     logFLUXOSfile << msg + "\n";
@@ -227,17 +225,21 @@ float read_inflow(GlobVar& ds,std::ofstream& logFLUXOSfile)
     arma::mat filedataQ; 
     bool flstatusQ =  filedataQ.load(ds.inflow_file,arma::csv_ascii);
     if(flstatusQ == true) {
-        for(a=1;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
+
+        ds.ix_inflow = filedataQ(1,0);
+        ds.iy_inflow = filedataQ(1,1);
+
+        for(a=2;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
             tinflows = filedataQ(a,0);  // t melt seconds
             vinflow = filedataQ(a,1);  // value of melt
-            (*ds.qmelt).at(a,0) = tinflows;  
-            (*ds.qmelt).at(a,1) = vinflow;
+            (*ds.inflow).at(a,0) = tinflows;  
+            (*ds.inflow).at(a,1) = vinflow;
             ds.qmelvtotal += vinflow /(1000.*3600.*24.) * (tinflows - tinflows_bef);  // input in mm/day
             tinflows_bef = tinflows;
         }
-       msg = "Successful loading of Qmelt file: " + ds.inflow_file;
+       msg = "Successful loading of INFLOW file: " + ds.inflow_file;
     } else{
-        msg = "PROBLEM loading of Qmelt file: " + ds.inflow_file;       
+        msg = "PROBLEM loading of INFLOW file: " + ds.inflow_file;       
     } 
     std::cout << msg  << std::endl;
     logFLUXOSfile << msg + "\n";
