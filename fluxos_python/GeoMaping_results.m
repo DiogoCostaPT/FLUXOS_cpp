@@ -1,14 +1,14 @@
 
 clear all
 
-sites = {'LON','ESS','RIS2','FW4','CMCDC2','STC','STC_WDPM'};
+sites = {'LON','ESS','RIS2','FW4','CMCDC2','STC','STC_WDPM','SD-Kevin'};
 
-site_i = 7;
+site_i = 8;
 
 plot_options = {'dem_elevation','water_depth'};
-plot_i = 2;
+plot_i = 1;
 
-cmax_waterdepth = 1; % in cm
+cmax_waterdepth = 2; % in cm
 add_sites = 1;
 MarkerFaceAlpha = 0.05;
 
@@ -16,7 +16,18 @@ MarkerFaceAlpha = 0.05;
 
 site = sites{site_i};
 
-if (strcmp(site,'LON'))
+if (strcmp(site,'SD-Kevin'))
+    % LON
+    demfile = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/sim_4_DEM_2m/Rosa_2m.asc';
+    results_file = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/sim_4_DEM_2m/Results/572400.txt';
+    delimiterIn = ' ';
+    utm_zone = '17 T';
+    ix = 1; % for simulations
+    iy = 2; % for simulations
+    x_inverse = false;
+    row_i_north_utm = 3; % for DEM
+    row_i_east_utm = 4; % for DEM
+elseif (strcmp(site,'LON'))
     % LON
     demfile = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_2/LON/ersi_grid_dem_LON_basin';
     results_file = '/media/dcosta/data/megasync/my_server/fluxos/Janina_batch_2/LON/Results/151200.txt';
@@ -153,7 +164,12 @@ if plot_i == 1
 % for water depth
 elseif plot_i == 2
 
-    results_raw = importdata(results_file);
+    results_raw = importdata(results_file,',',1);
+    try
+        results_raw = results_raw.data;
+    catch
+        
+    end
     results_array = results_raw(:,1:end);
     row_num = numel(results_array(:,1));
     results_geoscatter = results_raw(:,[1:2,4]);
