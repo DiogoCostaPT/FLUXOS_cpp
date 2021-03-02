@@ -57,8 +57,10 @@ int main(int argc, char* argv[])
 
     std::string modset_flname (argv[1]);
     std::string dirpath = SplitFilename (modset_flname);
-   
-    // Create/Open log file
+    
+    // #######################################################
+    // create/Open Log file
+    // #######################################################
     std::ofstream logFLUXOSfile (dirpath + "/fluxos_run.log");
     std::cout << "FLUXOS"  << std::endl;
     logFLUXOSfile << "FLUXOS \n";
@@ -66,111 +68,96 @@ int main(int argc, char* argv[])
     std::time_t start_time = std::chrono::system_clock::to_time_t(start);
     std::cout << "Simulation started... " << std::ctime(&start_time)  << std::endl;
     logFLUXOSfile << "Simulation started... " << std::ctime(&start_time);
-        
-     // Get the size of the domain (nrow and ncol)
+    
+    // #######################################################
+    // Get the size of the domain (nrow and ncol)
+    // #######################################################
     errflag = get_domain_size(&NROWSl,&NCOLSl, modset_flname, dirpath, logFLUXOSfile);
     if (errflag)
         exit(EXIT_FAILURE);
-        
+    
+    // #######################################################
     // Initiate variables on the heap
+    // #######################################################
     GlobVar ds(NROWSl+2,NCOLSl+2); 
     
-    // input/read data
+    // #######################################################
+    // Input/read data
+    // #######################################################
     ds.cfl = 1; // Courant condition
-    // ds.dxy = 3; // grid size (structure grid) - it will actually come from DEM
     ds.ntim = 0;// maximum time step (seconds)
-    //kapa = -2.    // /  -2=1.Ord ; -1=2.Ord   // KOMISCH, DASS REAL/INTEGER ->schauen bei Rolands Dateien
-    //betas = 2. // Chezy (parameter)
-    //ksfirow = 0.2 // Chezy (rougness) -> NEEDs to be converted into a vector with data for all cells
     ds.cvdef = 0.07; // for turbulent stress calc
     ds.nuem = 1.793e-6; // molecular dynamic viscosity (for turbulent stress calc)
-    //print_step = 3600; // in seconds
-    // timstart = 558000; // start of the simulation
     
+    // #######################################################
     // read model set up
+    // #######################################################
     errflag = read_modset(ds,modset_flname,dirpath,&print_step,&ks_input,logFLUXOSfile);
     if (errflag)
         exit(EXIT_FAILURE);
 
-    //std::cout << "Simulation purpose (write comment):  ";
-    //std::cin >> coment_sim_str;
+    // #######################################################
+    // Provide info to console
+    // #######################################################
     logFLUXOSfile << "Simulation: " + ds.sim_purp + "\n\n";
-    
-    // Request user input
-    //std::cout << "Print step (s) = ";
-    //std::cin >> print_step;
     logFLUXOSfile << "Print step (s) = " + std::to_string(print_step) + "\n";
-    
+    logFLUXOSfile << "Roughness height (m) = " + std::to_string(ks_input) + "\n";
+    logFLUXOSfile << "Cell size (m) = " + std::to_string(ds.dxy) + "\n";
+
+    // #######################################################
+    // Set size of domain and other info
+    // #######################################################
     ds.NROWS = ds.MROWS - 2;
     ds.NCOLS = ds.MCOLS - 2;
-    
     ds.D_coef = 0.01;
     
-    //std::cout << "Roughness height (m) = ";
-    //std::cin >> ks_input;
-    logFLUXOSfile << "Roughness height (m) = " + std::to_string(ks_input) + "\n";
-    
-    //std::cout << "Cell size (m) = ";
-    //std::cin >> ds.dxy;
-    logFLUXOSfile << "Cell size (m) = " + std::to_string(ds.dxy) + "\n";
-    
+    // #######################################################
+    // Read DEM
+    // #######################################################    
     errflag = read_geo(ds,ks_input,logFLUXOSfile); // DEM
     if (errflag)
         exit(EXIT_FAILURE);
     ds.arbase = ds.dxy * ds.dxy;
     
-    // Meteo and inflow forcing
+    // #######################################################
+    // Read forxing: Meteo and inflow files
+    // #######################################################
     ntim_meteo = read_meteo(ds,logFLUXOSfile); //  load
     ntim_inflow = read_inflow(ds,logFLUXOSfile); //  load
 
+    // #######################################################
+    // Provide simulation duraction to console
+    // #######################################################
     ds.ntim = std::max(ntim_meteo,ntim_inflow); // get the max ntim
 
-    
-    //std::cout << "Simulation time (days) (Snowmelt input duration = " + std::to_string(ds.ntim/(3600*24)) + " days) = ";
-    //std::cin >> ntim_days;
-    //ds.ntim = ntim_days * 3600 * 24;
+    // #######################################################
+    // Provide additional information to console
+    // #######################################################
     logFLUXOSfile << "Simulation time (days) = " + std::to_string(ds.ntim) + " (= " + std::to_string(ds.ntim) + " sec)";
-   
-    // Input the soil nutrient release rate
-    //std::cout << "Soil release rate (1/hour) = ";
-    //std::cin >> ds.soil_release_rate;
     logFLUXOSfile << "\nSoil release rate (1/hour) = " + std::to_string(ds.soil_release_rate);
-    
-    // Input the soil background concentration
-    //std::cout << "Soil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = ";
-    //std::cin >> ds.soil_conc_bckgrd;
     logFLUXOSfile << "\nSoil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = " + std::to_string(ds.soil_conc_bckgrd);
-    
-    //std::cout << "SWE max (cm) = ";
-    //std::cin >> ds.SWEmax;
     logFLUXOSfile << "\nSWE max (cm) = " + std::to_string(ds.SWEmax);
-    ds.SWEmax = ds.SWEmax/100;
-    //std::cout << "SWE std (cm) = ";
-    //std::cin >> ds.SWEstd;
     logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd) + "\n";
-    ds.SWEstd = ds.SWEstd/100;
-    
-    timstart = initiation(ds,logFLUXOSfile);
-    
-    // INITIATION
-    ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
-        
-    print_next = timstart;
-    ds.tim = timstart;
-    //write_results(ds,std::round(print_next));
-    
-    print_next = print_next + print_step;
-        
     std::cout << "-----------------------------------------------\n" << std::endl;
     logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
     
-    // TIME LOOP
+    // #######################################################
+    // Initiate
+    // #######################################################
+    timstart = initiation(ds,logFLUXOSfile);
+    ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
+    print_next = timstart;  
+    print_next = print_next + print_step;
+    ds.SWEstd = ds.SWEstd/100;
+        
+    // #######################################################
+    // Courant Condition: determine maximum time step for numerical stabilitity
+    // #######################################################
     while(ds.tim <= ds.ntim) 
     {              
         ds.dtfl=9.e10;
         hpall = 0.0f;
         
-        // SPACE LOOP
         for(icol=1;icol<=ds.NCOLS;icol++)
         {
             for(irow=1;irow<=ds.NROWS;irow++)
@@ -178,8 +165,8 @@ int main(int argc, char* argv[])
                 hp = (*ds.h).at(irow,icol);
                 (*ds.h0)(irow,icol) = hp; // adesolver
                 (*ds.ldry_prev).at(irow,icol) = (*ds.ldry).at(irow,icol); // adesolver
-                        
-                if(hp>ds.hdry)
+
+                if(hp>ds.hdry) 
                 {
                     (*ds.ldry).at(irow,icol)=0.0f;
                     hp=std::fmax((*ds.h).at(irow,icol),ds.hdry);
@@ -198,8 +185,9 @@ int main(int argc, char* argv[])
                 
         ds.tim = ds.tim + ds.dtfl;
           
-
-        // Qmelt load
+        // #######################################################
+        // Add forcing: meteo and inflow
+        // #######################################################
         errflag = add_meteo(ds);
         if (errflag)
             exit(EXIT_FAILURE);
@@ -207,8 +195,9 @@ int main(int argc, char* argv[])
         if (errflag)
             exit(EXIT_FAILURE);
 
-                
-        // FLOW SOLVERS
+        // #######################################################        
+        // CALL FLOW SOLVERS
+        // #######################################################
         if (hpall!=0) 
         {
             it++;
@@ -217,7 +206,9 @@ int main(int argc, char* argv[])
             wintrasolver_calc(ds);
         }
         
+        // #######################################################
         // PRINT RESULTS
+        // #######################################################
         if (ds.tim>=print_next)
         {
             end = std::chrono::system_clock::now();
@@ -242,7 +233,9 @@ int main(int argc, char* argv[])
          }
     }
     
+    // #######################################################
     // Simulation complete
+    // #######################################################
     std::cout << "-----------------------------------------------" << std::endl;
     logFLUXOSfile << "\n-----------------------------------------------" << std::endl;
     std::cout << "Simulation complete (" << std::chrono::system_clock::now << ")"  << std::endl;
