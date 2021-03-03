@@ -155,6 +155,11 @@ unsigned int a,irow, icol,meteo_rowi;
 double meteoi,hp;
 bool errflag = false;
 
+// Return if no METEO_FILE provided
+if (ds.meteo_file.empty())
+    return errflag;
+
+
 try{
     for (a=0;a<=(*ds.meteo).col(0).n_elem;a++){
         meteo_rowi = a;
@@ -205,6 +210,10 @@ unsigned int a,irow, icol,inflow_rowi;
 double inflowi,hp;
 bool errflag = false;
 
+// Return if no METEO_FILE provided
+if (ds.inflow_file.empty())
+    return errflag;
+
 try{
     for (a=0;a<=(*ds.inflow).col(0).n_elem;a++){
         inflow_rowi = a;
@@ -216,13 +225,18 @@ try{
     irow = ds.ix_inflow;
     icol = ds.iy_inflow;
         
-    inflowi = (*ds.inflow).at(inflow_rowi,1)*ds.dtfl/std::pow(ds.dxy,2); // added as m3/s
+    inflowi = (*ds.inflow).at(inflow_rowi,1)*ds.dtfl/(std::pow(ds.dxy,2)); // added as m3/s
 
     if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
     {
+        if ((*ds.z)(irow,icol) <= (*ds.zb).at(irow,icol)){
+            (*ds.z).at(irow,icol) = (*ds.zb).at(irow,icol);
+        }
+    
         hp = std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f); // adesolver hp before adding snowmelt  
         (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + inflowi;   
         (*ds.h)(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
+
         if ((*ds.h)(irow,icol) <= ds.hdry)
         {
             (*ds.ldry).at(irow,icol)=0.0f;
