@@ -138,8 +138,6 @@ int main(int argc, char* argv[])
     logFLUXOSfile << "\nSoil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = " + std::to_string(ds.soil_conc_bckgrd);
     logFLUXOSfile << "\nSWE max (cm) = " + std::to_string(ds.SWEmax);
     logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd) + "\n";
-    std::cout << "-----------------------------------------------\n" << std::endl;
-    logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
     
     // #######################################################
     // Initiate
@@ -149,6 +147,9 @@ int main(int argc, char* argv[])
     print_next = timstart;  
     print_next = print_next + print_step;
     ds.SWEstd = ds.SWEstd/100;
+
+    std::cout << "-----------------------------------------------\n" << std::endl;
+    logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
         
     // #######################################################
     // Courant Condition: determine maximum time step for numerical stabilitity
