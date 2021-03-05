@@ -237,7 +237,7 @@ float read_inflow(GlobVar& ds,std::ofstream& logFLUXOSfile)
         return tim;
     }
     
-    // reading qmelt 
+    // reading inflow
     ds.qmelvtotal  = 0;
     arma::mat filedataQ; 
     bool flstatusQ =  filedataQ.load(ds.inflow_file,arma::csv_ascii);
@@ -249,8 +249,8 @@ float read_inflow(GlobVar& ds,std::ofstream& logFLUXOSfile)
         for(a=2;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
             tinflows = filedataQ(a,0);  // t melt seconds
             vinflow = filedataQ(a,1);  // value of melt
-            (*ds.inflow).at(a,0) = tinflows;  
-            (*ds.inflow).at(a,1) = vinflow;
+            (*ds.inflow).at(a-2,0) = tinflows;  
+            (*ds.inflow).at(a-2,1) = vinflow;
             ds.qmelvtotal += vinflow /(1000.*3600.*24.) * (tinflows - tinflows_bef);  // input in mm/day
             tinflows_bef = tinflows;
         }
