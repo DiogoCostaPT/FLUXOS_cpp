@@ -266,9 +266,6 @@ float read_inflow(
     bool flstatusQ =  filedataQ.load(ds.inflow_file,arma::csv_ascii);
     if(flstatusQ == true) {
 
-        ds.inflow_ncol = filedataQ(1,0);
-        ds.inflow_nrow = filedataQ(1,1);
-
         for(a=1;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
             tinflows = filedataQ(a,0);  // t melt seconds
             vinflow = filedataQ(a,1);  // value of melt
