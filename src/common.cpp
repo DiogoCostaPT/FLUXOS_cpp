@@ -26,7 +26,8 @@
 #include "GlobVar.h"
 #include "common.h"
 
-std::string SplitFilename (const std::string& str)
+std::string SplitFilename (
+    const std::string& str)
 {
   size_t found;
   found=str.find_last_of("/\\");
@@ -34,7 +35,8 @@ std::string SplitFilename (const std::string& str)
 
 }
 
-int getIntNumberFromString(std::string s){
+int getIntNumberFromString(
+    std::string s){
    std::stringstream str_strm;
    str_strm << s; //convert the string s into stringstream
    std::string temp_str;
@@ -49,7 +51,8 @@ int getIntNumberFromString(std::string s){
 }
 
 // read file names in Results directory
-int findLastStep(const char *path) 
+int findLastStep(
+    const char *path) 
 {
 
    struct dirent *entry;
@@ -89,9 +92,12 @@ int findLastStep(const char *path)
 
 
 // get size of the domain
-bool get_domain_size(unsigned int *rown, unsigned int *coln, 
-                    const std::string& filename, const std::string& pathfile,
-                    std::ofstream& logFLUXOSfile)
+bool get_domain_size(
+    unsigned int *rown, 
+    unsigned int *coln, 
+    const std::string& filename, 
+    const std::string& pathfile,
+    std::ofstream& logFLUXOSfile)
 {
 
     // Read DEM file fom modset
@@ -149,7 +155,8 @@ bool get_domain_size(unsigned int *rown, unsigned int *coln,
 }
 
 // Add meteo at instant t
-bool add_meteo(GlobVar& ds){
+bool add_meteo(
+    GlobVar& ds){
 
 unsigned int a,irow, icol,meteo_rowi;
 double meteoi,hp;
@@ -204,7 +211,8 @@ return errflag;
 
 
 // Add inflow at instant t
-bool add_inflow(GlobVar& ds){
+bool add_inflow(
+    GlobVar& ds){
 
 unsigned int a,irow, icol,inflow_rowi;
 double inflowi,hp;

@@ -21,6 +21,7 @@
 
 #include "GlobVar.h"
 
-void hydrodynamics_calc(GlobVar& ds);
+void hydrodynamics_calc(
+    GlobVar& ds);
 
 #endif // !SOLVER_DRYDOMAINH_INCLUDED

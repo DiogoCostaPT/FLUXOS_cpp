@@ -22,6 +22,8 @@
 
 #include "GlobVar.h"
 
-void adesolver_calc(GlobVar& ds, int it);
+void adesolver_calc(
+    GlobVar& ds, 
+    int it);
 
 #endif // !SOLVER_DRYDOMAINH_INCLUDED

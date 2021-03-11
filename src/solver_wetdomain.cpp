@@ -24,7 +24,10 @@
 #include "GlobVar.h"
 #include "solver_wetdomain.h"
 
-void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol){
+void solver_wet(
+    GlobVar& ds, 
+    unsigned int irow, 
+    unsigned int icol){
 
     unsigned int iw,ie, is,in,inn, NROWSl, NCOLSl,dx,dy;
     double fe1,fe2,fe3,fn1,fn2,fn3,zw,zp,ze,zs,

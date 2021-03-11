@@ -22,6 +22,8 @@
 #include "GlobVar.h"
 #include <iostream>
 
-unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile);
+unsigned int initiation(
+    GlobVar& ds,
+    std::ofstream& logFLUXOSfile);
 
 #endif

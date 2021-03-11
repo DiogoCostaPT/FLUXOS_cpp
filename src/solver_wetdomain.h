@@ -22,6 +22,9 @@
 
 #include "GlobVar.h"
 
-void solver_wet(GlobVar& ds, unsigned int irow, unsigned int icol);
+void solver_wet(
+    GlobVar& ds, 
+    unsigned int irow, 
+    unsigned int icol);
 
 #endif // !SOLVER_DRYDOMAINH_INCLUDED

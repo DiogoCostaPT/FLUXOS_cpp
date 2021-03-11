@@ -24,7 +24,9 @@
 #include "initiate.h"
 #include "common.h"
 
-unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
+unsigned int initiation(
+    GlobVar& ds,
+    std::ofstream& logFLUXOSfile) {
     
     std::unique_ptr<double[]> zbs1(new double[ds.MROWS]);   
     double zbsw,zbnw,zbse,zbne,zbsum;
@@ -90,7 +92,8 @@ unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
         {
             if(std::fabs((*ds.zb)(irow,icol))!=99999)
             {
-            (*ds.h).at(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
+            (*ds.h).at(irow,icol)=
+                std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
             (*ds.z).at(irow,icol)=(*ds.zb).at(irow,icol)+(*ds.h).at(irow,icol);
             (*ds.qx).at(irow,icol)=(*ds.ux).at(irow,icol)*(*ds.h).at(irow,icol);
             (*ds.qy).at(irow,icol)=(*ds.uy).at(irow,icol)*(*ds.h).at(irow,icol);
@@ -152,24 +155,36 @@ unsigned int initiation(GlobVar& ds,std::ofstream& logFLUXOSfile) {
     // BOUNDARY VALUES (initial set up)
         for(icol=0;icol<=NCOLS1;icol++)
         {
-          (*ds.zb).at(0,icol)=1.5*(*ds.zb).at(1,icol)-.5*(*ds.zb).at(2,icol);
-          (*ds.zb).at(NROWS1,icol)=1.5*(*ds.zb).at(ds.NROWS,icol)-.5*(*ds.zb).at(ds.NROWS-1,icol);
-          (*ds.z).at(0,icol)=1.5*(*ds.z).at(1,icol)-.5*(*ds.z).at(2,icol);
-          (*ds.z).at(NROWS1,icol)=1.5*(*ds.z).at(ds.NROWS,icol)-.5*(*ds.z).at(ds.NROWS-1,icol);
-          (*ds.h).at(0,icol)=std::fmax(0.0f,(*ds.z).at(0,icol)-(*ds.zb).at(0,icol));
-          (*ds.h).at(NROWS1,icol)=std::fmax(0.0f,(*ds.z).at(NROWS1,icol)-(*ds.zb).at(NROWS1,icol));
+          (*ds.zb).at(0,icol)=
+            1.5*(*ds.zb).at(1,icol)-.5*(*ds.zb).at(2,icol);
+          (*ds.zb).at(NROWS1,icol)=
+            1.5*(*ds.zb).at(ds.NROWS,icol)-.5*(*ds.zb).at(ds.NROWS-1,icol);
+          (*ds.z).at(0,icol)=
+            1.5*(*ds.z).at(1,icol)-.5*(*ds.z).at(2,icol);
+          (*ds.z).at(NROWS1,icol)=
+            1.5*(*ds.z).at(ds.NROWS,icol)-.5*(*ds.z).at(ds.NROWS-1,icol);
+          (*ds.h).at(0,icol)=
+            std::fmax(0.0f,(*ds.z).at(0,icol)-(*ds.zb).at(0,icol));
+          (*ds.h).at(NROWS1,icol)=
+            std::fmax(0.0f,(*ds.z).at(NROWS1,icol)-(*ds.zb).at(NROWS1,icol));
           (*ds.qx).at(0,icol)=0.0f;
           (*ds.qy).at(NROWS1,icol)=0.0f;
           (*ds.qxf).at(0,icol)=0.0f;
         }
         for(irow=0;irow<=NROWS1;irow++)
         { 
-          (*ds.zb).at(irow,0)=1.5*(*ds.zb).at(irow,1)-.5*(*ds.zb).at(irow,2);
-          (*ds.zb).at(irow,NCOLS1)=1.5*(*ds.zb).at(irow,ds.NCOLS)-.5*(*ds.zb).at(irow,ds.NCOLS-1);
-          (*ds.z).at(irow,0)=1.5*(*ds.z).at(irow,1)-.5*(*ds.z).at(irow,2);
-          (*ds.z).at(irow,NCOLS1)=1.5*(*ds.z).at(irow,ds.NCOLS)-.5*(*ds.z).at(irow,ds.NCOLS-1);
-          (*ds.h).at(irow,0)=std::fmax(0.0f,(*ds.z).at(irow,0)-(*ds.zb).at(irow,0));
-          (*ds.h).at(irow,NCOLS1)=std::fmax(0.0f,(*ds.z).at(irow,NCOLS1)-(*ds.zb).at(irow,NCOLS1));
+          (*ds.zb).at(irow,0)=
+            1.5*(*ds.zb).at(irow,1)-.5*(*ds.zb).at(irow,2);
+          (*ds.zb).at(irow,NCOLS1)=
+            1.5*(*ds.zb).at(irow,ds.NCOLS)-.5*(*ds.zb).at(irow,ds.NCOLS-1);
+          (*ds.z).at(irow,0)=
+            1.5*(*ds.z).at(irow,1)-.5*(*ds.z).at(irow,2);
+          (*ds.z).at(irow,NCOLS1)=
+            1.5*(*ds.z).at(irow,ds.NCOLS)-.5*(*ds.z).at(irow,ds.NCOLS-1);
+          (*ds.h).at(irow,0)=
+            std::fmax(0.0f,(*ds.z).at(irow,0)-(*ds.zb).at(irow,0));
+          (*ds.h).at(irow,NCOLS1)=
+            std::fmax(0.0f,(*ds.z).at(irow,NCOLS1)-(*ds.zb).at(irow,NCOLS1));
           (*ds.qx).at(irow,0)=0.0f;
           (*ds.qy).at(irow,NCOLS1)=0.0f;
           (*ds.qyf).at(irow,0)=0.0f;

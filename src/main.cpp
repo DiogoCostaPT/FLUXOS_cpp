@@ -72,7 +72,12 @@ int main(int argc, char* argv[])
     // #######################################################
     // Get the size of the domain (nrow and ncol)
     // #######################################################
-    errflag = get_domain_size(&NROWSl,&NCOLSl, modset_flname, dirpath, logFLUXOSfile);
+    errflag = get_domain_size(
+        &NROWSl,
+        &NCOLSl, 
+        modset_flname, 
+        dirpath, 
+        logFLUXOSfile);
     if (errflag)
         exit(EXIT_FAILURE);
     

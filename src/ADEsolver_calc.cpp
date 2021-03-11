@@ -24,7 +24,9 @@
 #include "ADEsolver_calc.h"
 
 // ADE solver
-void adesolver_calc(GlobVar& ds, int it)
+void adesolver_calc(
+    GlobVar& ds, 
+    int it)
 {
 
     arma::mat qfcds(ds.MROWS*ds.MCOLS,1);  //double qfcds(0:mx);

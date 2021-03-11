@@ -23,10 +23,13 @@
 #include "read_functions.h"
 #include "common.h"
 
-bool read_modset(GlobVar& ds, const std::string& filename, 
-                const std::string& pathfile, unsigned int *print_step, 
-                double *ks_input,
-                std::ofstream& logFLUXOSfile)
+bool read_modset(
+    GlobVar& ds, 
+    const std::string& filename, 
+    const std::string& pathfile, 
+    unsigned int *print_step, 
+    double *ks_input,
+    std::ofstream& logFLUXOSfile)
 {
     // read_modset(ds,print_step,ks_input,zbinc,ntim_days)
     
@@ -69,7 +72,10 @@ bool read_modset(GlobVar& ds, const std::string& filename,
     
 }
 
-bool read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
+bool read_geo(
+    GlobVar& ds,
+    double ks_input,
+    std::ofstream& logFLUXOSfile)
 {
     int icol,irow,n;  
     float zbp,zbp_corr,zbn,zbs,zbe,zbw,temp_float;
@@ -183,7 +189,9 @@ bool read_geo(GlobVar& ds,double ks_input,std::ofstream& logFLUXOSfile)
 
 }
 
-float read_meteo(GlobVar& ds,std::ofstream& logFLUXOSfile)
+float read_meteo(
+    GlobVar& ds,
+    std::ofstream& logFLUXOSfile)
 {
     unsigned int a; 
     unsigned int icol,irow;
@@ -223,7 +231,9 @@ float read_meteo(GlobVar& ds,std::ofstream& logFLUXOSfile)
 }
 
 
-float read_inflow(GlobVar& ds,std::ofstream& logFLUXOSfile)
+float read_inflow(
+    GlobVar& ds,
+    std::ofstream& logFLUXOSfile)
 {
     unsigned int a; 
     unsigned int icol,irow;

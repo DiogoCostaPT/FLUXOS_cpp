@@ -25,7 +25,8 @@
 #include "solver_drydomain.h"
 #include "solver_wetdomain.h"
 
-void hydrodynamics_calc(GlobVar& ds)
+void hydrodynamics_calc(
+    GlobVar& ds)
 {
            
 //-----------------------------------------------------------------------
@@ -94,9 +95,15 @@ void hydrodynamics_calc(GlobVar& ds)
         {  
              cell_neumann = (*ds.innerNeumannBCWeir).at(irow,icol);
              if (cell_neumann == 0.0f){
-                (*ds.dh).at(irow,icol) = (((*ds.fe_1).at(irow-1,icol)-(*ds.fe_1).at(irow,icol))/ds.dxy +((*ds.fn_1).at(irow,icol-1)-(*ds.fn_1).at(irow,icol))/ds.dxy)*dtl;
-                (*ds.dqx).at(irow,icol) = (((*ds.fe_2).at(irow-1,icol)-(*ds.fe_2).at(irow,icol))/ds.dxy +((*ds.fn_2).at(irow,icol-1)-(*ds.fn_2).at(irow,icol))/ds.dxy)*dtl;
-                (*ds.dqy).at(irow,icol) = (((*ds.fe_3).at(irow-1,icol)-(*ds.fe_3).at(irow,icol))/ds.dxy +((*ds.fn_3).at(irow,icol-1)-(*ds.fn_3).at(irow,icol))/ds.dxy)*dtl;
+                (*ds.dh).at(irow,icol) = 
+                    (((*ds.fe_1).at(irow-1,icol)-(*ds.fe_1).at(irow,icol))/ds.dxy 
+                    +((*ds.fn_1).at(irow,icol-1)-(*ds.fn_1).at(irow,icol))/ds.dxy)*dtl;
+                (*ds.dqx).at(irow,icol) = 
+                    (((*ds.fe_2).at(irow-1,icol)-(*ds.fe_2).at(irow,icol))/ds.dxy 
+                    +((*ds.fn_2).at(irow,icol-1)-(*ds.fn_2).at(irow,icol))/ds.dxy)*dtl;
+                (*ds.dqy).at(irow,icol) = 
+                    (((*ds.fe_3).at(irow-1,icol)-(*ds.fe_3).at(irow,icol))/ds.dxy 
+                    +((*ds.fn_3).at(irow,icol-1)-(*ds.fn_3).at(irow,icol))/ds.dxy)*dtl;
                 (*ds.qxf).at(irow,icol) = (*ds.fe_1).at(irow,icol)*dtl;
                 (*ds.qyf).at(irow,icol) = (*ds.fn_1).at(irow,icol)*dtl;
              }else
@@ -128,10 +135,16 @@ void hydrodynamics_calc(GlobVar& ds)
                 (*ds.ldry).at(irow,icol) = 1.0f;
             } else 
             {
-                (*ds.qx).at(irow,icol)=(*ds.qx).at(irow,icol)+(*ds.dqx).at(irow,icol);  // numerical flux at cell center
-                (*ds.qy).at(irow,icol)=(*ds.qy).at(irow,icol)+(*ds.dqy).at(irow,icol);  // numerical flux at cell center
-                (*ds.qx).at(irow,icol)=.1*(*ds.qxf).at(irow-1,icol)+.8*(*ds.qx).at(irow,icol)+.1*(*ds.qxf).at(irow,icol); 
-                (*ds.qy).at(irow,icol)=.1*(*ds.qyf).at(irow,icol-1)+.8*(*ds.qy).at(irow,icol)+.1*(*ds.qyf).at(irow,icol);
+                (*ds.qx).at(irow,icol)=
+                    (*ds.qx).at(irow,icol)+(*ds.dqx).at(irow,icol);  // numerical flux at cell center
+                (*ds.qy).at(irow,icol)=
+                    (*ds.qy).at(irow,icol)+(*ds.dqy).at(irow,icol);  // numerical flux at cell center
+                (*ds.qx).at(irow,icol)=
+                    .1*(*ds.qxf).at(irow-1,icol)+.8*(*ds.qx).at(irow,icol)
+                    +.1*(*ds.qxf).at(irow,icol); 
+                (*ds.qy).at(irow,icol)=
+                    .1*(*ds.qyf).at(irow,icol-1)+.8*(*ds.qy).at(irow,icol)
+                    +.1*(*ds.qyf).at(irow,icol);
                 (*ds.ldry).at(irow,icol) = 0.0f;          
             }  
         }

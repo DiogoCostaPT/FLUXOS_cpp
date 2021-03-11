@@ -24,7 +24,10 @@
 #include "GlobVar.h"
 #include "solver_drydomain.h"
 
-void solver_dry(GlobVar& ds, unsigned int irow, unsigned int icol) {
+void solver_dry(
+    GlobVar& ds, 
+    unsigned int irow, 
+    unsigned int icol) {
     
     unsigned int iw,ie,is,in, NROWSl, NCOLSl;
     double fe1,fe2,fe3,fn1,fn2,fn3,zp,ze,zn,
