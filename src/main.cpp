@@ -79,7 +79,9 @@ int main(int argc, char* argv[])
     // #######################################################
     // Initiate variables on the heap
     // #######################################################
-    GlobVar ds(NROWSl+2,NCOLSl+2); 
+    GlobVar ds(
+        NROWSl+2,
+        NCOLSl+2); 
     
     // #######################################################
     // Input/read data
@@ -92,7 +94,13 @@ int main(int argc, char* argv[])
     // #######################################################
     // read model set up
     // #######################################################
-    errflag = read_modset(ds,modset_flname,dirpath,&print_step,&ks_input,logFLUXOSfile);
+    ds.master_MODSET = master_MODSET_local;
+    errflag = read_modset(
+        ds,modset_flname,
+        dirpath,
+        &print_step,
+        &ks_input,
+        logFLUXOSfile);
     if (errflag)
         exit(EXIT_FAILURE);
 
@@ -114,7 +122,10 @@ int main(int argc, char* argv[])
     // #######################################################
     // Read DEM
     // #######################################################    
-    errflag = read_geo(ds,ks_input,logFLUXOSfile); // DEM
+    errflag = read_geo(
+        ds,
+        ks_input,
+        logFLUXOSfile); // DEM
     if (errflag)
         exit(EXIT_FAILURE);
     ds.arbase = ds.dxy * ds.dxy;
@@ -122,8 +133,12 @@ int main(int argc, char* argv[])
     // #######################################################
     // Read forxing: Meteo and inflow files
     // #######################################################
-    ntim_meteo = read_meteo(ds,logFLUXOSfile); //  load
-    ntim_inflow = read_inflow(ds,logFLUXOSfile); //  load
+    ntim_meteo = read_meteo(
+        ds,
+        logFLUXOSfile); //  load
+    ntim_inflow = read_inflow(
+        ds,
+        logFLUXOSfile); //  load
 
     // #######################################################
     // Provide simulation duraction to console
@@ -142,7 +157,9 @@ int main(int argc, char* argv[])
     // #######################################################
     // Initiate
     // #######################################################
-    timstart = initiation(ds,logFLUXOSfile);
+    timstart = initiation(
+        ds,
+        logFLUXOSfile);
     ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
     print_next = timstart;  
     print_next = print_next + print_step;
@@ -215,7 +232,11 @@ int main(int argc, char* argv[])
             end = std::chrono::system_clock::now();
             elapsed_seconds = end-start;
             
-            outwritestatus = write_results(ds,std::round(print_next),print_step,elapsed_seconds);
+            outwritestatus = write_results(
+                ds,
+                std::round(print_next),
+                print_step,
+                elapsed_seconds);
              
             if(outwritestatus == true) 
             {
