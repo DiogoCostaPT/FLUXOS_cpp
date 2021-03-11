@@ -223,6 +223,7 @@ try{
 
     irow = ds.inflow_nrow;
     icol = ds.inflow_ncol;
+    
     inflowi = (*ds.inflow).at(inflow_rowi,1)*ds.dtfl/(std::pow(ds.dxy,2)); // added as m3/s
 
     if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
@@ -236,9 +237,9 @@ try{
         (*ds.h)(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
 
         if ((*ds.h)(irow,icol) <= ds.hdry)
-            (*ds.ldry).at(irow,icol)=0.0f;
+            (*ds.ldry).at(irow,icol) = 1.0f;
         else
-            (*ds.ldry).at(irow,icol)=1.0f;
+            (*ds.ldry).at(irow,icol)= 0.0f;
         
         (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
         if (hp!=0.)
