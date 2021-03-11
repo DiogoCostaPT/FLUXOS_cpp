@@ -221,9 +221,8 @@ try{
         }
     }
 
-    icol = ds.inflow_ncol;
     irow = ds.inflow_nrow;
-        
+    icol = ds.inflow_ncol;
     inflowi = (*ds.inflow).at(inflow_rowi,1)*ds.dtfl/(std::pow(ds.dxy,2)); // added as m3/s
 
     if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
