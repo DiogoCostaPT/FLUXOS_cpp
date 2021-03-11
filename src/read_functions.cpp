@@ -26,49 +26,56 @@
 bool read_modset(
     GlobVar& ds, 
     const std::string& filename, 
-    const std::string& pathfile, 
     unsigned int *print_step, 
     double *ks_input,
     std::ofstream& logFLUXOSfile)
 {
-    // read_modset(ds,print_step,ks_input,zbinc,ntim_days)
     
     std::string str, msg;
     bool errflag = false;
     
-    std::ifstream file(filename);
-    
-    int i = 0;
-    while (std::getline(file, str)) 
-    {
-        // Continue if comment
-        if(str.find("#") != std::string::npos)
-            continue;
+    try{
 
-        i += 1;
-        //if(str.find("COMMNET") != std::string::npos){ds.sim_purp = str.substr(8);}; // comment
-        if(str.find("DEM_FILE") != std::string::npos){ds.dem_file = str.substr(9);}; // DEM ESRI-ArcGIS ascii
-        if(str.find("METEO_FILE") != std::string::npos){ds.meteo_file = str.substr(11);}; // Meteo file
-        if(str.find("INFLOW_FILE") != std::string::npos){ds.inflow_file = str.substr(12);}; // Meteo file
-        if(str.find("PRINT_STEP") != std::string::npos){(*print_step) = std::stoi(str.substr(11));}; // print time step
-        if(str.find("ROUGNESS_HEIGHT") != std::string::npos){(*ks_input) = std::stof(str.substr(16));};  // average roughness height (m)
-        if(str.find("SOIL_RELEASE_RATE") != std::string::npos){(ds.soil_release_rate) = std::stof(str.substr(18));}; //  WINTRA: soil nutrient release rate
-        if(str.find("SOIL_CONC_BACKGROUND") != std::string::npos){(ds.soil_conc_bckgrd) = std::stof(str.substr(21));};  // WINTRA: soil background concentration
-        if(str.find("SWE_STD") != std::string::npos){(ds.SWEstd) = std::stof(str.substr(8));}; // SWE standard deviation (snow depletion curves, Kevin's paper)
-        if(str.find("SWE_MAX") != std::string::npos){(ds.SWEmax) = std::stof(str.substr(8));};  // SWE standard deviation (snow depletion curves, Kevin's paper)   
-    }
-    file.close();
-    
-    if(i==8){
-        msg = "Successful loading of master input file: " + filename;
-    } else{
+        // Compulsory data
+        ds.dem_file = ds.master_MODSET["DEM_FILE"];
+        *print_step = ds.master_MODSET["PRINT_STEP"];
+        *ks_input = ds.master_MODSET["ROUGNESS_HEIGHT"];
+        ds.soil_release_rate = ds.master_MODSET["SOIL_RELEASE_RATE"];
+        ds.soil_conc_bckgrd = ds.master_MODSET["SOIL_CONC_BACKGROUND"];
+        ds.SWEstd = ds.master_MODSET["SWE_STD"];
+        ds.SWEmax = ds.master_MODSET["SWE_MAX"];
+
+        // Only requires one of these forcing files to be provided
+        auto exist_meteo = ds.master_MODSET.find("METEO_FILE");
+        auto exist_inflow = ds.master_MODSET.find("INFLOW_FILE");
+
+        if (exist_meteo != ds.master_MODSET.end() || 
+            exist_inflow != ds.master_MODSET.end()){
+
+            if (exist_meteo != ds.master_MODSET.end())
+                ds.meteo_file = ds.master_MODSET["METEO_FILE"];
+
+            if (exist_inflow != ds.master_MODSET.end())
+                ds.inflow_file = ds.master_MODSET["INFLOW_FILE"];
+            
+            msg = "Successful loading of master input file: " + filename;
+        }
+        else{
+            msg = "METEO_FILE or INFLOW_FILE must be provided in master file: " + filename;
+            errflag = true;
+        }               
+
+    }catch(json::type_error& e){ 
+
         msg = "PROBLEM loading of master input file: " + filename;
         errflag = true;
-    } 
-     std::cout << msg  << std::endl;
-     logFLUXOSfile << msg + "\n";
 
-     return errflag;
+    }
+
+    std::cout << msg  << std::endl;
+    logFLUXOSfile << msg + "\n";
+
+    return errflag;
     
 }
 

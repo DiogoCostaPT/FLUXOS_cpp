@@ -19,6 +19,9 @@
 #ifndef GLOBVARH_INCLUDED
 #define GLOBVARH_INCLUDED
 
+#include "jnlohmann/json.h"
+using json = nlohmann::json;
+
 class GlobVar
 {
 public:
@@ -93,6 +96,8 @@ public:
     unsigned long ix_inflow, iy_inflow;
 
     double NODATA_VALUE;
+
+    json master_MODSET;
     
 };
 

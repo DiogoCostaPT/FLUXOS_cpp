@@ -92,29 +92,20 @@ int findLastStep(
 
 
 // get size of the domain
-bool get_domain_size(
-    unsigned int *rown, 
+bool get_domain_size(unsigned int *rown, 
     unsigned int *coln, 
-    const std::string& filename, 
-    const std::string& pathfile,
+    json master_MODSET_local,
     std::ofstream& logFLUXOSfile)
 {
 
-    // Read DEM file fom modset
-
-    std::ifstream file(filename);
+    // Local variables
     std::string str, dem_file_temp, msg;
     bool errflag = false;
     
-    while (std::getline(file, str)) 
-    {
-        if(str.find("DEM_FILE") != std::string::npos){
-            dem_file_temp = str.substr(9);
-        }
-        
-    }
-    file.close();
+    // Get DEM filepath
+    dem_file_temp = master_MODSET_local["DEM_FILE"];
 
+    // Opening the DEM file.
     unsigned int linei,numi;
     std::string line, stri; 
     std::ifstream myfile (dem_file_temp); //opening the file.

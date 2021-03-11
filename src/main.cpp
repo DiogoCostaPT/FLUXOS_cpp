@@ -29,6 +29,9 @@
 #include <dirent.h>
 #include <sys/types.h>
 
+#include "jnlohmann/json.h"
+using json = nlohmann::json;
+
 #include "common.h"
 #include "GlobVar.h"
 #include "read_functions.h"
@@ -70,13 +73,19 @@ int main(int argc, char* argv[])
     logFLUXOSfile << "Simulation started... " << std::ctime(&start_time);
     
     // #######################################################
+    // Read modset MASTER FILE (JSON)
+    // #######################################################
+    json master_MODSET_local;
+    std::ifstream i(modset_flname);
+    i >> master_MODSET_local;
+    
+    // #######################################################
     // Get the size of the domain (nrow and ncol)
     // #######################################################
     errflag = get_domain_size(
         &NROWSl,
-        &NCOLSl, 
-        modset_flname, 
-        dirpath, 
+        &NCOLSl,
+        master_MODSET_local,
         logFLUXOSfile);
     if (errflag)
         exit(EXIT_FAILURE);
@@ -95,13 +104,18 @@ int main(int argc, char* argv[])
     ds.ntim = 0;// maximum time step (seconds)
     ds.cvdef = 0.07; // for turbulent stress calc
     ds.nuem = 1.793e-6; // molecular dynamic viscosity (for turbulent stress calc)
+
+    // #######################################################
+    // Save master_MODSET_local in GlobVar
+    // #######################################################
+    ds.master_MODSET = master_MODSET_local;
     
     // #######################################################
     // read model set up
     // #######################################################
     errflag = read_modset(
-        ds,modset_flname,
-        dirpath,
+        ds,
+        modset_flname, 
         &print_step,
         &ks_input,
         logFLUXOSfile);
