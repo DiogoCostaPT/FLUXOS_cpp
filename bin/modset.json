@@ -1,7 +1,13 @@
 {
 	"COMMNET": "Batch_1 - additional tests for paper",
 	"DEM_FILE": "bin/Rosa_2m.asc",
-	"INFLOW_FILE": "bin/Flow_forcing.fluxos",
+	"INFLOW_FILE": {
+		"FILENAME": "bin/Flow_forcing.fluxos",
+		"DISCHARGE_LOCATION":{
+			"NROW": 201,
+			"NCOL": 310
+		}
+	},
 	"PRINT_STEP": 3600,
 	"ROUGNESS_HEIGHT": 0.005,
 	"SOIL_RELEASE_RATE": 0.08,

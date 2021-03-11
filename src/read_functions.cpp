@@ -55,8 +55,11 @@ bool read_modset(
             if (exist_meteo != ds.master_MODSET.end())
                 ds.meteo_file = ds.master_MODSET["METEO_FILE"];
 
-            if (exist_inflow != ds.master_MODSET.end())
-                ds.inflow_file = ds.master_MODSET["INFLOW_FILE"];
+            if (exist_inflow != ds.master_MODSET.end()){
+                ds.inflow_file = ds.master_MODSET["INFLOW_FILE"]["FILENAME"];
+                ds.inflow_nrow = ds.master_MODSET["INFLOW_FILE"]["DISCHARGE_LOCATION"]["NROW"];
+                ds.inflow_ncol = ds.master_MODSET["INFLOW_FILE"]["DISCHARGE_LOCATION"]["NCOL"];
+            }
             
             msg = "Successful loading of master input file: " + filename;
         }
@@ -223,7 +226,10 @@ float read_meteo(
             vmeteo = filedataQ(a,1);  // value of melt
             (*ds.meteo).at(a,0) = tmeteo;  
             (*ds.meteo).at(a,1) = vmeteo;
+
+            // For WINTRA 
             ds.qmelvtotal += vmeteo /(1000.*3600.*24.) * (tmeteo - tmeteo_bef);  // input in mm/day
+            
             tmeteo_bef = tmeteo;
         }
        msg = "Successful loading of METEO file: " + ds.meteo_file;
@@ -255,25 +261,25 @@ float read_inflow(
     }
     
     // reading inflow
-    ds.qmelvtotal  = 0;
+
     arma::mat filedataQ; 
     bool flstatusQ =  filedataQ.load(ds.inflow_file,arma::csv_ascii);
     if(flstatusQ == true) {
 
-        ds.ix_inflow = filedataQ(1,0);
-        ds.iy_inflow = filedataQ(1,1);
+        ds.inflow_ncol = filedataQ(1,0);
+        ds.inflow_nrow = filedataQ(1,1);
 
-        for(a=2;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
+        for(a=1;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
             tinflows = filedataQ(a,0);  // t melt seconds
             vinflow = filedataQ(a,1);  // value of melt
-            (*ds.inflow).at(a-2,0) = tinflows;  
-            (*ds.inflow).at(a-2,1) = vinflow;
-            ds.qmelvtotal += vinflow /(1000.*3600.*24.) * (tinflows - tinflows_bef);  // input in mm/day
+            (*ds.inflow).at(a-1,0) = tinflows;  
+            (*ds.inflow).at(a-1,1) = vinflow;
+        
             tinflows_bef = tinflows;
         }
        msg = "Successful loading of INFLOW file: " + ds.inflow_file;
     } else{
-        msg = "PROBLEM loading of INFLOW file: " + ds.inflow_file;       
+       msg = "PROBLEM loading of INFLOW file: " + ds.inflow_file;       
     } 
     std::cout << msg  << std::endl;
     logFLUXOSfile << msg + "\n";

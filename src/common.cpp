@@ -221,8 +221,8 @@ try{
         }
     }
 
-    irow = ds.ix_inflow;
-    icol = ds.iy_inflow;
+    icol = ds.inflow_ncol;
+    irow = ds.inflow_nrow;
         
     inflowi = (*ds.inflow).at(inflow_rowi,1)*ds.dtfl/(std::pow(ds.dxy,2)); // added as m3/s
 

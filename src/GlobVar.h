@@ -93,7 +93,7 @@ public:
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
     
     std::string dem_file,meteo_file,inflow_file,sim_purp;
-    unsigned long ix_inflow, iy_inflow;
+    unsigned long inflow_ncol, inflow_nrow;
 
     double NODATA_VALUE;
 
