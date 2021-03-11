@@ -237,9 +237,10 @@ try{
         (*ds.h)(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
 
         if ((*ds.h)(irow,icol) <= ds.hdry)
-        {
             (*ds.ldry).at(irow,icol)=0.0f;
-        }
+        else
+            (*ds.ldry).at(irow,icol)=1.0f;
+        
         (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
         if (hp!=0.)
         {          
