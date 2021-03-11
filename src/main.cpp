@@ -94,7 +94,6 @@ int main(int argc, char* argv[])
     // #######################################################
     // read model set up
     // #######################################################
-    ds.master_MODSET = master_MODSET_local;
     errflag = read_modset(
         ds,modset_flname,
         dirpath,
