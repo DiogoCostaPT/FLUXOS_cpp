@@ -1,5 +1,15 @@
 # FLUXOS-OVERLAND
-* Soure code for the FLUXOS-OVERLAND model. The original code (named as FLUXOS) was written in FORTRAN and consisted of the coupling of 2dmb, +QeS2, MODFLOW and MT3DMS.
+## Table of Contents
+* [Introduction](#introduction)
+* [Branches](#branches)
+* [Compiling](#compiling)
+* [Execution](#execution)
+* [Visualization](#visualization)
+* [Supporting Scripts](#supporting-scripts)
+* [Working Example](#working-example)
+
+## Introduction
+* Soure code for the FLUXOS-OVERLAND model. The original code (named as FLUXOS) was written in Fortran and consisted of the coupling of 2dmb, +QeS2, MODFLOW and MT3DMS.
 
 * Modifications (from FLUXOS to FLUXOS-OVERLAND):
 	* Converted to C++
@@ -18,18 +28,19 @@
 	* FLUXOS-OVERLAND
 		* Poster: https://www.researchgate.net/publication/333324452_Hydrodynamic_modelling_of_snowmelt_flooding_events_and_nutrient_transport_in_the_Canadian_Prairies_using_the_FLUXOS_model?channel=doi&linkId=5ce70f0a458515712ebda98b&showFulltext=true
 
-# Branches
+## Branches
 * master: All changes made in adesolver and adesolver_wintra have been merged into master
 * developnment: branch used for development before merge with master
 * adesolver: Adection-Dispersion-Reaction equation solver was converted to C++ and debugged
 * adesolver_wintra: the wintra algorithm was added
 
-# Compiling
+## Compiling
 * cmake: CMakeList is provided
 * Library dependencies: Armadillo 
 * Cmake minimum version: 3.10
 
-# Execution (and input files and folder needed)
+<!-- ## Execution (and input files and folder needed) -->
+## Execution
 * Create a folder with name "Results" inside the working directory where the input files and fluxos are
 * input files (see examle in Working_example folder)
 	* master input file: e.g., modset
@@ -38,13 +49,17 @@
 	* Snowmelt timeseries (time,mm/day)
 * to execute: ./fluxos_cpp "argument_1" (where "argument_1" is the mater input file)
 
-# Visualization of results (stored inside "Results" folder)
+<!-- ## Visualization of results (stored inside "Results" folder) -->
+## Visualization
+* For visualization of output stored in "Results" folder
 * visit: https://wci.llnl.gov/simulation/computer-codes/visit/
 
-# Supporting scripts (post-processing)
+<!-- ## Supporting scripts (post-processing) -->
+## Supporting Scripts
+* Used for post-processing
 * "fluxos_python" folder
 
-# Working example
+## Working Example
 * "Working_example" folder
 
 
