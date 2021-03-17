@@ -30,10 +30,10 @@
 
 ## Branches
 * main: All changes made in adesolver and adesolver_wintra have been merged into main
-* developnment: branch used for development before merge with main
+* development: branch used for development before merge with main
 * adesolver: Adection-Dispersion-Reaction equation solver was converted to C++ and debugged
 * adesolver_wintra: the wintra algorithm was added
-* Note that the primary branch (formerly known as master) was renamed main
+* Note that the primary branch (formerly known as "master") was renamed as "main"
 
 ## Compiling
 * cmake: CMakeList is provided
@@ -42,13 +42,13 @@
 
 <!-- ## Execution (and input files and folder needed) -->
 ## Execution
-* Create a folder with name "Results" inside the working directory where the input files and fluxos are
-* input files (see examle in Working_example folder)
-	* master input file: e.g., modset
+* Create a folder with name "Results" inside the working directory where the input files and exectuable are located
+* input files (see example in Working_example folder)
+	* primary input file: e.g., modset
 	* DEM file (Esri ASCII-format raster with headers removed ->  this will be fixed soon)
 	* DEM of the basin (sub-set of the main DEM file for FLUXOS to know where the boundaries of the basin are)
 	* Snowmelt timeseries (time,mm/day)
-* to execute: ./fluxos_cpp "argument_1" (where "argument_1" is the mater input file)
+* to execute: ./fluxos_cpp "argument_1" (where "argument_1" is the primary input file)
 
 <!-- ## Visualization of results (stored inside "Results" folder) -->
 ## Visualization
