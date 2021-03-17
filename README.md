@@ -30,9 +30,10 @@
 
 ## Branches
 * main: All changes made in adesolver and adesolver_wintra have been merged into main
-* developnment: branch used for development before merge with master
+* developnment: branch used for development before merge with main
 * adesolver: Adection-Dispersion-Reaction equation solver was converted to C++ and debugged
 * adesolver_wintra: the wintra algorithm was added
+* Note that the primary branch (formerly known as master) was renamed main
 
 ## Compiling
 * cmake: CMakeList is provided
