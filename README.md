@@ -29,7 +29,7 @@
 		* Poster: https://www.researchgate.net/publication/333324452_Hydrodynamic_modelling_of_snowmelt_flooding_events_and_nutrient_transport_in_the_Canadian_Prairies_using_the_FLUXOS_model?channel=doi&linkId=5ce70f0a458515712ebda98b&showFulltext=true
 
 ## Branches
-* master: All changes made in adesolver and adesolver_wintra have been merged into master
+* main: All changes made in adesolver and adesolver_wintra have been merged into main
 * developnment: branch used for development before merge with master
 * adesolver: Adection-Dispersion-Reaction equation solver was converted to C++ and debugged
 * adesolver_wintra: the wintra algorithm was added
