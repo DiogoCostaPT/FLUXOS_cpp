@@ -68,9 +68,9 @@ $ git branch -u origin/main main
 <!-- ## Supporting scripts (post-processing) -->
 ## Supporting Scripts
 * Used for post-processing
-* "fluxos_python" folder
+* See ["fluxos_python"](fluxos_python) folder
 
 ## Working Example
-* "Working_example" folder
+* See ["Working_example"](Working_example) folder
 
 
