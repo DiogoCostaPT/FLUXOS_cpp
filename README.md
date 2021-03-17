@@ -29,11 +29,20 @@
 		* Poster: https://www.researchgate.net/publication/333324452_Hydrodynamic_modelling_of_snowmelt_flooding_events_and_nutrient_transport_in_the_Canadian_Prairies_using_the_FLUXOS_model?channel=doi&linkId=5ce70f0a458515712ebda98b&showFulltext=true
 
 ## Branches
+### Active
 * main: All changes made in adesolver and adesolver_wintra have been merged into main
 * development: branch used for development before merge with main
+### To be Archived
 * adesolver: Adection-Dispersion-Reaction equation solver was converted to C++ and debugged
 * adesolver_wintra: the wintra algorithm was added
+### Notes
 * Note that the primary branch (formerly known as "master") was renamed as "main"
+* If using a local clone with the previous naming scheme, the clone may be updated using the following Git commands:
+```
+$ git branch -m master main
+$ git fetch -p origin
+$ git branch -u origin/main main
+```
 
 ## Compiling
 * cmake: CMakeList is provided
