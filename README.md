@@ -61,8 +61,9 @@ $ git branch -u origin/main main
 
 <!-- ## Visualization of results (stored inside "Results" folder) -->
 ## Visualization
-* For visualization of output stored in "Results" folder
-* visit: https://wci.llnl.gov/simulation/computer-codes/visit/
+* Output stored in "Results" folder may be visualized using VisIt: 
+ 
+[![alt text](https://wci.llnl.gov/sites/wci/files/visit-home.jpg "VisIt")](https://wci.llnl.gov/simulation/computer-codes/visit/)
 
 <!-- ## Supporting scripts (post-processing) -->
 ## Supporting Scripts
