@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Linux &#8212; FLUXOS-OVERLAND 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Windows" href="Windows.html" />
+    <link rel="prev" title="Build and Compile" href="Compile.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="linux">
+<h1>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h1>
+<dl>
+<dt>1.Armadillo</dt><dd><p>You could download the Armadillo with the apt package manager, but the version provided is really old, which is lower than our required version 9.9. So Download the package from the website</p>
+<p>arma.sourceforge.net/download.html</p>
+<p>Extract the package and go to the armadillo folder, then run:</p>
+<p><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">.</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">make</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">make</span> <span class="pre">install</span></code></p>
+</dd>
+<dt>2.OpenMP</dt><dd><p>You could directly install OpenMP with the command below, which meets our version requirement</p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">libomp-dev</span></code></p>
+</dd>
+<dt>3.cmake</dt><dd><p>You could download the cmake package from the website</p>
+<p><a class="reference external" href="https://cmake.org/files/">https://cmake.org/files/</a></p>
+<p>Please make sure the cmake version is hogher than 3.10</p>
+</dd>
+<dt>4.Compile</dt><dd><p>There is a CmakeLists.txt in the github repo. You could directly compile the application with the command</p>
+<p><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">.</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">make</span></code></p>
+<p>The executable file will be generated to the Results folder.</p>
+</dd>
+</dl>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">FLUXOS-OVERLAND</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Home.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Installation.html">Installation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Download.html">Download</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Build.html">Building requirement</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="Compile.html">Build and Compile</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Windows.html">Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="MacOS.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Trouble.html">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Input.html">Input/Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Developer.html">Developer:Join us!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference.html">Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="Installation.html">Installation</a><ul>
+  <li><a href="Compile.html">Build and Compile</a><ul>
+      <li>Previous: <a href="Compile.html" title="previous chapter">Build and Compile</a></li>
+      <li>Next: <a href="Windows.html" title="next chapter">Windows</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Diogo Costa.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Linux.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
