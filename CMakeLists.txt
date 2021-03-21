@@ -6,7 +6,8 @@ IF (UNIX)
 	ELSEIF(APPLE)
 		MESSAGE(STATUS "current platform : MacOS")
 	ENDIF()
-        project(fluxos)
+
+	project(fluxos)
 
         file(GLOB SOURCES "src/*.cpp")
 
@@ -36,6 +37,8 @@ IF (UNIX)
         target_link_libraries(
                 fluxos
                 ${ARMADILLO_LIBRARIES})
+
+
 ELSE()	
 	MESSAGE(STATUS "curent platform : windows")
 	project(fluxos)
