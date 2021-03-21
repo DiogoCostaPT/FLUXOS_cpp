@@ -51,7 +51,7 @@ $ git branch -u origin/main main
 
 <!-- ## Execution (and input files and folder needed) -->
 ## Execution
-* Create a folder with name "Results" inside the working directory where the input files and exectuable are located
+* Create a folder with name "Results" inside the working directory where the input files and executable are located
 * input files (see example in Working_example folder)
 	* primary input file: e.g., modset
 	* DEM file (Esri ASCII-format raster with headers removed ->  this will be fixed soon)
@@ -61,16 +61,17 @@ $ git branch -u origin/main main
 
 <!-- ## Visualization of results (stored inside "Results" folder) -->
 ## Visualization
-* Output stored in "Results" folder may be visualized using VisIt: 
+* Output stored in "Results" folder may be visualized using [VisIt](https://wci.llnl.gov/simulation/computer-codes/visit/): 
  
 [![alt text](https://wci.llnl.gov/sites/wci/files/visit-home.jpg "VisIt")](https://wci.llnl.gov/simulation/computer-codes/visit/)
 
 <!-- ## Supporting scripts (post-processing) -->
 ## Supporting Scripts
 * Used for post-processing
-* See ["fluxos_python"](fluxos_python) folder
+* See ["fluxos_supporting_scripts"](fluxos_supporting_scripts) folder
 
 ## Working Example
 * See ["Working_example"](Working_example) folder
+* Updates coming soon!
 
 
