@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Master configuration file &mdash; FLUXOS-OVERLAND 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Digital Elevation Model (DEM)" href="Digital.html" />
+    <link rel="prev" title="Input/Output" href="In.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> FLUXOS-OVERLAND
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Home.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Input.html">Input/Output</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="In.html">Input/Output</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Master configuration file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Digital.html">Digital Elevation Model (DEM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Initial.html">Initial conditions file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Forcing.html">Forcing input file</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="out.html">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Developer.html">Developer:Join us!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">FLUXOS-OVERLAND</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="Input.html">Input/Output</a> &raquo;</li>
+        
+          <li><a href="In.html">Input/Output</a> &raquo;</li>
+        
+      <li>Master configuration file</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/Master.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="master-configuration-file">
+<h1>Master configuration file<a class="headerlink" href="#master-configuration-file" title="Permalink to this headline">¶</a></h1>
+<p>The master configuration is JSON file that provides FLUXOS-OVERLAND with information and instructions to run a simulation. It contains pairs of variable/command names and values. The variables/commands needed to run a simulation are:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Variables/Keywords in MASTER file (JSON type)</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Variable/Keyword</p></td>
+<td><p>any useful descriptive information about the project</p></td>
+</tr>
+<tr class="row-even"><td><p>DEM_FILE</p></td>
+<td><p>full path to the ASCII-ERSI DEM file</p></td>
+</tr>
+<tr class="row-odd"><td><p>PRINT_STEP</p></td>
+<td><p>temporal resolution of the output files (this is not the model timestep as that is defined by the Courant–Friedrichs–Lewy Condition of numerical stability)</p></td>
+</tr>
+<tr class="row-even"><td><p>ROUGNESS_HEIGHT</p></td>
+<td><p>average roughness of the terrain measured in height (m), it is used in friction model and water will be retained until this height</p></td>
+</tr>
+<tr class="row-odd"><td><p>SOIL_RELEASE_RATE</p></td>
+<td><p>release of soil contaminants (mg/hour)</p></td>
+</tr>
+<tr class="row-even"><td><p>SOIL_CONC_BACKGROUND</p></td>
+<td><p>initial surficial soil concentration (mg/l)</p></td>
+</tr>
+<tr class="row-odd"><td><p>SWE_STD</p></td>
+<td><p>standard deviation of pre-melt SWE (for calculation of runoff-soil interaction during snowmelt, used the WINTRA model)</p></td>
+</tr>
+<tr class="row-even"><td><p>SWE_MAX</p></td>
+<td><p>maximum SWE (for calculation of runoff-soil interaction during snowmelt, used the WINTRA model)</p></td>
+</tr>
+<tr class="row-odd"><td><p>METEO_FILE (optional)</p></td>
+<td><p>full path to the snowmelt/rainfall timeseries</p></td>
+</tr>
+<tr class="row-even"><td><p>INFLOW_FILE (optional)</p></td>
+<td><p>full pa/rainfall timeseries</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;COMMNET&quot;</span><span class="p">:</span> <span class="s2">&quot;Batch_1 - additional tests for paper&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;DEM_FILE&quot;</span><span class="p">:</span> <span class="s2">&quot;bin/Rosa_2m.asc&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;INFLOW_FILE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;FILENAME&quot;</span><span class="p">:</span> <span class="s2">&quot;bin/Flow_forcing.fluxos&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;DISCHARGE_LOCATION&quot;</span><span class="p">:{</span>
+            <span class="nt">&quot;NROW&quot;</span><span class="p">:</span> <span class="mi">201</span><span class="p">,</span>
+            <span class="nt">&quot;NCOL&quot;</span><span class="p">:</span> <span class="mi">310</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;PRINT_STEP&quot;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+    <span class="nt">&quot;ROUGNESS_HEIGHT&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
+    <span class="nt">&quot;SOIL_RELEASE_RATE&quot;</span><span class="p">:</span> <span class="mf">0.08</span><span class="p">,</span>
+    <span class="nt">&quot;SOIL_CONC_BACKGROUND&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;SWE_STD&quot;</span><span class="p">:</span> <span class="mf">9.5</span><span class="p">,</span>
+    <span class="nt">&quot;SWE_MAX&quot;</span><span class="p">:</span> <span class="mf">9.5</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="Digital.html" class="btn btn-neutral float-right" title="Digital Elevation Model (DEM)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="In.html" class="btn btn-neutral float-left" title="Input/Output" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Diogo Costa.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
