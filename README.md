@@ -30,8 +30,10 @@
 
 ## Branches
 ### Active
-* main: All changes made in adesolver and adesolver_wintra have been merged into main
-* development: branch used for development before merge with main
+<!-- * main: All changes made in adesolver and adesolver_wintra have been merged into main -->
+* main: primary branch with latest verified updates to the working code 
+* development: used to verify updates from feature branches before merging with main
+* supporting_scripts: feature branch for development of supporting Python and MATLAB scripts
 ### To be Archived
 * adesolver: Adection-Dispersion-Reaction equation solver was converted to C++ and debugged
 * adesolver_wintra: the wintra algorithm was added
