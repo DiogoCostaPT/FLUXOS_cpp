@@ -30,4 +30,4 @@ MacOS
 	
 	``make``
 	
-	The executable file will be generated to the Results folder.
+	The executable file will be generated to the "bin" folder.
