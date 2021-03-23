@@ -1,5 +1,5 @@
 # FLUXOS-OVERLAND (supporting scripts to examine the model outputs)
-# Copyright (C) 2019-2021 ECCC
+# Copyright (C) 2019-2021 Diogo Costa
 #
 # This file is part of FLUXOS-OVERLAND
 #
@@ -44,19 +44,31 @@ import vtk_generator as vtkgen
 # Provide directory with all the simulations to examine (or leave sim_bactch blank and define resultdir_list below
 run_batch_flag = True  # TRUE: reads simulations from sim_batch_dir folder
                        # FALSE: only reads simulations listed in resultdir_list_use
+'''
 sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/TESTS_VARIA/2'
 resultdir_list_select = [ # list here the simulations to examine (if you want to use this, leave
         '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_36_paper_crhm/Results/',
         '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_49_paper_crhm/Results/',
         '/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_65_paper_crhm/Results/',
     ]
+'''
+
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC'
+resultdir_list_select = [ # list here the simulations to examine (if you want to use this, leave
+        '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC/Results' \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_49_paper_crhm/Results/', \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_65_paper_crhm/Results/', \
+    ]
 
 # DEM file
-dempath = '/media/dcosta/data/megasync/my_server/fluxos/TESTS_VARIA/2/dem_clip_SRTM_resample_500m.asc'
+#dempath = '/media/dcosta/data/megasync/my_server/fluxos/TESTS_VARIA/2/dem_clip_SRTM_resample_500m.asc'
+dempath = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC/Rosa_2m.asc'
 
 # Cross section shapefile (for cross-section data extraction)
-CrossSecLine_path_shapefile = \
-            '/media/dcosta/data/megasync/ec_main/models/fluxos/support/STC_data_pre-processing/00_Cross_Sections/MS9.shp'
+#CrossSecLine_path_shapefile = \
+#            '/media/dcosta/data/megasync/ec_main/models/fluxos/support/STC_data_pre-processing/00_Cross_Sections/MS9.shp'
+
+CrossSecLine_path_shapefile = '/media/dcosta/data/megasync/ec_main/models/fluxos/support/Kevin_data_stDenis_SmithCreek/StDenis/cross_section_exit.shp'
 
 # Define model configuration
 TimeStrgStart = datetime(2011, 3, 31, 0, 0, 0) # start date (yyyy,mm,dd,HH,MM,SS)
@@ -81,7 +93,7 @@ mapoverlay_opaqueness = 50
 '''
 #########################################################################################
 #########################################################################################
-### CALCULTIONS (DON'T CANGE)
+### CALCULATIONS (DON'T CANGE)
 #########################################################################################
 #########################################################################################
 '''
@@ -93,9 +105,12 @@ simType = input("Options:\n"
                 "# VTK generator ('vtk)\n Answer: ")
 
 # Read geo to get nx and ny
-geomatrix = np.loadtxt(dempath, dtype='i', delimiter=' ', skiprows=6)
+geomatrix = np.loadtxt(dempath, dtype='f', delimiter=' ', skiprows=6)
 ny = geomatrix.shape[0]
 nx = geomatrix.shape[1]
+
+# Read coordinates (x,y) of corner
+XLL_YLL_CORNER_AND_CELL_SIZE_DEM = np.loadtxt(dempath, skiprows=2, max_rows=3, usecols=1, dtype=float)
 
 # Identify the simulation folder to analyse
 if run_batch_flag == True:
@@ -181,7 +196,7 @@ if (simType == 'cs'):
             continue
 
         # Extract the results over the cross-section
-        crosecval = cse.csextract(simType,resultdir,resfiles_list, xy_CS, sim, var_col_1, var_col_2, nx, ny, dxy)
+        crosecval = cse.csextract(simType,resultdir,resfiles_list, xy_CS, XLL_YLL_CORNER_AND_CELL_SIZE_DEM,sim, var_col_1, var_col_2, nx, ny, dxy)
 
         # stack existig and new crosecval
         if file_cs_exists:

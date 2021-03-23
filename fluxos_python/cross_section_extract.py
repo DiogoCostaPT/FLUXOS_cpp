@@ -31,7 +31,7 @@ import data_management as dm
 
 
 # Extract the values for the cross-section (for all time steps) - parallel
-def csextract(simType,resultdir,resfiles_list, xy_CS,  sim, var_col_1, var_col_2, nx, ny, dxy):
+def csextract(simType,resultdir,resfiles_list, xy_CS,  XLL_YLL_CORNER_AND_CELL_SIZE_DEM, sim, var_col_1, var_col_2, nx, ny, dxy):
 
     # extracting the cross-section values
     #ntimstp = round((Timee - Tinitial) / t_step_read)+1  # number of time steps
@@ -43,12 +43,12 @@ def csextract(simType,resultdir,resfiles_list, xy_CS,  sim, var_col_1, var_col_2
     geom_CS, xy_CS_cor = getanglesCS(xy_CS)
 
     num_cores = round(multiprocessing.cpu_count()*2/3)
-    crosecvals = np.vstack(Parallel(n_jobs=num_cores)(delayed(Extract_File_Res)(simType,resultdir,resfiles_list,t_int, xy_CS_cor, geom_CS, nx, ny, sim, var_col_1, var_col_2) for t_int in tqdm(range(0, ntimstp))))
+    crosecvals = np.vstack(Parallel(n_jobs=num_cores)(delayed(Extract_File_Res)(simType,resultdir,resfiles_list,t_int, xy_CS_cor, XLL_YLL_CORNER_AND_CELL_SIZE_DEM, geom_CS, nx, ny, sim, var_col_1, var_col_2) for t_int in tqdm(range(0, ntimstp))))
 
     return crosecvals
 
 # Extract the values for the cross-section (each time step)
-def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, geom_CS, nx, ny, sim, var_col_1, var_col_2):  # Loop over the result files
+def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, XLL_YLL_CORNER_AND_CELL_SIZE_DEM, geom_CS, nx, ny, sim, var_col_1, var_col_2):  # Loop over the result files
 
     # generate the file name string
     crosecvals_t = np.zeros(((len(xy_CS_cor)) + 1))  # + 1 because the first column is time
@@ -65,7 +65,7 @@ def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, geom_CS
             with open(resfilepath, 'r') as fid:  # open the result file x
                 # read the result file x
                 try:
-                    dataraw = np.genfromtxt(resfilepath, delimiter=',')
+                    dataraw = np.genfromtxt(resfilepath, delimiter=',', skip_header=1)
 
                     if (simType == 'sq'): # SQ case (soil concentrations)
                         # Var 1 only
@@ -89,9 +89,19 @@ def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, geom_CS
                     #crosecvals_t[0] = timei
 
                     for segi in range(0, len(xy_CS_cor)):
-                        xi = xy_CS_cor[segi, 0].astype(int)
-                        yi = 721-xy_CS_cor[segi, 1].astype(int)
-                        yi = xy_CS_cor[segi, 1].astype(int)
+
+                        # Get shapefile X and Y coordinates
+                        xi = xy_CS_cor[segi, 0].astype(float)
+                        yi = xy_CS_cor[segi, 1].astype(float)
+
+                        # Reset to origin (0,0) to identify location in FLUXOS output files
+                        xi = round((xi - XLL_YLL_CORNER_AND_CELL_SIZE_DEM[0])/XLL_YLL_CORNER_AND_CELL_SIZE_DEM[2])
+                        yi = round((yi - XLL_YLL_CORNER_AND_CELL_SIZE_DEM[1])/XLL_YLL_CORNER_AND_CELL_SIZE_DEM[2])
+
+                        # convert from float into int
+                        xi = xi.astype(int)
+                        yi = ny - yi.astype(int)
+
                         if simType == 'sq':  # Water levels or concentrations
                             crosecvals_t[segi+1] = xyz_matrix_var_1[yi, xi]  # cross-section values
                         elif simType == 'wq':
@@ -154,8 +164,6 @@ def lineCSshapefile(polygons_shp_file):
 
 #  Get the xy of all points in the cross-section from the cross-section shapefile nodes (interpolation)
 def InterpCSpoints_from_y_CS(shp_nodes_CS):
-
-
 
     x_start = int(round(shp_nodes_CS[0, 0]))
     x_end = int(round(shp_nodes_CS[0, 1]))
