@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 # Define compilaton mode
 option(MODE_release "ON: release mode; OFF: debug mode" OFF) 
 
+# Set compilation mode flags
 IF(MODE_release MATCHES ON)
         MESSAGE(STATUS "compilation model : release")
         set(CMAKE_CXX_FLAGS "-O3")
@@ -13,6 +14,7 @@ ELSE(MODE_release MATCHES OFF)
         set(FLUXOS_EXEC_name "fluxos_debug")
 ENDIF()
 
+# Settings depending on OS
 IF (UNIX)
 	IF (UNIX AND NOT APPLE)
 		MESSAGE(STATUS "current platform : Linux")
