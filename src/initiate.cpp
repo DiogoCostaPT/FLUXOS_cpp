@@ -118,7 +118,7 @@ unsigned int initiation(
             irow = (int) (filedata(a,0));  
             icol = (int) (filedata(a,1)); 
 
-            (*ds.z).at(irow,icol) = (*ds.zb).at(irow,icol) + filedata(a,4);
+            (*ds.z).at(irow,icol) = filedata(a,4);
             (*ds.h).at(irow,icol) = filedata(a,5); 
             (*ds.ux).at(irow,icol) = filedata(a,6);
             (*ds.uy).at(irow,icol) = filedata(a,7);
