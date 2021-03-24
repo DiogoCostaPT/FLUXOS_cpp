@@ -26,7 +26,6 @@
 bool read_modset(
     GlobVar& ds, 
     const std::string& filename, 
-    unsigned int *print_step, 
     double *ks_input,
     std::ofstream& logFLUXOSfile)
 {
@@ -38,7 +37,8 @@ bool read_modset(
 
         // Compulsory data
         ds.dem_file = ds.master_MODSET["DEM_FILE"];
-        *print_step = ds.master_MODSET["PRINT_STEP"];
+        ds.print_step = ds.master_MODSET["OUTPUT"]["PRINT_STEP"];
+        ds.h_min_print = ds.master_MODSET["OUTPUT"]["H_MIN_TO_PRINT"];
         *ks_input = ds.master_MODSET["ROUGNESS_HEIGHT"];
         ds.soil_release_rate = ds.master_MODSET["SOIL_RELEASE_RATE"];
         ds.soil_conc_bckgrd = ds.master_MODSET["SOIL_CONC_BACKGROUND"];
@@ -103,7 +103,9 @@ bool read_geo(
     getline (myfile,line); // NCOLS
     getline (myfile,line); // NROWS
     getline (myfile,line); // XLLCORNER
+    (ds.XLLCORNER) = getFloatNumberFromString(line);
     getline (myfile,line); // YLLCORNER
+    (ds.YLLCORNER) = getFloatNumberFromString(line);
     getline (myfile,line); // CELLSIZE
     (ds.dxy) =  getIntNumberFromString(line);
     getline (myfile,line); // NODATA_VALUE

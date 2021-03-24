@@ -32,6 +32,9 @@ std::string SplitFilename (
 int getIntNumberFromString(
     std::string s);
 
+double getFloatNumberFromString(
+    std::string s);
+
 // read file names in Results directory
 int findLastStep(
     const char *path);

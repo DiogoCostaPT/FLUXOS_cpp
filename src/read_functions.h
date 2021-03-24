@@ -25,7 +25,6 @@
 bool read_modset(
     GlobVar& ds, 
     const std::string& filename, 
-    unsigned int *print_step, 
     double *ks_input,
     std::ofstream& logFLUXOSfile);
 

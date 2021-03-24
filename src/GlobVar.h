@@ -95,7 +95,9 @@ public:
     std::string dem_file,meteo_file,inflow_file,sim_purp;
     unsigned long inflow_ncol, inflow_nrow;
 
-    double NODATA_VALUE;
+    unsigned long print_step, h_min_print; // output settings
+
+    double NODATA_VALUE,XLLCORNER,YLLCORNER;
 
     json master_MODSET;
     

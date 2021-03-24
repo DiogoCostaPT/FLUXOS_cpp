@@ -50,6 +50,21 @@ int getIntNumberFromString(
    }
 }
 
+double getFloatNumberFromString(
+    std::string s){
+   std::stringstream str_strm;
+   str_strm << s; //convert the string s into stringstream
+   std::string temp_str;
+   double temp_double;
+   while(!str_strm.eof()) {
+      str_strm >> temp_str; //take words into temp_str one by one
+      if(std::stringstream(temp_str) >> temp_double) { //try to convert string to int
+         return temp_double;
+      }
+      temp_str = ""; //clear temp string
+   }
+}
+
 // read file names in Results directory
 int findLastStep(
     const char *path) 

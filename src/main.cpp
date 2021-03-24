@@ -46,7 +46,7 @@ using json = nlohmann::json;
 int main(int argc, char* argv[]) 
 {   
     unsigned int NROWSl, NCOLSl, it = 0;
-    unsigned int irow, icol, print_step, print_next, timstart;
+    unsigned int irow, icol, print_next, timstart;
     int ntim_meteo, ntim_inflow;
     double c0,hp,v0,u0, hpall, ks_input; 
     bool outwritestatus;
@@ -116,7 +116,6 @@ int main(int argc, char* argv[])
     errflag = read_modset(
         ds,
         modset_flname, 
-        &print_step,
         &ks_input,
         logFLUXOSfile);
     if (errflag)
@@ -126,7 +125,7 @@ int main(int argc, char* argv[])
     // Provide info to console
     // #######################################################
     logFLUXOSfile << "Simulation: " + ds.sim_purp + "\n\n";
-    logFLUXOSfile << "Print step (s) = " + std::to_string(print_step) + "\n";
+    logFLUXOSfile << "Print step (s) = " + std::to_string(ds.print_step) + "\n";
     logFLUXOSfile << "Roughness height (m) = " + std::to_string(ks_input) + "\n";
     logFLUXOSfile << "Cell size (m) = " + std::to_string(ds.dxy) + "\n";
 
@@ -180,7 +179,7 @@ int main(int argc, char* argv[])
         logFLUXOSfile);
     ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
     print_next = timstart;  
-    print_next = print_next + print_step;
+    print_next = print_next + ds.print_step;
     ds.SWEstd = ds.SWEstd/100;
 
     std::cout << "-----------------------------------------------\n" << std::endl;
@@ -253,14 +252,13 @@ int main(int argc, char* argv[])
             outwritestatus = write_results(
                 ds,
                 std::round(print_next),
-                print_step,
                 elapsed_seconds);
              
             if(outwritestatus == true) 
             {
-                std::cout << "Saved: '" << print_next << ".txt' || time step (min): " << std::to_string(print_step/60) << " || Time elapsed (min): " << elapsed_seconds.count()/60 << std::endl;
-                logFLUXOSfile << "Saved: '" << print_next << ".txt' || time step (min): " << std::to_string(print_step/60) << " || Time elapsed (min): " << std::to_string(elapsed_seconds.count()/60) + "\n";
-                print_next = print_next + print_step;
+                std::cout << "Saved: '" << print_next << ".txt' || time step (min): " << std::to_string(ds.print_step/60) << " || Time elapsed (min): " << elapsed_seconds.count()/60 << std::endl;
+                logFLUXOSfile << "Saved: '" << print_next << ".txt' || time step (min): " << std::to_string(ds.print_step/60) << " || Time elapsed (min): " << std::to_string(elapsed_seconds.count()/60) + "\n";
+                print_next = print_next + ds.print_step;
                 start = std::chrono::system_clock::now();
 
             } else
