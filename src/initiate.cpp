@@ -115,18 +115,19 @@ unsigned int initiation(
     {
         for(a=1;a<filedata.col(1).n_elem;a++)
         {
-            irow = filedata(a,0);  
-            icol = filedata(a,1);  
-            (*ds.h).at(irow,icol) = filedata(a,3);
-            (*ds.z).at(irow,icol) = (*ds.zb).at(irow,icol) + filedata(a,3);
-            (*ds.ux).at(irow,icol) = filedata(a,4);
-            (*ds.uy).at(irow,icol) = filedata(a,5);
-            (*ds.qx).at(irow,icol) = filedata(a,6);
-            (*ds.qy).at(irow,icol) = filedata(a,7);
-            (*ds.us).at(irow,icol) = filedata(a,8);
-            (*ds.conc_SW).at(irow,icol) = filedata(a,9);
-            (*ds.soil_mass).at(irow,icol) = filedata(a,10);
-            (*ds.twetimetracer).at(irow,icol) = filedata(a,13);
+            irow = (int) (filedata(a,0));  
+            icol = (int) (filedata(a,1)); 
+
+            (*ds.z).at(irow,icol) = (*ds.zb).at(irow,icol) + filedata(a,4);
+            (*ds.h).at(irow,icol) = filedata(a,5); 
+            (*ds.ux).at(irow,icol) = filedata(a,6);
+            (*ds.uy).at(irow,icol) = filedata(a,7);
+            (*ds.qx).at(irow,icol) = filedata(a,8);
+            (*ds.qy).at(irow,icol) = filedata(a,9);
+            (*ds.us).at(irow,icol) = filedata(a,10);
+            (*ds.conc_SW).at(irow,icol) = filedata(a,11);
+            (*ds.soil_mass).at(irow,icol) = filedata(a,12);
+            (*ds.twetimetracer).at(irow,icol) = filedata(a,15);
             (*ds.ldry).at(irow,icol) = 0.0f;
         }
         msg = "Successful loading of initial conditions file: " + init_file;
