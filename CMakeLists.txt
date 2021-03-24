@@ -1,13 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Define compilaton mode
-# ON: release mode, OFF: debug model
-option(MODE_release "release" ON) 
+option(MODE_release "ON: release mode; OFF: debug mode" OFF) 
 
-IF(MODE_release)
+IF(MODE_release MATCHES ON)
+        MESSAGE(STATUS "compilation model : release")
         set(CMAKE_CXX_FLAGS "-O3")
         set(FLUXOS_EXEC_name "fluxos")
-ELSE()
+ELSE(MODE_release MATCHES OFF)
+        MESSAGE(STATUS "compilation model : debug")
         set(CMAKE_CXX_FLAGS "-g3 -Wall -pedantic")
         set(FLUXOS_EXEC_name "fluxos_debug")
 ENDIF()
