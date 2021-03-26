@@ -67,6 +67,13 @@ def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, XLL_YLL
                 try:
                     dataraw = np.genfromtxt(resfilepath, delimiter=',', skip_header=1)
 
+                    # DEM
+                    dem_x = dm.xyz_extract_z_column(dataraw, 0, 1, 2, 0)  # extract relevant column
+                    dem_x_matrix = dm.xyz_to_matrix(dem_x, nx, ny)  # convert into matrix
+                    dem_y = dm.xyz_extract_z_column(dataraw, 0, 1, 3, 0)  # extract relevant column
+                    dem_y_matrix = dm.xyz_to_matrix(dem_x, nx, ny)  # convert into matrix
+
+                    # Vars
                     if (simType == 'sq'): # SQ case (soil concentrations)
                         # Var 1 only
                         xyz_columndata = dm.xyz_extract_z_column(dataraw, 0, 1, var_col_1,0)  # extract relevant column

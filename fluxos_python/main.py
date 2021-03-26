@@ -53,9 +53,9 @@ resultdir_list_select = [ # list here the simulations to examine (if you want to
     ]
 '''
 
-sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC'
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC_newFluxosVersion'
 resultdir_list_select = [ # list here the simulations to examine (if you want to use this, leave
-        '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC/Results' \
+        '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC_newFluxosVersion/Results' \
         ##'/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_49_paper_crhm/Results/', \
         ##'/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_65_paper_crhm/Results/', \
     ]
@@ -131,13 +131,13 @@ if (simType == 'cs'):
     simType = input("Options:\n# Examine Flow (f)\n# Water Quality (wq)\n# Soil Quality (sq)\n Answer: ")
 
     if (simType == 'f'):
-        var_col_1 = 6  # 3-h, 6-qx, 9-C, 10 - soil mass, 11 - fn_1, 12 - fe_1
-        var_col_2 = 7  # 3-h, 6-qx, 9-C, 10 - soil mass, 11 - fn_1, 12 - fe_1
+        var_col_1 = 8  # 3-h, 6-qx, 9-C, 10 - soil mass, 11 - fn_1, 12 - fe_1
+        var_col_2 = 9  # 3-h, 6-qx, 9-C, 10 - soil mass, 11 - fn_1, 12 - fe_1
     elif (simType == 'wq'):
-        var_col_1 = 9
-        var_col_2 = 3
+        var_col_1 = 11
+        var_col_2 = 5
     elif (simType == 'sq'):
-        var_col_1 = 10
+        var_col_1 = 12
         var_col_2 = 0
     else:
         sys.exit("Error: Not a valid entry (only accepts 'f', 'wq' or 'sq'")
