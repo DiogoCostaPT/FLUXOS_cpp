@@ -14,56 +14,59 @@ ELSE(MODE_release MATCHES OFF)
         set(FLUXOS_EXEC_name "fluxos_debug")
 ENDIF()
 
-# Settings depending on OS
 IF (UNIX)
-	IF (UNIX AND NOT APPLE)
-		MESSAGE(STATUS "current platform : Linux")
-	ELSEIF(APPLE)
-		MESSAGE(STATUS "current platform : MacOS")
-	ENDIF()
-
-	project(fluxos)
+        IF(UNIX AND NOT APPLE)
+	        MESSAGE(STATUS "current platform : Linux")
+        ELSEIF(APPLE)
+                MESSAGE(STATUS "current platform : MacOS")
+        ENDIF()
+	
+        project(fluxos)
 
         file(GLOB SOURCES "src/*.cpp")
 
-        set(CMAKE_CXX_STANDARD 17)
-        
-        # Packages
-        find_package(Armadillo REQUIRED)
-        find_package(OpenMP)
+        set(CMAKE_CXX_STANDARD 11)
+        #set(CMAKE_CXX_FLAGS "-O3")
+        set(CMAKE_CXX_FLAGS "-g3 -Wall -pedantic")
+        #set(CMAKE_CXX_FLAGS "-O2 -g ")
+        #set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
+        find_package(Armadillo REQUIRED)
+        find_package(OpenMP REQUIRED)
 
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-        include_directories(${AMRADILLO_INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
-
         set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-        # Create Results folder if non-existant
-        file(MAKE_DIRECTORY Results)
-        
-        add_executable(${FLUXOS_EXEC_name}
+        add_executable(fluxos
                 ${SOURCES})
 
+        target_include_directories(fluxos PUBLIC ${ARMADILLO_INCLUDE_DIR})
+
         target_link_libraries(
-                ${FLUXOS_EXEC_name}
+                fluxos
                 ${ARMADILLO_LIBRARIES})
+ELSE()
 
-
-ELSE()	
-	MESSAGE(STATUS "curent platform : windows")
 	project(fluxos)
+
+	MESSAGE(STATUS "current platform : Windows")
+
 	file(GLOB SOURCES "src/*.cpp")
-	# Create Results folder if non-existant
-	file(MAKE_DIRECTORY Results)
 
 	set(CMAKE_CXX_STANDARD 17)
+	set(CMAKE_CXX_FLAGS "-O3 -Wall -pedantic")
 
 	# Packages
 	find_package(OpenMP)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Results)
-	add_executable(${FLUXOS_EXEC_name}, ${SOURCES})
-	target_include_directories(${FLUXOS_EXEC_name} PUBLIC "I:/FLUXOS_cpp-master/Armadillo/include")
 
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+	add_executable(fluxos
+        	${SOURCES})
+
+	#please the set the path to the "Armadillo/include" here
+	target_include_directories(fluxos PUBLIC "I:/FLUXOS_cpp/Armadillo/include")
 ENDIF()
