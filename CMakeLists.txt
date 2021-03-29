@@ -47,7 +47,7 @@ IF (UNIX)
 		
 	IF(APPLE)
 		target_include_directories(
-			${FLUXOS_EXEC_name PUBLIC 
+			${FLUXOS_EXEC_name} PUBLIC
         		${ARMADILLO_INCLUDE_DIR})
 	ENDIF()
 
