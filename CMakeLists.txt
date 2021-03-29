@@ -44,6 +44,12 @@ IF (UNIX)
         
         add_executable(${FLUXOS_EXEC_name}
                 ${SOURCES})
+		
+	IF(APPLE)
+		target_include_directories(
+			${FLUXOS_EXEC_name PUBLIC 
+        		${ARMADILLO_INCLUDE_DIR})
+	ENDIF()
 
         target_link_libraries(
                 ${FLUXOS_EXEC_name}
