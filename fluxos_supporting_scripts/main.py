@@ -42,7 +42,7 @@ import vtk_generator as vtkgen
 '''
 
 # Provide directory with all the simulations to examine (or leave sim_bactch blank and define resultdir_list below
-run_batch_flag = True  # TRUE: reads simulations from sim_batch_dir folder
+run_batch_flag = False  # TRUE: reads simulations from sim_batch_dir folder
                        # FALSE: only reads simulations listed in resultdir_list_use
 '''
 sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/TESTS_VARIA/2'
@@ -53,11 +53,12 @@ resultdir_list_select = [ # list here the simulations to examine (if you want to
     ]
 '''
 
-sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC_newFluxosVersion'
+sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021'
 resultdir_list_select = [ # list here the simulations to examine (if you want to use this, leave
-        '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC_newFluxosVersion/Results' \
-        ##'/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_49_paper_crhm/Results/', \
-        ##'/media/dcosta/data/megasync/my_server/fluxos/batch_1_selected_paper_CRHM/t_65_paper_crhm/Results/', \
+        '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC/Results/' \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC_newFluxosVersion/Results' \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC/Results' \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC_newFluxosVersion/Results' \
     ]
 
 # DEM file
@@ -130,16 +131,7 @@ if (simType == 'cs'):
 
     simType = input("Options:\n# Examine Flow (f)\n# Water Quality (wq)\n# Soil Quality (sq)\n Answer: ")
 
-    if (simType == 'f'):
-        var_col_1 = 8  # 3-h, 6-qx, 9-C, 10 - soil mass, 11 - fn_1, 12 - fe_1
-        var_col_2 = 9  # 3-h, 6-qx, 9-C, 10 - soil mass, 11 - fn_1, 12 - fe_1
-    elif (simType == 'wq'):
-        var_col_1 = 11
-        var_col_2 = 5
-    elif (simType == 'sq'):
-        var_col_1 = 12
-        var_col_2 = 0
-    else:
+    if (simType != 'f' and simType != 'wq' and simType != 'sq'):
         sys.exit("Error: Not a valid entry (only accepts 'f', 'wq' or 'sq'")
 
     Overwrite_csfile = input(
@@ -196,7 +188,16 @@ if (simType == 'cs'):
             continue
 
         # Extract the results over the cross-section
-        crosecval = cse.csextract(simType,resultdir,resfiles_list, xy_CS, XLL_YLL_CORNER_AND_CELL_SIZE_DEM,sim, var_col_1, var_col_2, nx, ny, dxy)
+        crosecval = cse.csextract(
+            simType,
+            resultdir,
+            resfiles_list,
+            xy_CS,
+            XLL_YLL_CORNER_AND_CELL_SIZE_DEM,
+            sim,
+            nx,
+            ny,
+            dxy)
 
         # stack existig and new crosecval
         if file_cs_exists:

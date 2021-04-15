@@ -49,7 +49,7 @@ bool write_results(
         {
             if (((*ds.zb)(irow,icol)!=0.0f) && ((*ds.h).at(irow,icol)>ds.h_min_print))
             {
-                filedataR(a,0) = irow;  
+                filedataR(a,0) = irow;
                 filedataR(a,1) = icol;
                 filedataR(a,2) = irow * (ds.dxy) + (ds.XLLCORNER);  
                 filedataR(a,3) = icol * (ds.dxy) + (ds.YLLCORNER); 

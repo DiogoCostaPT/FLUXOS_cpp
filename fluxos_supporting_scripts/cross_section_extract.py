@@ -20,6 +20,7 @@
 
 # import libraries
 import geopandas as gpd
+import pandas as pd
 import os
 from joblib import Parallel, delayed
 import multiprocessing
@@ -31,7 +32,16 @@ import data_management as dm
 
 
 # Extract the values for the cross-section (for all time steps) - parallel
-def csextract(simType,resultdir,resfiles_list, xy_CS,  XLL_YLL_CORNER_AND_CELL_SIZE_DEM, sim, var_col_1, var_col_2, nx, ny, dxy):
+def csextract(
+        simType,
+        resultdir,
+        resfiles_list,
+        xy_CS,
+        XLL_YLL_CORNER_AND_CELL_SIZE_DEM,
+        sim,
+        nx,
+        ny,
+        dxy):
 
     # extracting the cross-section values
     #ntimstp = round((Timee - Tinitial) / t_step_read)+1  # number of time steps
@@ -43,12 +53,32 @@ def csextract(simType,resultdir,resfiles_list, xy_CS,  XLL_YLL_CORNER_AND_CELL_S
     geom_CS, xy_CS_cor = getanglesCS(xy_CS)
 
     num_cores = round(multiprocessing.cpu_count()*2/3)
-    crosecvals = np.vstack(Parallel(n_jobs=num_cores)(delayed(Extract_File_Res)(simType,resultdir,resfiles_list,t_int, xy_CS_cor, XLL_YLL_CORNER_AND_CELL_SIZE_DEM, geom_CS, nx, ny, sim, var_col_1, var_col_2) for t_int in tqdm(range(0, ntimstp))))
+    crosecvals = np.vstack(Parallel(n_jobs=num_cores)(
+        delayed(Extract_File_Res)(
+            simType,
+            resultdir,
+            resfiles_list,
+            t_int,
+            xy_CS_cor,
+            XLL_YLL_CORNER_AND_CELL_SIZE_DEM,
+            geom_CS,
+            nx,
+            ny,
+            sim) for t_int in tqdm(range(0, ntimstp))))
 
     return crosecvals
 
 # Extract the values for the cross-section (each time step)
-def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, XLL_YLL_CORNER_AND_CELL_SIZE_DEM, geom_CS, nx, ny, sim, var_col_1, var_col_2):  # Loop over the result files
+def Extract_File_Res(
+        simType,
+        resultdir,
+        resfilepath_all,
+        t_int,xy_CS_cor,
+        XLL_YLL_CORNER_AND_CELL_SIZE_DEM,
+        geom_CS,
+        nx,
+        ny,
+        sim):  # Loop over the result files
 
     # generate the file name string
     crosecvals_t = np.zeros(((len(xy_CS_cor)) + 1))  # + 1 because the first column is time
@@ -66,6 +96,7 @@ def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, XLL_YLL
                 # read the result file x
                 try:
                     dataraw = np.genfromtxt(resfilepath, delimiter=',', skip_header=1)
+                    header = pd.read_csv(resfilepath, index_col=0, nrows=0).columns.tolist()
 
                     # DEM
                     dem_x = dm.xyz_extract_z_column(dataraw, 0, 1, 2, 0)  # extract relevant column
@@ -74,11 +105,19 @@ def Extract_File_Res(simType,resultdir,resfilepath_all, t_int,xy_CS_cor, XLL_YLL
                     dem_y_matrix = dm.xyz_to_matrix(dem_x, nx, ny)  # convert into matrix
 
                     # Vars
-                    if (simType == 'sq'): # SQ case (soil concentrations)
+                    if simType == 'sq': # SQ case (soil concentrations)
                         # Var 1 only
+                        var_col_1 = header.index('soil_mass [g]')
                         xyz_columndata = dm.xyz_extract_z_column(dataraw, 0, 1, var_col_1,0)  # extract relevant column
                         xyz_matrix_var_1 = dm.xyz_to_matrix(xyz_columndata, nx, ny)  # convert into matrix
                     else:
+                        if simType == 'f':
+                            var_col_1 = header.index('qx * dxy [m3/sec]')
+                            var_col_2 = header.index('qy * dxy [m3/sec]')
+                        elif (simType == 'wq'):
+                            var_col_2 = header.index('conc_SW [mg/l]')
+                            var_col_1 = header.index('h [m]')
+
                         xyz_columndata = dm.xyz_extract_z_column(dataraw, 0, 1, var_col_1, var_col_2)  # extract relevant column
                         xyz_matrix_var_1 = dm.xyz_to_matrix(xyz_columndata[:, [0, 1, 2]], nx, ny)  # convert into matrix (var 1)
                         xyz_matrix_var_2 = dm.xyz_to_matrix(xyz_columndata[:, [0, 1, 3]], nx, ny)  # convert into matrix (var 2)

@@ -5,8 +5,9 @@ MedianMax_velocity_flag = 0;
 
 
 FLUXOS_res_dir = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/';
-resultdir_list = {'4_force_pond_1_new_with_IC/Results'
-    ...
+resultdir_list = {
+    '4_force_pond_1_new_with_IC/Results',...
+    ...'4_force_pond_1_new_without_IC/Results',...
     };
 obsPath = '';
 
@@ -83,7 +84,7 @@ if CrossSections_outFiles_flag
     %% Model results to plot
     fluxos_time  = time_mod;
     fluxos_results = (sum(data_mod'))'; % summing up flow on all cells of the cross-section
-    fluxos_results(fluxos_results<0.2) = max( fluxos_results(fluxos_results<0.2) - 0.1,0);
+    %fluxos_results(fluxos_results<0.2) = max( fluxos_results(fluxos_results<0.2) - 0.1,0);
     
     %% Calculate NSE, RMSE and Bias
      if ~isempty(obsPath)
