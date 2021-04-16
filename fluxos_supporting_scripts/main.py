@@ -55,10 +55,10 @@ resultdir_list_select = [ # list here the simulations to examine (if you want to
 
 sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021'
 resultdir_list_select = [ # list here the simulations to examine (if you want to use this, leave
-        '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC/Results/' \
-        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC_newFluxosVersion/Results' \
-        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC/Results' \
-        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC_newFluxosVersion/Results' \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC/Results/' \
+        '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC_newFluxosVersion/Results/' \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC/Results/' \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC_newFluxosVersion/Results/' \
     ]
 
 # DEM file

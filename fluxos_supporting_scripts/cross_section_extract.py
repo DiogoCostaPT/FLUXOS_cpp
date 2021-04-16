@@ -93,16 +93,23 @@ def Extract_File_Res(
         # open result file
         if os.path.exists(resfilepath):
             with open(resfilepath, 'r') as fid:  # open the result file x
-                # read the result file x
-                try:
-                    dataraw = np.genfromtxt(resfilepath, delimiter=',', skip_header=1)
-                    header = pd.read_csv(resfilepath, index_col=0, nrows=0).columns.tolist()
 
-                    # DEM
-                    dem_x = dm.xyz_extract_z_column(dataraw, 0, 1, 2, 0)  # extract relevant column
-                    dem_x_matrix = dm.xyz_to_matrix(dem_x, nx, ny)  # convert into matrix
-                    dem_y = dm.xyz_extract_z_column(dataraw, 0, 1, 3, 0)  # extract relevant column
-                    dem_y_matrix = dm.xyz_to_matrix(dem_x, nx, ny)  # convert into matrix
+                try:
+                    # read the result file x
+                    dataraw = np.genfromtxt(resfilepath, delimiter=',', skip_header=1)
+                    header = pd.read_csv(resfilepath, header=0, nrows=1).columns.tolist()
+
+                    # Coordinates (from Results file)
+                    # x-dir
+                    coord_x_index = header.index('Xcoord')
+                    coord_x = dm.xyz_extract_z_column(dataraw, 0, 1, coord_x_index, 0)  # extract relevant column
+                    coord_x = np.round(coord_x)
+                    #coord_x_matrix = dm.xyz_to_matrix(coord_x, nx, ny)  # convert into matrix
+                    # y-dir
+                    coord_y_index = header.index('Ycoord')
+                    coord_y = dm.xyz_extract_z_column(dataraw, 0, 1, coord_y_index, 0)  # extract relevant column
+                    coord_y = np.round(coord_y)
+                    #coord_y_matrix = dm.xyz_to_matrix(coord_y, nx, ny)  # convert into matrix
 
                     # Vars
                     if simType == 'sq': # SQ case (soil concentrations)
@@ -137,31 +144,47 @@ def Extract_File_Res(
                     for segi in range(0, len(xy_CS_cor)):
 
                         # Get shapefile X and Y coordinates
-                        xi = xy_CS_cor[segi, 0].astype(float)
-                        yi = xy_CS_cor[segi, 1].astype(float)
+                        xi_CCshapefile = xy_CS_cor[segi, 0].astype(float)
+                        yi_CCshapefile = xy_CS_cor[segi, 1].astype(float)
 
-                        # Reset to origin (0,0) to identify location in FLUXOS output files
-                        xi = round((xi - XLL_YLL_CORNER_AND_CELL_SIZE_DEM[0])/XLL_YLL_CORNER_AND_CELL_SIZE_DEM[2])
-                        yi = round((yi - XLL_YLL_CORNER_AND_CELL_SIZE_DEM[1])/XLL_YLL_CORNER_AND_CELL_SIZE_DEM[2])
+                        xi_loc = np.where(coord_x[:,2] == xi_CCshapefile)
+                        yi_loc = np.where(coord_y[:,2] == yi_CCshapefile)
 
-                        # convert from float into int
-                        xi = xi.astype(int)
-                        yi = ny - yi.astype(int)
+                        xi_yi_row_loc = np.intersect1d(xi_loc,yi_loc)
 
-                        if simType == 'sq':  # Water levels or concentrations
-                            crosecvals_t[segi+1] = xyz_matrix_var_1[yi, xi]  # cross-section values
-                        elif simType == 'wq':
-                            crosecvals_t[segi + 1] = xyz_matrix_var_1[yi, xi]#/xyz_matrix_var_2[yi, xi]  # cross-section values
-                        else:  # calculation of the ortogonal flow to the cross section
-                            p_flow = xyz_matrix_var_1[yi, xi]
-                            q_flow = xyz_matrix_var_2[yi, xi]
-                            # different conditions (see notes)
-                            if a == 0:  # perfectly horizontal cross-section
-                                crosecvals_t[segi+1] = q_flow
-                            elif b == 0:  # perfectly vertical cross-section
-                                crosecvals_t[segi+1] = 0
-                            else:  # general case
-                                crosecvals_t[segi + 1] = max(q_flow * np.cos(alpha_h), 0) + max(p_flow * np.sin(alpha_h), 0)
+                        # check if empty (if empty skip)
+                        if xi_yi_row_loc:
+
+                            xi = coord_y[xi_yi_row_loc,0]
+                            yi = coord_y[xi_yi_row_loc,1]
+
+                            # Reset to origin (0,0) to identify location in FLUXOS output files
+                            #xi = round((xi - XLL_YLL_CORNER_AND_CELL_SIZE_DEM[0])/XLL_YLL_CORNER_AND_CELL_SIZE_DEM[2])
+                            #yi = round((yi - XLL_YLL_CORNER_AND_CELL_SIZE_DEM[1])/XLL_YLL_CORNER_AND_CELL_SIZE_DEM[2])
+
+                            # convert from float into int
+                            xi = xi.astype(int)
+                            yi = ny - yi.astype(int)
+
+                            if simType == 'sq':  # Water levels or concentrations
+                                crosecvals_t[segi+1] = xyz_matrix_var_1[yi, xi]  # cross-section values
+                            elif simType == 'wq':
+                                crosecvals_t[segi + 1] = xyz_matrix_var_1[yi, xi]#/xyz_matrix_var_2[yi, xi]  # cross-section values
+                            else:  # calculation of the ortogonal flow to the cross section
+                                p_flow = xyz_matrix_var_1[yi, xi]
+                                q_flow = xyz_matrix_var_2[yi, xi]
+                                # different conditions (see notes)
+                                if a == 0:  # perfectly horizontal cross-section
+                                    crosecvals_t[segi+1] = q_flow
+                                elif b == 0:  # perfectly vertical cross-section
+                                    crosecvals_t[segi+1] = 0
+                                else:  # general case
+                                    crosecvals_t[segi + 1] = max(q_flow * np.cos(alpha_h), 0) + max(p_flow * np.sin(alpha_h), 0)
+                        else:
+                            # Element in cross-section is dry (could not find the element in Results files)
+                            #print("Cross-Section element is dry (" + str(int(xi_CCshapefile)) + "," + str(
+                            #    int(yi_CCshapefile)) + ") - SKIPPED")
+                            crosecvals_t[segi + 1] = 0
                 except:
                     print("Cannot open file:" + resfilepath + "or exception in function <Extract_File_Res>")
 
