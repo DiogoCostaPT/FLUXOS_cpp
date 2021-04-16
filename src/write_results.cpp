@@ -51,12 +51,14 @@ bool write_results(
             {
                 filedataR(a,0) = irow;
                 filedataR(a,1) = icol;
-                filedataR(a,2) = irow * (ds.dxy) + (ds.XLLCORNER);  
-                filedataR(a,3) = icol * (ds.dxy) + (ds.YLLCORNER); 
-                filedataR(a,4) = (*ds.z).at(irow,icol); 
+
+                filedataR(a,2) = (ds.XLLCORNER) + (ds.dxy) * (ds.NROWS - irow);
+                filedataR(a,3) = icol * (ds.dxy) + (ds.YLLCORNER);
+
+                filedataR(a,4) = (*ds.z).at(irow,icol);
                 filedataR(a,5) = (*ds.z).at(irow,icol) - (*ds.zb).at(irow,icol);
-                filedataR(a,6) = (*ds.ux).at(irow,icol); 
-                filedataR(a,7) = (*ds.uy).at(irow,icol); 
+                filedataR(a,6) = (*ds.ux).at(irow,icol);
+                filedataR(a,7) = (*ds.uy).at(irow,icol);
                 filedataR(a,8) = (*ds.qx).at(irow,icol)*ds.dxy;
                 filedataR(a,9) = (*ds.qy).at(irow,icol)*ds.dxy;
                 filedataR(a,10) = (*ds.us).at(irow,icol); 
@@ -65,7 +67,9 @@ bool write_results(
                 filedataR(a,13) = (*ds.fe_1).at(irow,icol);
                 filedataR(a,14) = (*ds.fn_1).at(irow,icol);
                 filedataR(a,15) = (*ds.twetimetracer).at(irow,icol);
+
                 a = a + 1;
+                
             }
         }
     }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Define compilaton mode
-option(MODE_release "ON: release mode; OFF: debug mode" OFF) 
+option(MODE_release "ON: release mode; OFF: debug mode" ON) 
 
 # Set compilation mode flags
 IF(MODE_release MATCHES ON)

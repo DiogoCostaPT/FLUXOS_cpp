@@ -115,7 +115,7 @@ bool read_geo(
     // Read DEM from file and store in ds.zb
     if (myfile.is_open()) //if the file is open
     {
-        irow = 1;
+        irow = ds.NROWS;
         while (! myfile.eof() ) //while the end of file is NOT reached
         {
             std::stringstream str_strm;
@@ -133,7 +133,7 @@ bool read_geo(
                 temp_str = ""; //clear temp string
             }
             str_strm.str(std::string());
-            irow++;
+            irow--;
         }
         myfile.close(); //closing the file
         msg = "Successful loading of DEM file: " + ds.dem_file;
