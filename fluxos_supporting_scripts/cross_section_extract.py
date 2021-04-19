@@ -146,9 +146,17 @@ def Extract_File_Res(
                         # Get shapefile X and Y coordinates
                         xi_CCshapefile = xy_CS_cor[segi, 0].astype(float)
                         yi_CCshapefile = xy_CS_cor[segi, 1].astype(float)
+                        
+                        # locate model cells closer to cross-section elements
+                        loc_mindiff = (np.abs(coord_x[:,2]  - xi_CCshapefile)).argmin()
+                        xi_CCshapefile_adj_to_mod = coord_x[loc_mindiff,2]
 
-                        xi_loc = np.where(coord_x[:,2] == xi_CCshapefile)
-                        yi_loc = np.where(coord_y[:,2] == yi_CCshapefile)
+                        loc_mindiff = (np.abs(coord_y[:, 2] - yi_CCshapefile)).argmin()
+                        yi_CCshapefile_adj_to_mod = coord_y[loc_mindiff, 2]
+
+                        # Identidy the locations
+                        xi_loc = np.where(coord_x[:,2] == xi_CCshapefile_adj_to_mod)
+                        yi_loc = np.where(coord_y[:,2] == yi_CCshapefile_adj_to_mod)
 
                         xi_yi_row_loc = np.intersect1d(xi_loc,yi_loc)
 
