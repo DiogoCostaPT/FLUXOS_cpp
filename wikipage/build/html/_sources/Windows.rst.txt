@@ -6,7 +6,7 @@ Windows
 	
 	arma.sourceforge.net/download.html
 	
-	After extract, copy the include folder to a convenient directory. We will need this directroy for the cmamke file.
+	After extract, copy the "include" folder to a convenient directory. We will need this directroy for the cmake file.
 	
 .. image:: windows1.PNG
 
@@ -23,7 +23,7 @@ Windows
 	
 	https://sourceforge.net/projects/mingw/
 	
-	The installation process is quite straight forward. After installation, you could be able to use "MinGW Installation Manager". In order to ise OpenMP, we need to install "mingw-pthread" shown as the figure below
+	The installation process is quite straight forward. After installation, you could be able to use "MinGW Installation Manager". In order to use OpenMP, we need to install "mingw-pthread" shown as the figure below
 	
 .. image:: windows3.PNG
 	

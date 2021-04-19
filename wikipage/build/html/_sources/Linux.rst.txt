@@ -2,7 +2,7 @@ Linux
 ==================================
 
 1.Armadillo
-	You could download the Armadillo with the apt package manager, but the version provided is really old, which is lower than our required version 9.9. So Download the package from the website 
+	You could download the Armadillo with the apt package manager, but the version provided is old, which is lower than our required version 9.9. So Download the package from the website 
 	
 	arma.sourceforge.net/download.html
 	
@@ -25,7 +25,7 @@ Linux
 	
 	https://cmake.org/files/
 	
-	Please make sure the cmake version is hogher than 3.10
+	Please make sure the cmake version is higher than 3.10
 	
 4.Compile
 	There is a CmakeLists.txt in the github repo. You could directly compile the application with the command

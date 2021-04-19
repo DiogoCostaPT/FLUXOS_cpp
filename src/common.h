@@ -22,7 +22,7 @@
 #include "GlobVar.h"
 #include <string.h>
 
-#include "jnlohmann/json.h"
+#include "jnlohmann/json.hpp"
 using json = nlohmann::json;
 
 

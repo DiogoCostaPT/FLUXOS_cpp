@@ -29,7 +29,7 @@
 #include <dirent.h>
 #include <sys/types.h>
 
-#include "jnlohmann/json.h"
+#include "jnlohmann/json.hpp"
 using json = nlohmann::json;
 
 #include "common.h"
@@ -77,7 +77,10 @@ int main(int argc, char* argv[])
     // #######################################################
     json master_MODSET_local;
     std::ifstream i(modset_flname);
-    i >> master_MODSET_local;
+    master_MODSET_local = json::parse(i,
+        /* callback */ nullptr,
+        /* allow exceptions */ false,
+        /* skip_comments */ true);
     
     // #######################################################
     // Get the size of the domain (nrow and ncol)

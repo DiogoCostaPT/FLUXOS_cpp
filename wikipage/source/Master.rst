@@ -26,24 +26,38 @@ The master configuration is JSON file that provides FLUXOS-OVERLAND with informa
     *   - INFLOW_FILE (optional)
         - full pa/rainfall timeseries
 
+The JSON file supports C/C++ syntax for comments: single-line comment (``//``) or comment blocks (``/*`` and ``*/``).
+
 Example:
 
 .. code-block:: json
 
     {
-        "COMMNET": "Batch_1 - additional tests for paper",
-        "DEM_FILE": "bin/Rosa_2m.asc",
-        "INFLOW_FILE": {
-            "FILENAME": "bin/Flow_forcing.fluxos",
-            "DISCHARGE_LOCATION":{
-                "NROW": 201,
-                "NCOL": 310
+        "PROJECT_NAME": "Test",
+        "GEOGRAPHICAL_LOCATION": "Svalbard",
+        "AUTHORS": "Diogo Costa",
+        "DATE": "May_2020",
+        "COMMENT": "Default file for testing purposes",
+        "OPENWQ_INPUT": {
+            "CONFIG_FILEPATH": "bin/openWQ_config.json",
+            "BGC_CYCLES_FILEPATH": "bin/openWQ_BGC_cycling.json",
+            "SINKSOURCE_FILES": {
+                "1": {
+                    "LABEL": "fertilizer_N",
+                    "FILEPATH": "bin/openWQ_source_fertN.json"
+                },
+                "2": {
+                    "LABEL": "fertilizer_P",
+                    "FILEPATH": "bin/openWQ_source_fertP.json"
+                }
             }
         },
-        "PRINT_STEP": 3600,
-        "ROUGNESS_HEIGHT": 0.005,
-        "SOIL_RELEASE_RATE": 0.08,
-        "SOIL_CONC_BACKGROUND": 1,
-        "SWE_STD": 9.5,
-        "SWE_MAX": 9.5
+        "openWQ_OUTPUT": {
+            "RESULTS_FOLDERPATH": "bin/Output_OpenWQ",
+            "FORMAT": "HDF5",
+            "CHEMICAL_SPECIES":["SOIL_NO3","SOIL_NO3"],
+            "COMPARTMENTS": ["SNOW","SOIL"],
+            "TIMESTEP": [1,"h"]
+        }
     }
+

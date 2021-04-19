@@ -19,7 +19,7 @@
 #ifndef GLOBVARH_INCLUDED
 #define GLOBVARH_INCLUDED
 
-#include "jnlohmann/json.h"
+#include "jnlohmann/json.hpp"
 using json = nlohmann::json;
 
 class GlobVar

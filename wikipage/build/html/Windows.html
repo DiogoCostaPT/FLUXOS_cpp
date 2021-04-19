@@ -1,91 +1,93 @@
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Windows &mdash; FLUXOS-OVERLAND 0.0.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Windows &#8212; FLUXOS-OVERLAND 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="MacOS" href="MacOS.html" />
-    <link rel="prev" title="Linux" href="Linux.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
+    <link rel="prev" title="Linux" href="Linux.html" />
    
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
           
 
-          
-            <a href="index.html" class="icon icon-home"> FLUXOS-OVERLAND
-          
-
-          
-          </a>
-
-          
+          <div class="body" role="main">
             
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  <div class="section" id="windows">
+<h1>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>1.Armadillo</dt>
+<dd><p class="first">Download the latest stable package from the website</p>
+<p>arma.sourceforge.net/download.html</p>
+<p class="last">After extract, copy the “include” folder to a convenient directory. We will need this directroy for the cmake file.</p>
+</dd>
+</dl>
+<img alt="_images/windows1.PNG" src="_images/windows1.PNG" />
+<dl class="docutils">
+<dt>2.OpenMP</dt>
+<dd><p class="first">We could build the C++ compiler with MinGW. Please install the Windows 64bit MinGW, otherwise you are likely meet problems when working with Armadillo library. Here is the link</p>
+<p><a class="reference external" href="https://sourceforge.net/projects/mingw-w64/">https://sourceforge.net/projects/mingw-w64/</a></p>
+<p>Running the setup file and set the architecture to “x86_64”, also remember the installation directory.</p>
+<p>Then go to the installation folder, add the <code class="docutils literal notranslate"><span class="pre">&lt;mingw</span> <span class="pre">installation</span> <span class="pre">path&gt;\i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/include</span></code> to the windows environment path. By now, MinGW should have been configurated successfully.</p>
+<p>MinGW has a package manager which would be convenient to install the libraries and packages. We could setup OpenMP with it.</p>
+<p><a class="reference external" href="https://sourceforge.net/projects/mingw/">https://sourceforge.net/projects/mingw/</a></p>
+<p class="last">The installation process is quite straight forward. After installation, you could be able to use “MinGW Installation Manager”. In order to use OpenMP, we need to install “mingw-pthread” shown as the figure below</p>
+</dd>
+</dl>
+<img alt="_images/windows3.PNG" src="_images/windows3.PNG" />
+<img alt="_images/windows2.PNG" src="_images/windows2.PNG" />
+<ol class="arabic" start="3">
+<li><dl class="first docutils">
+<dt>cmake and compile</dt>
+<dd><p class="first">Before runing the cmake file, please write the armadillo include directory to the “target_include_directorties” in the cmake file. After that, open the cmd and go to the directroy of the “CmakeLists.txt”. Then</p>
+<p><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">-G</span> <span class="pre">&quot;Unix</span> <span class="pre">Makefiles&quot;</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">make</span></code></p>
+<p class="last">The executable file will be generated to the “Results” folder</p>
+</dd>
+</dl>
+</li>
+</ol>
 </div>
 
+
+          </div>
           
         </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">FLUXOS-OVERLAND</a></h1>
 
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul class="current">
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Home.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html">Documentation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="Installation.html">Installation</a><ul class="current">
@@ -105,154 +107,57 @@
 <li class="toctree-l1"><a class="reference internal" href="Reference.html">Reference</a></li>
 </ul>
 
-            
-          
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="Installation.html">Installation</a><ul>
+  <li><a href="Compile.html">Build and Compile</a><ul>
+      <li>Previous: <a href="Linux.html" title="previous chapter">Linux</a></li>
+      <li>Next: <a href="MacOS.html" title="next chapter">MacOS</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
-        
       </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Diogo Costa.
       
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">FLUXOS-OVERLAND</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="Installation.html">Installation</a> &raquo;</li>
-        
-          <li><a href="Compile.html">Build and Compile</a> &raquo;</li>
-        
-      <li>Windows</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="_sources/Windows.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
-
-  
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
-  <div class="section" id="windows">
-<h1>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h1>
-<dl>
-<dt>1.Armadillo</dt><dd><p>Download the latest stable package from the website</p>
-<p>arma.sourceforge.net/download.html</p>
-<p>After extract, copy the include folder to a convenient directory. We will need this directroy for the cmamke file.</p>
-</dd>
-</dl>
-<img alt="_images/windows1.PNG" src="_images/windows1.PNG" />
-<dl>
-<dt>2.OpenMP</dt><dd><p>We could build the C++ compiler with MinGW. Please install the Windows 64bit MinGW, otherwise you are likely meet problems when working with Armadillo library. Here is the link</p>
-<p><a class="reference external" href="https://sourceforge.net/projects/mingw-w64/">https://sourceforge.net/projects/mingw-w64/</a></p>
-<p>Running the setup file and set the architecture to “x86_64”, also remember the installation directory.</p>
-<p>Then go to the installation folder, add the <code class="docutils literal notranslate"><span class="pre">&lt;mingw</span> <span class="pre">installation</span> <span class="pre">path&gt;\i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/include</span></code> to the windows environment path. By now, MinGW should have been configurated successfully.</p>
-<p>MinGW has a package manager which would be convenient to install the libraries and packages. We could setup OpenMP with it.</p>
-<p><a class="reference external" href="https://sourceforge.net/projects/mingw/">https://sourceforge.net/projects/mingw/</a></p>
-<p>The installation process is quite straight forward. After installation, you could be able to use “MinGW Installation Manager”. In order to ise OpenMP, we need to install “mingw-pthread” shown as the figure below</p>
-</dd>
-</dl>
-<img alt="_images/windows3.PNG" src="_images/windows3.PNG" />
-<img alt="_images/windows2.PNG" src="_images/windows2.PNG" />
-<ol class="arabic" start="3">
-<li><dl>
-<dt>cmake and compile</dt><dd><p>Before runing the cmake file, please write the armadillo include directory to the “target_include_directorties” in the cmake file. After that, open the cmd and go to the directroy of the “CmakeLists.txt”. Then</p>
-<p><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">-G</span> <span class="pre">&quot;Unix</span> <span class="pre">Makefiles&quot;</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">make</span></code></p>
-<p>The executable file will be generated to the “Results” folder</p>
-</dd>
-</dl>
-</li>
-</ol>
-</div>
-
-
-           </div>
-           
-          </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="MacOS.html" class="btn btn-neutral float-right" title="MacOS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="Linux.html" class="btn btn-neutral float-left" title="Linux" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Windows.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Diogo Costa.
-
-    </p>
-  </div>
     
+
     
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-  
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
-    
-   
-
-</body>
+  </body>
 </html>
