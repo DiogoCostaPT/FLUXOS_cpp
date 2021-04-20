@@ -119,8 +119,10 @@ def Extract_File_Res(
                         xyz_matrix_var_1 = dm.xyz_to_matrix(xyz_columndata, nx, ny)  # convert into matrix
                     else:
                         if simType == 'f':
-                            var_col_1 = header.index('qx * dxy [m3/sec]')
-                            var_col_2 = header.index('qy * dxy [m3/sec]')
+                            #var_col_1 = header.index('qx * dxy [m3/sec]')
+                            #var_col_2 = header.index('qy * dxy [m3/sec]')
+                            var_col_1 = header.index('fe_1 [m2/s]')
+                            var_col_2 = header.index('fn_1 [m2/s]')
                         elif (simType == 'wq'):
                             var_col_2 = header.index('conc_SW [mg/l]')
                             var_col_1 = header.index('h [m]')

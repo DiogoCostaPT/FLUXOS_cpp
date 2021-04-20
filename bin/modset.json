@@ -4,8 +4,8 @@
 	"INFLOW_FILE": {
 		"FILENAME": "bin/Flow_forcing.fluxos",
 		"DISCHARGE_LOCATION":{
-			"NROW": 501,
-			"NCOL": 448
+			"X_COORDINATE": 425894,
+			"Y_COORDINATE": 5785553
 		}
 	},
 	"OUTPUT": {

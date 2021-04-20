@@ -57,8 +57,10 @@ bool read_modset(
 
             if (exist_inflow != ds.master_MODSET.end()){
                 ds.inflow_file = ds.master_MODSET["INFLOW_FILE"]["FILENAME"];
-                ds.inflow_nrow = ds.master_MODSET["INFLOW_FILE"]["DISCHARGE_LOCATION"]["NROW"];
-                ds.inflow_ncol = ds.master_MODSET["INFLOW_FILE"]["DISCHARGE_LOCATION"]["NCOL"];
+
+                ds.inflow_ycoord = ds.master_MODSET["INFLOW_FILE"]["DISCHARGE_LOCATION"]["Y_COORDINATE"];
+                ds.inflow_xcoord = ds.master_MODSET["INFLOW_FILE"]["DISCHARGE_LOCATION"]["X_COORDINATE"];
+
             }
             
             msg = "Successful loading of master input file: " + filename;
@@ -195,6 +197,12 @@ bool read_geo(
             //(*ds.z).at(irow,icol) = zbp_corr;
             (*ds.ks).at(irow,icol) = ks_input; 
         }
+    }
+
+    // Determine discharge row and col
+    if (ds.inflow_ycoord == NULL || ds.inflow_xcoord == NULL){
+        ds.inflow_nrow = ds.NROWS - std::round(ds.YLLCORNER - ds.inflow_ycoord); 
+        ds.inflow_ncol = std::round(ds.XLLCORNER - ds.inflow_xcoord); 
     }
 
     return errflag;

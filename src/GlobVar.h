@@ -93,7 +93,9 @@ public:
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
     
     std::string dem_file,meteo_file,inflow_file,sim_purp;
-    unsigned long inflow_ncol, inflow_nrow;
+
+    // Discharge location info
+    unsigned long inflow_xcoord, inflow_ycoord, inflow_ncol, inflow_nrow;
 
     unsigned long print_step, h_min_print; // output settings
 
