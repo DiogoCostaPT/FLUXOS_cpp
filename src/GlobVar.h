@@ -95,7 +95,7 @@ public:
     std::string dem_file,meteo_file,inflow_file,sim_purp;
 
     // Discharge location info
-    unsigned long inflow_xcoord, inflow_ycoord, inflow_ncol, inflow_nrow;
+    unsigned long inflow_xcoord = NULL, inflow_ycoord = NULL, inflow_ncol, inflow_nrow;
 
     unsigned long print_step, h_min_print; // output settings
 

@@ -1,6 +1,7 @@
 {
 	"COMMNET": "Batch_1 - additional tests for paper",
 	"DEM_FILE": "bin/Rosa_2m.asc",
+	/*
 	"INFLOW_FILE": {
 		"FILENAME": "bin/Flow_forcing.fluxos",
 		"DISCHARGE_LOCATION":{
@@ -8,6 +9,8 @@
 			"Y_COORDINATE": 5785553
 		}
 	},
+	*/
+	"METEO_FILE": "bin/Qmelt_synthetic.fluxos",
 	"OUTPUT": {
 		"PRINT_STEP": 3600,
 		"H_MIN_TO_PRINT": 0.005
