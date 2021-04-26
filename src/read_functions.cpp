@@ -201,7 +201,7 @@ bool read_geo(
 
     // Determine discharge row and col
     if (ds.inflow_ycoord != NULL || ds.inflow_xcoord != NULL){
-        ds.inflow_nrow = ds.NROWS - std::round(ds.inflow_ycoord - ds.YLLCORNER)/ds.dxy; 
+        ds.inflow_nrow = std::round(ds.inflow_ycoord - ds.YLLCORNER)/ds.dxy; 
         ds.inflow_ncol = std::round(ds.inflow_xcoord - ds.XLLCORNER)/ds.dxy;
     }
 
