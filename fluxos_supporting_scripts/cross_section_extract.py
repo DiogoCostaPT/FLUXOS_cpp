@@ -119,10 +119,10 @@ def Extract_File_Res(
                         xyz_matrix_var_1 = dm.xyz_to_matrix(xyz_columndata, nx, ny)  # convert into matrix
                     else:
                         if simType == 'f':
-                            #var_col_1 = header.index('qx * dxy [m3/sec]')
-                            #var_col_2 = header.index('qy * dxy [m3/sec]')
-                            var_col_1 = header.index('fe_1 [m2/s]')
-                            var_col_2 = header.index('fn_1 [m2/s]')
+                            var_col_1 = header.index('qx * dxy [m3/sec]')
+                            var_col_2 = header.index('qy * dxy [m3/sec]')
+                            #var_col_1 = header.index('fe_1 [m2/s]')
+                            #var_col_2 = header.index('fn_1 [m2/s]')
                         elif (simType == 'wq'):
                             var_col_2 = header.index('conc_SW [mg/l]')
                             var_col_1 = header.index('h [m]')
@@ -150,11 +150,15 @@ def Extract_File_Res(
                         yi_CCshapefile = xy_CS_cor[segi, 1].astype(float)
                         
                         # locate model cells closer to cross-section elements
-                        loc_mindiff = (np.abs(coord_x[:,2]  - xi_CCshapefile)).argmin()
-                        xi_CCshapefile_adj_to_mod = coord_x[loc_mindiff,2]
+                        diff_vals_x = np.abs(coord_x[:,2] - xi_CCshapefile)
+                        loc_mindiff = np.asarray(np.where(
+                            diff_vals_x == diff_vals_x.min()))
+                        xi_CCshapefile_adj_to_mod = coord_x[loc_mindiff[0,0],2]
 
-                        loc_mindiff = (np.abs(coord_y[:, 2] - yi_CCshapefile)).argmin()
-                        yi_CCshapefile_adj_to_mod = coord_y[loc_mindiff, 2]
+                        diff_vals_y = np.abs(coord_y[:, 2] - yi_CCshapefile)
+                        loc_mindiff = np.asarray(np.where(
+                            diff_vals_y == diff_vals_y.min()))
+                        yi_CCshapefile_adj_to_mod = coord_y[loc_mindiff[0,0], 2]
 
                         # Identidy the locations
                         xi_loc = np.where(coord_x[:,2] == xi_CCshapefile_adj_to_mod)
@@ -165,8 +169,8 @@ def Extract_File_Res(
                         # check if empty (if empty skip)
                         if xi_yi_row_loc:
 
-                            xi = coord_y[xi_yi_row_loc,0]
-                            yi = coord_y[xi_yi_row_loc,1]
+                            xi = coord_x[xi_yi_row_loc,1]
+                            yi = coord_y[xi_yi_row_loc,0]
 
                             # Reset to origin (0,0) to identify location in FLUXOS output files
                             #xi = round((xi - XLL_YLL_CORNER_AND_CELL_SIZE_DEM[0])/XLL_YLL_CORNER_AND_CELL_SIZE_DEM[2])
@@ -174,7 +178,7 @@ def Extract_File_Res(
 
                             # convert from float into int
                             xi = xi.astype(int)
-                            yi = ny - yi.astype(int)
+                            yi = yi.astype(int)
 
                             if simType == 'sq':  # Water levels or concentrations
                                 crosecvals_t[segi+1] = xyz_matrix_var_1[yi, xi]  # cross-section values
