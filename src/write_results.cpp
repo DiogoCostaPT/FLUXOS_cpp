@@ -52,7 +52,7 @@ bool write_results(
                 filedataR(a,0) = irow;
                 filedataR(a,1) = icol;
 
-                filedataR(a,2) = icol * (ds.dxy) + (ds.XLLCORNER) ;
+                filedataR(a,2) = icol * (ds.dxy) + (ds.XLLCORNER);
                 filedataR(a,3) = irow * (ds.dxy) + (ds.YLLCORNER);
                 
                 filedataR(a,4) = (*ds.z).at(irow,icol);

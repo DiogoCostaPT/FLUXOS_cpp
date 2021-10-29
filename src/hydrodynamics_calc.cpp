@@ -73,7 +73,7 @@ void hydrodynamics_calc(
         }
 
         // CALL FLOW SOLVERS (compute mass and momentum fluxes)
-    #pragma omp for private(irow,cell_neumann)
+        #pragma omp for private(irow,cell_neumann)
         for(icol=1;icol<=ds.NCOLS;icol++)
         {
             for(irow=1;irow<=ds.NROWS;irow++)
@@ -90,7 +90,7 @@ void hydrodynamics_calc(
         }
 
         // CALCULATE TOTAL MASS AND MOMENTUM DERIVATIVE
-    #pragma omp for private(irow,cell_neumann)
+        #pragma omp for private(irow,cell_neumann)
         for(icol=1;icol<=ds.NCOLS;icol++)
         {
             for(irow=1;irow<=ds.NROWS;irow++)
@@ -120,7 +120,7 @@ void hydrodynamics_calc(
         }
 
         // CAL NEW VALUES
-    #pragma omp for private(irow,cell_neumann,hp)
+        #pragma omp for private(irow,cell_neumann,hp)
         for(icol=1;icol<=ds.NCOLS;icol++)
         {
             for(irow=1;irow<=ds.NROWS;irow++)
