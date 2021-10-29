@@ -56,14 +56,19 @@ resultdir_list_select = [ # list here the simulations to examine (if you want to
 sim_batch_dir = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021'
 resultdir_list_select = [ # list here the simulations to examine (if you want to use this, leave
         ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC/Results/' \
-        '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC_newFluxosVersion_V2/Results/' \
-        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC/Results/' \
-        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_without_IC_newFluxosVersion/Results/' \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/force_pond_1_new_with_IC_flipped_rows_flowinputfixed/Results/' \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/force_pond_1_new_without_IC_flipped_rows_flowinputfixed/Results/' \
+        ##'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/force_pond_1_new_with_IC_flipped_rows_flowinputfixed_2/Results/'
+        #'/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/force_pond_1_new_with_IC_flipped_rows_flowinputfixed_2/Results/'
+        #'/media/dcosta/data/megasync/my_server/fluxos/Simulations/LLO_Emily/Big_Creek/Sim_1/Results/' \
+        '/media/dcosta/data/megasync/my_server/fluxos/Simulations/LLO_Emily/Wigle_Creek/Sim_1/Results/'
+        #'/media/dcosta/data/megasync/my_server/fluxos/Simulations/LLO_Emily/Big_Creek/Sim_2/Results/'
     ]
 
 # DEM file
 #dempath = '/media/dcosta/data/megasync/my_server/fluxos/TESTS_VARIA/2/dem_clip_SRTM_resample_500m.asc'
 dempath = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/4_force_pond_1_new_with_IC/Rosa_2m.asc'
+#dempath = '/media/dcosta/data/megasync/ec_main/models/crhm/support/PROJECTS/LLO/1_data/Emily/DEM_converted_10M.asc.aux/DEM_converted3_2.asc'
 
 # Cross section shapefile (for cross-section data extraction)
 #CrossSecLine_path_shapefile = \
@@ -244,7 +249,7 @@ elif (simType == 'vtk'):
             print("     vtk directory: CREATE")
         except:
             print("     vtk directory: ALREADY EXISTS")
-        num_cores = multiprocessing.cpu_count()
+        num_cores = round(multiprocessing.cpu_count()*2/3)
         Parallel(n_jobs=num_cores)(delayed(vtkgen.vtk_generator)(simType, resultdir, resfiles_list[res_i], dempath, nx, ny, dxy) for res_i in tqdm(range(0,len(resfiles_list))))
 
 else:

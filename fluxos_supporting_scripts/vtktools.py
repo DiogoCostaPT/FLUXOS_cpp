@@ -2,6 +2,8 @@
 # adapted from: cfinch/Shocksolution_Examples
 # https://github.com/cfinch/Shocksolution_Examples/blob/master/Visualization/vtktools.py
 
+import numpy as np
+
 #!/usr/bin/env python
 class VTK_XML_Serial_Unstructured:
     """
@@ -15,21 +17,22 @@ class VTK_XML_Serial_Unstructured:
 
     def coords3D_to_string(self, x,y,z):
         string = str()
-        for i in range(len(x)):
-            string = string + repr(x[i]) + ' ' + repr(y[i]) \
-                    + ' ' + repr(z[i]) + ' '
+        xyz = np.vstack((x,y,z)).T.flatten()
+        string = ' '.join(map(str, xyz))
         return string
 
     def coords2D_to_string(self, x,y):
         string = str()
-        for i in range(len(x)):
-            string = string + repr(x[i]) + ' ' + repr(y[i]) + ' '
+        xy = np.vstack((x, y)).T.flatten()
+        string = ' '.join(map(str, xy))
         return string
 
     def array_to_string(self, a):
+
         string = str()
-        for i in range(len(a)):
-            string = string + repr(a[i]) + ' '
+
+        string = ' '.join(map(str, a))
+
         return string
 
     def snapshot(self, fileName, x, y, z, h, ux, uy, qx, qy, conc_sw, conc_soil,timeconnect_h):
@@ -177,7 +180,7 @@ class VTK_XML_Serial_Unstructured:
         flowVelVec.setAttribute("format", "ascii")
         point_data.appendChild(flowVelVec)
 
-        string = self.coords3D_to_string(uy, ux, (ux + uy)*0.000001)
+        string = self.coords3D_to_string(ux, ux, (ux + uy)*0.000001)
         flowVelVecData = doc.createTextNode(string)
         flowVelVec.appendChild(flowVelVecData)
 
