@@ -24,36 +24,37 @@ IF (UNIX)
 
 	project(fluxos)
 
-        file(GLOB SOURCES "src/*.cpp")
+	file(GLOB SOURCES "src/*.cpp")
 
-        set(CMAKE_CXX_STANDARD 17)
-        
-        # Packages
-        find_package(Armadillo REQUIRED)
-        find_package(OpenMP)
+	set(CMAKE_CXX_STANDARD 17)
+	
+	# Packages
+	find_package(Armadillo REQUIRED)
+	FIND_PACKAGE(HDF5 REQUIRED)
+	find_package(OpenMP)
 
 
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-        include_directories(${AMRADILLO_INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
+	include_directories(${AMRADILLO_INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
 
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-        # Create Results folder if non-existant
-        file(MAKE_DIRECTORY Results)
-        
-        add_executable(${FLUXOS_EXEC_name}
-                ${SOURCES})
-		
-	IF(APPLE)
-		target_include_directories(
-			${FLUXOS_EXEC_name} PUBLIC
-        		${ARMADILLO_INCLUDE_DIR})
-	ENDIF()
+	# Create Results folder if non-existant
+	file(MAKE_DIRECTORY Results)
+	
+	add_executable(${FLUXOS_EXEC_name}
+			${SOURCES})
+	
+	target_include_directories(
+		${FLUXOS_EXEC_name} PUBLIC
+		${HDF5_INCLUDE_DIRS}
+		${ARMADILLO_INCLUDE_DIR})
 
-        target_link_libraries(
-                ${FLUXOS_EXEC_name}
-                ${ARMADILLO_LIBRARIES})
+	target_link_libraries(
+		${FLUXOS_EXEC_name}
+		${HDF5_C_LIBRARY_hdf5}
+		${ARMADILLO_LIBRARIES})
 
 
 ELSE()	
@@ -70,6 +71,9 @@ ELSE()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Results)
 	add_executable(${FLUXOS_EXEC_name}, ${SOURCES})
-	target_include_directories(${FLUXOS_EXEC_name} PUBLIC "I:/FLUXOS_cpp-master/Armadillo/include")
+	target_include_directories(
+		${FLUXOS_EXEC_name} PUBLIC 
+		${HDF5_INCLUDE_DIRS}  
+		"/usr/include/")
 
 ENDIF()
