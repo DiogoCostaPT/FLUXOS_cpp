@@ -1,20 +1,17 @@
 .. FLUXOS documentation master file, created by
-   sphinx-quickstart on Thu Mar  4 19:33:42 2021.
+   sphinx-quickstart on Tue Feb 28 07:27:26 2023.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-FLUXOS-OVERLAND
-==================================
+Welcome to FLUXOS's documentation!
+===========================================
 
 .. toctree::
    :maxdepth: 4
-   
+
    Home
    Documentation
    Installation
    Input
    Developer
    Reference
-   
-
-
