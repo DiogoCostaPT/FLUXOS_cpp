@@ -36,6 +36,9 @@ unsigned int initiation(
     NROWS1=ds.NROWS+1;
     NCOLS1=ds.NCOLS+1;
 
+    // Create output file idf not existing
+    check_mkdir(ds.output_folder);  
+
      // INTERPOLATE ELEVATIONS OF THE BOUNDARIES
     for(irow=0;irow<=NROWS1;irow++){
       zbs1[irow]=(*ds.zb).at(irow,1);
@@ -102,12 +105,13 @@ unsigned int initiation(
         }
     }
     
-    timstart = findLastStep("Results/"); // list the results files to get the last time step
+    ds.output_folder = ds.output_folder + "/";
+    timstart = findLastStep(ds.output_folder.c_str()); // list the results files to get the last time step
     
     arma::mat filedata; 
     std::string init_file, msg;
     
-    init_file = "Results/" + std::to_string(timstart) + ".txt";
+    init_file = ds.output_folder + "/" + std::to_string(timstart) + ".txt";
     
     bool flstatus = filedata.load(init_file,arma::csv_ascii);
 

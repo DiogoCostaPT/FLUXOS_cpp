@@ -37,7 +37,7 @@ bool write_results(
     int a = 0;
     double ux;
     
-    std::string tprint = "Results/" + std::to_string(print_tag); 
+    std::string tprint = ds.output_folder + "/" + std::to_string(print_tag); 
     std::string filext(".txt");
     tprint += filext;
 

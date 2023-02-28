@@ -21,6 +21,7 @@
 
 #include "GlobVar.h"
 #include <string.h>
+#include <sys/stat.h>
 
 #include "jnlohmann/json.hpp"
 using json = nlohmann::json;
@@ -49,5 +50,8 @@ bool add_meteo(
     
 bool add_inflow(
     GlobVar& ds);
+
+void check_mkdir(
+    std::string &dirname);
 
 #endif

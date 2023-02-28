@@ -16,28 +16,6 @@
 #ifndef OPENWQ_HYDROLINK_INCLUDED
 #define OPENWQ_HYDROLINK_INCLUDED
 
-// from CRHM
-#include "../crhm/vcl.h"
-//#pragma hdrstop
-
-#include "../crhm/WQ_CRHM.h"
-#include "../crhm/NewModules.h"
-#include "../crhm/GlobalDll.h"
-#include "../crhm/ClassModule.h"
-
-#include <math.h>
-#include <stdlib.h>
-
-//#pragma package(smart_init)
-using namespace CRHM;
-
-// for OpenWQ
-#include <iostream>
-#include <fstream>
-#include <armadillo>
-#include <string>
-
-// #include "utility.h"
 
 #include "openwq/src/OpenWQ_couplercalls.h"
 #include "openwq/src/OpenWQ_global.h"
@@ -51,13 +29,10 @@ using namespace CRHM;
 #include "openwq/src/OpenWQ_output.h"
 
 
-
-class ClassWQ_OpenWQ : public ClassModule
+class ClassWQ_OpenWQ
 {
 
     public:
-
-    ClassWQ_OpenWQ(string Name, String Version = "undefined", CRHM::LMODULE Lvl = CRHM::PROTO) : ClassModule(Name, Version, Lvl) {};
 
     // Variables from CRHM
     const float *hru_t; // has to be converted to soil temperatures. How?
@@ -124,7 +99,6 @@ class ClassWQ_OpenWQ : public ClassModule
         OpenWQ_solver& OpenWQ_solver,                // solver module
         OpenWQ_output& OpenWQ_output);               // output modules
 
-    ClassWQ_OpenWQ* klone(string name) const;
 
 };
 

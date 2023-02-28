@@ -37,6 +37,7 @@ bool read_modset(
 
         // Compulsory data
         ds.dem_file = ds.master_MODSET["DEM_FILE"];
+        ds.output_folder = ds.master_MODSET["OUTPUT"]["OUTPUT_FOLDER"];
         ds.print_step = ds.master_MODSET["OUTPUT"]["PRINT_STEP"];
         ds.h_min_print = ds.master_MODSET["OUTPUT"]["H_MIN_TO_PRINT"];
         *ks_input = ds.master_MODSET["ROUGNESS_HEIGHT"];

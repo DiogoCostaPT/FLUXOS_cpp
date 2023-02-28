@@ -17,11 +17,6 @@
 
 #include "OpenWQ_hydrolink.h"
 
-using namespace CRHM;
-
-ClassWQ_OpenWQ* ClassWQ_OpenWQ::klone(string name) const{
-  return new ClassWQ_OpenWQ(name);
-}
 
 void ClassWQ_OpenWQ::decl(
     OpenWQ_couplercalls& OpenWQ_couplercalls,     // Class with all call from coupler
@@ -89,52 +84,12 @@ void ClassWQ_OpenWQ::decl(
             OpenWQ_extwatflux_ss,        // sink and source modules)
             OpenWQ_output);
 
-        // SPECIFIC TO CRHM
-        // Fix number of species for use in other module
-        // Particularly WQ_CRHM that computes transport
-        Global::numsubstances = OpenWQ_wqconfig.BGC_general_num_chem;
+
 
 
     }
 
-    // ################################
-    // Get Variables from other modules or meteorology
-    // ################################
-    // SWE
-    declgetvar("*", "SWE", "(mm)", &SWE);
-    declputvar("*", "SWE_conc", "(mg/l)", &SWE_conc, &SWE_conc_lay);
-    // runoff
-    declgetvar("*", "soil_runoff", "(mm)", &soil_runoff);
-    declputvar("*", "soil_runoff_cWQ", "(mm)", &soil_runoff_cWQ,&soil_runoff_cWQ_lay);
-    // ssr
-    declgetvar("*", "soil_ssr", "(mm)", &soil_ssr);
-    declputvar("*", "soil_ssr_conc", "(mm)", &soil_ssr_conc,&soil_ssr_conc_lay);
-    // Sd
-    declstatvar("Sd", NHRU, "Depression storage.", "(mm)", &Sd);
-    declstatvar("Sd_conc", NDEFN, "Concentration: Depression storage.", "(mg/l)", &Sd_conc, &Sd_conc_lay, Global::numsubstances);
-    // soil_rechr
-    declgetvar("*", "soil_rechr", "(mm)", &soil_rechr);
-    declputvar("*", "conc_soil_rechr", "(mg/l)", &conc_soil_rechr, &conc_soil_rechr_lay);
-    // soil moist (vol) & soil_lower (conc)
-    declgetvar("*", "soil_moist", "(mm)", &soil_moist);
-    declputvar("*", "conc_soil_lower", "(mg/l)", &conc_soil_lower, &conc_soil_lower_lay);
-    // surficial soil (only mass)
-    declputvar("*", "surfsoil_solub_mWQ", "(mg/l)", &surfsoil_solub_mWQ, &surfsoil_solub_mWQ_lay);
-    // gw
-    declstatvar("gw", NHRU, "ground water storage.", "(mm)", &gw);
-    declstatvar("gw_conc", NDEFN, "Concentration: ground water storage.", "(mg/l)", &gw_conc, &gw_conc_lay, Global::numsubstances);
-
-    // ################################
-    // Get Parameters from other modules or meteorology
-    // ################################
-    // air temperature
-    declgetvar("*", "hru_t", "(°C)", &hru_t);
-    declparam("hru_area", NHRU, "[1]", "1e-6", "1e+09", "hru area", "(km^2)", &hru_area);
-    declparam("soil_rechr_max", NHRU, "[60.0]", "0.0", "350.0",
-    "Maximum value for soil recharge zone (upper portion of soil_moist where losses occur as both evaporation "//
-    "and transpiration).  Must be less than or equal to soil_moist.","( )", &soil_rechr_max);
-
-
+    
 }
 
 void ClassWQ_OpenWQ::run(
@@ -160,7 +115,10 @@ void ClassWQ_OpenWQ::run(
     // Retrieve simulation timestamp
     // convert to OpenWQ time convention: seconds since 00:00 hours, Jan 1, 1900 UTC
     // this allows the use of a number of funtions of C++
-    time_t simtime = (Global::DTnow) * 24 * 3600;
+    time_t simtime;
+    int hru = 10;
+    int nhru = 100;
+    int hh = 1;
 
     // Update Dependencies to kinetic formulas (needs loop to get hydro model variables
     // that are dependencies to OpenWQ)
