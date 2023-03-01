@@ -18,8 +18,8 @@ site = sites{site_i};
 
 if (strcmp(site,'SD-Kevin'))
     % LON
-    demfile = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/sim_4_DEM_2m/Rosa_2m.asc';
-    results_file = '/media/dcosta/data/megasync/my_server/fluxos/Simulations/SD_Kevin_2021/sim_4_DEM_2m/Results/572400.txt';
+    demfile = '/Users/diogocosta/Library/CloudStorage/OneDrive-impactblue-scientific.com/6_Projects/1_GWF/2_WIP/code/fluxos_overland/case_studies/tests_debug/Rosa_2m.asc';
+    results_file = '/Users/diogocosta/Library/CloudStorage/OneDrive-impactblue-scientific.com/6_Projects/1_GWF/2_WIP/code/fluxos_overland/case_studies/tests_debug/OUTPUT_FLUXOS/61200.txt';
     delimiterIn = ' ';
     utm_zone = '17 T';
     ix = 1; % for simulations

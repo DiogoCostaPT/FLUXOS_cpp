@@ -49,21 +49,15 @@ void ClassWQ_OpenWQ::decl(
         // Characterize the Host model domain
         // Host model specific
         // #######################################
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SWE",nhru,1,1));
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(1,"RUNOFF",nhru,1,1));
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(2,"SSR",nhru,1,1));
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(3,"SD",nhru,1,1));
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(4,"SOIL_RECHR",nhru,1,1));
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(5,"SOIL_LOWER",nhru,1,1));
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(6,"SURFSOIL",nhru,1,1));
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(7,"GW",nhru,1,1));
+        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SURFACE_WATER",nhru,1,1));
+
         // (add other compartments as needed)...
 
         // Dependencies
         // to expand BGC modelling options
-        OpenWQ_hostModelconfig.HydroDepend.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SM", nhru,1,1));
-        OpenWQ_hostModelconfig.HydroDepend.push_back(OpenWQ_hostModelconfig::hydroTuple(1,"Tair_K", nhru,1,1));
-        OpenWQ_hostModelconfig.HydroDepend.push_back(OpenWQ_hostModelconfig::hydroTuple(2,"Tsoil_K", nhru,1,1));
+        //OpenWQ_hostModelconfig.HydroDepend.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SM", nhru,1,1));
+        //OpenWQ_hostModelconfig.HydroDepend.push_back(OpenWQ_hostModelconfig::hydroTuple(1,"Tair_K", nhru,1,1));
+        //OpenWQ_hostModelconfig.HydroDepend.push_back(OpenWQ_hostModelconfig::hydroTuple(2,"Tsoil_K", nhru,1,1));
 
         // Create Object: OpenWQ_json (Input JSON files) and wqconfig
         //OpenWQ_json OpenWQ_json;            // create OpenWQ_json object
