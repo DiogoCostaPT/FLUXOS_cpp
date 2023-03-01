@@ -46,6 +46,11 @@ bool read_modset(
         ds.SWEstd = ds.master_MODSET["SWE_STD"];
         ds.SWEmax = ds.master_MODSET["SWE_MAX"];
 
+        // Modules
+        ds.openwq = ds.master_MODSET["EXTERNAL_MODULES"]["OPENWQ"]["STATUS"];
+        if (ds.openwq == true){
+            ds.openwq_masterfile = ds.master_MODSET["EXTERNAL_MODULES"]["OPENWQ"]["MASTERFILE_DIR"];
+        }
         // Only requires one of these forcing files to be provided
         auto exist_meteo = ds.master_MODSET.find("METEO_FILE");
         auto exist_inflow = ds.master_MODSET.find("INFLOW_FILE");

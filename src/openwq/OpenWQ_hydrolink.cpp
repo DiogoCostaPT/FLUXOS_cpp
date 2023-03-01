@@ -18,7 +18,7 @@
 #include "OpenWQ_hydrolink.h"
 
 
-void ClassWQ_OpenWQ::decl(
+void class_openwq::openwq_decl(
     OpenWQ_couplercalls& OpenWQ_couplercalls,     // Class with all call from coupler
     OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
     OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
@@ -32,7 +32,8 @@ void ClassWQ_OpenWQ::decl(
     OpenWQ_chem& OpenWQ_chem,                   // biochemistry modules
     OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
     OpenWQ_output& OpenWQ_output,
-    unsigned long nhru)
+    unsigned long NROWS,
+    unsigned long NCOLS)
 {
     
     // Location of master file
@@ -49,7 +50,7 @@ void ClassWQ_OpenWQ::decl(
         // Characterize the Host model domain
         // Host model specific
         // #######################################
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SURFACE_WATER",nhru,1,1));
+        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SURFACE_WATER",NROWS,NCOLS,1));
 
         // (add other compartments as needed)...
 
@@ -86,7 +87,8 @@ void ClassWQ_OpenWQ::decl(
     
 }
 
-void ClassWQ_OpenWQ::run(
+/*
+void class_openwq::run(
     OpenWQ_couplercalls& OpenWQ_couplercalls,
     OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
     OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
@@ -143,34 +145,7 @@ void ClassWQ_OpenWQ::run(
         (*OpenWQ_hostModelconfig.waterVol_hydromodel)[0](hru,0,0) 
             = std::fmax(SWE[hru] * 1000 * hru_area[hru] 
                 , 0.0f);
-        // soil_runoff
-        (*OpenWQ_hostModelconfig.waterVol_hydromodel)[1](hru,0,0) 
-            = std::fmax(soil_runoff[hru] * 1000 * hru_area[hru] 
-                , 0.0f);
-        // soil ssr
-        (*OpenWQ_hostModelconfig.waterVol_hydromodel)[2](hru,0,0) 
-            = std::fmax(soil_ssr[hru] * 1000 * hru_area[hru] 
-                , 0.0f);
-        // Sd
-        (*OpenWQ_hostModelconfig.waterVol_hydromodel)[3](hru,0,0) 
-            = std::fmax(Sd[hru] * 1000 * hru_area[hru] 
-                , 0.0f);
-        // Soi_rechr
-        (*OpenWQ_hostModelconfig.waterVol_hydromodel)[4](hru,0,0) 
-            = std::fmax(soil_rechr[hru] * 1000 * hru_area[hru] 
-                , 0.0f);
-        // Soil_moist
-        (*OpenWQ_hostModelconfig.waterVol_hydromodel)[5](hru,0,0) 
-            = std::fmax((soil_moist[hh] - soil_rechr[hh]) * 1000 * hru_area[hru] 
-                , 0.0f);
-        // Surfsoil (not water in it)
-        (*OpenWQ_hostModelconfig.waterVol_hydromodel)[6](hru,0,0) 
-            = 1;
-        // gw
-        (*OpenWQ_hostModelconfig.waterVol_hydromodel)[7](hru,0,0) 
-            = std::fmax(gw[hru] * 1000 * hru_area[hru] 
-                , 0.0f);
-        
+       
     }
 
     // ##############################################
@@ -481,3 +456,4 @@ void ClassWQ_OpenWQ::run(
 
 }
 
+*/

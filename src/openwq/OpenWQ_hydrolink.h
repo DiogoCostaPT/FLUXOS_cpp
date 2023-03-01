@@ -17,57 +17,24 @@
 #define OPENWQ_HYDROLINK_INCLUDED
 
 
-#include "openwq/src/OpenWQ_couplercalls.h"
-#include "openwq/src/OpenWQ_global.h"
-#include "openwq/src/OpenWQ_readjson.h"
-#include "openwq/src/OpenWQ_initiate.h"
-#include "openwq/src/OpenWQ_chem.h"
-#include "openwq/src/OpenWQ_watertransp.h"
-#include "openwq/src/OpenWQ_extwatflux_ss.h"
-#include "openwq/src/OpenWQ_units.h"
-#include "openwq/src/OpenWQ_solver.h"
-#include "openwq/src/OpenWQ_output.h"
+#include "../openwq/openwq/src/OpenWQ_initiate.h"
+#include "../openwq/openwq/src/OpenWQ_chem.h"
+#include "../openwq/openwq/src/OpenWQ_watertransp.h"
+#include "../openwq/openwq/src/OpenWQ_extwatflux_ss.h"
+#include "../openwq/openwq/src/OpenWQ_output.h"
+#include "../openwq/openwq/src/OpenWQ_units.h"
+#include "../openwq/openwq/src/OpenWQ_utils.h"
+#include "../openwq/openwq/src/OpenWQ_solver.h"
+#include "../openwq/openwq/src/OpenWQ_couplercalls.h"
+#include "../openwq/openwq/src/OpenWQ_global.h"
+#include "../openwq/openwq/src/OpenWQ_readjson.h"
 
-
-class ClassWQ_OpenWQ
+class class_openwq
 {
 
     public:
 
-    // Variables from CRHM
-    const float *hru_t; // has to be converted to soil temperatures. How?
-    const float *hru_area; //
-    const float *SWE;
-    float *SWE_conc;
-    float **SWE_conc_lay;
-    const float *soil_runoff;
-    float *soil_runoff_cWQ;
-    float **soil_runoff_cWQ_lay; 
-    const float *soil_ssr;
-    float *soil_ssr_conc;
-    float **soil_ssr_conc_lay; 
-    const float *soil_lower;
-    float *soil_lower_conc;
-    float **soil_lower_conc_lay;
-    const float *soil_rechr;
-    float *conc_soil_rechr;
-    float **conc_soil_rechr_lay;
-    float *surfsoil_solub_mWQ;
-    float **surfsoil_solub_mWQ_lay; 
-    float *conc_soil_lower;   // concentration of organic nitrogen *** from soilstate
-    float **conc_soil_lower_lay;
-    const float *soil_moist;
-    float *Sd;
-    float *Sd_conc;
-    float **Sd_conc_lay;
-    float *gw;
-    float *gw_conc;
-    float **gw_conc_lay;
-    const float *soil_rechr_max;
-
-    //ClassWQ_OpenWQ* klone(string name) const;
-
-    void decl(
+    void openwq_decl(
         OpenWQ_couplercalls& OpenWQ_couplercalls,
         OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
         OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
@@ -81,8 +48,10 @@ class ClassWQ_OpenWQ
         OpenWQ_chem& OpenWQ_chem,                   // biochemistry modules
         OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
         OpenWQ_output& OpenWQ_output,                // output modules (needed for console/logfile)
-        unsigned long num_hru);
+        unsigned long NROWS,
+        unsigned long NCOLS);
 
+    
     void run(
         OpenWQ_couplercalls& OpenWQ_couplercalls,
         OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,

@@ -91,7 +91,7 @@ public:
     double hdry,                                    //minimum water depth
         dtfl,tim,                                   // timestep for flow computation
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
-    
+
     std::string output_folder, dem_file,meteo_file,inflow_file,sim_purp;
 
     // Discharge location info
@@ -102,6 +102,10 @@ public:
     double NODATA_VALUE,XLLCORNER,YLLCORNER;
 
     json master_MODSET;
+
+    // Modules
+    bool openwq;
+    std::string openwq_masterfile;
     
 };
 

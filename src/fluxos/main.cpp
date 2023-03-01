@@ -43,6 +43,26 @@ using json = nlohmann::json;
 #include "WINTRAsolver_calc.h"
 #include "write_results.h"
 
+// Openwq objects
+#include "../openwq/OpenWQ_hydrolink.h"
+
+OpenWQ_couplercalls OpenWQ_couplercalls;
+OpenWQ_hostModelconfig OpenWQ_hostModelconfig;
+OpenWQ_json OpenWQ_json;                    // create OpenWQ_json object
+OpenWQ_wqconfig OpenWQ_wqconfig;            // create OpenWQ_wqconfig object
+OpenWQ_units OpenWQ_units;                  // functions for unit conversion
+OpenWQ_utils OpenWQ_utils;
+OpenWQ_readjson OpenWQ_readjson;            // read json files
+int num_HydroComp = 1; // number of compartments to link openWQ (see details in OpenWQ_hydrolink.cpp) 
+OpenWQ_vars OpenWQ_vars(num_HydroComp);
+OpenWQ_initiate OpenWQ_initiate;            // initiate modules
+OpenWQ_watertransp OpenWQ_watertransp;      // transport modules
+OpenWQ_chem OpenWQ_chem;                    // biochemistry modules
+OpenWQ_extwatflux_ss OpenWQ_extwatflux_ss;        // sink and source modules
+OpenWQ_solver OpenWQ_solver;                // solver module
+OpenWQ_output OpenWQ_output;                // output module
+class_openwq class_openwq;
+
 int main(int argc, char* argv[]) 
 {   
     unsigned int NROWSl, NCOLSl, it = 0;
@@ -151,7 +171,7 @@ int main(int argc, char* argv[])
     ds.arbase = ds.dxy * ds.dxy;
     
     // #######################################################
-    // Read forxing: Meteo and inflow files
+    // Read forcing: Meteo and inflow files
     // #######################################################
     ntim_meteo = read_meteo(
         ds,
@@ -159,6 +179,7 @@ int main(int argc, char* argv[])
     ntim_inflow = read_inflow(
         ds,
         logFLUXOSfile); //  load
+
 
     // #######################################################
     // Provide simulation duraction to console
@@ -174,6 +195,34 @@ int main(int argc, char* argv[])
     logFLUXOSfile << "\nSWE max (cm) = " + std::to_string(ds.SWEmax);
     logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd) + "\n";
     
+    // #######################################################
+    // OpenWQ
+    // #######################################################
+    if (ds.openwq == true){
+
+        // Message that openwq has been activated
+        logFLUXOSfile << "\n > OpenWQ activated";
+
+        // Call openwq_decl
+        class_openwq.openwq_decl(
+            OpenWQ_couplercalls,     // Class with all call from coupler
+            OpenWQ_hostModelconfig,
+            OpenWQ_json,                    // create OpenWQ_json object
+            OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+            OpenWQ_units,                  // functions for unit conversion
+            OpenWQ_utils,
+            OpenWQ_readjson,            // read json files
+            OpenWQ_vars,
+            OpenWQ_initiate,            // initiate modules
+            OpenWQ_watertransp,      // transport modules
+            OpenWQ_chem,                   // biochemistry modules
+            OpenWQ_extwatflux_ss,        // sink and source modules)
+            OpenWQ_output,
+            ds.NROWS,
+            ds.NCOLS
+        );
+    }
+
     // #######################################################
     // Initiate
     // #######################################################
