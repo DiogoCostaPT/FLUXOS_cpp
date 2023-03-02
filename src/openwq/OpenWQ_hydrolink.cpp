@@ -51,7 +51,7 @@ void openwq_hydrolink::openwq_decl(
         // Characterize the Host model domain
         // Host model specific
         // #######################################
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SURFACE_WATER",NROWS,NCOLS,1));
+        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SURFACE_WATER",NCOLS,NROWS,1));
 
         // (add other compartments as needed)...
 
@@ -88,8 +88,8 @@ void openwq_hydrolink::openwq_decl(
     
 }
 
-/*
-void openwq_hydrolink::run(
+
+void openwq_hydrolink::openwq_time_start(
     OpenWQ_couplercalls& OpenWQ_couplercalls,
     OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
     OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
@@ -103,23 +103,27 @@ void openwq_hydrolink::run(
     OpenWQ_chem& OpenWQ_chem,                    // biochemistry modules
     OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
     OpenWQ_solver& OpenWQ_solver,                // solver module
-    OpenWQ_output& OpenWQ_output)                // output modules
+    OpenWQ_output& OpenWQ_output,                // output modules
+    GlobVar& GlobVar_fluxos)                                     // fluxos h
 {
 
     // Local Variables
     unsigned int Sub_mob;   // interactive species index (for mobile species)
+    unsigned long fluxos_nrow = GlobVar_fluxos.NROWS;
+    unsigned long fluxos_ncol = GlobVar_fluxos.NCOLS;
 
     // Retrieve simulation timestamp
     // convert to OpenWQ time convention: seconds since 00:00 hours, Jan 1, 1900 UTC
     // this allows the use of a number of funtions of C++
-    time_t simtime;
-    int hru = 10;
-    int nhru = 100;
-    int hh = 1;
+    time_t simtime = getSimTime(GlobVar_fluxos.sim_start_time, GlobVar_fluxos.tim);
+    //int hru = 10;
+    // int nhru = 100;
+    // int hh = 1;
 
+    /*
     // Update Dependencies to kinetic formulas (needs loop to get hydro model variables
     // that are dependencies to OpenWQ)
-    #pragma omp parallel for num_threads(OpenWQ_wqconfig.num_threads_requested)
+    //#pragma omp parallel for num_threads(OpenWQ_wqconfig.num_threads_requested)
     for (unsigned int hru=0;hru<nhru;hru++){
         (*OpenWQ_hostModelconfig.dependVar)[0](hru,0,0) = soil_rechr[hru]/soil_rechr_max[hru];  // loop needed - Save all SM data from hostmodel at time t
         (*OpenWQ_hostModelconfig.dependVar)[1](hru,0,0) = hru_t[hru];  // loop needed - Save all Taair data from hostmodel at time t      
@@ -128,9 +132,9 @@ void openwq_hydrolink::run(
         //(*OpenWQ_hostModelconfig.Tair)(hru,0,0) = hru_t[hru];  // loop needed - Save all Taair data from hostmodel at time t      
         //(*OpenWQ_hostModelconfig.Tsoil)(hru,0,0) = hru_t[hru];   // keeping the same as Tair for now
     }
+    */
 
-
-     // Get Fluxes from Hydrological model
+    // Get Fluxes from Hydrological model
     // Save them to (*OpenWQ_hostModelconfig.waterVol_hydromodel)
     // Convert units to m3
 
@@ -139,13 +143,16 @@ void openwq_hydrolink::run(
     // So conversion of mm (water) to m3 is calculated as follows:
     // water_m3 = (water_mm / 1000) * (area_km2 * 1000000) <=>
     // water_m3 = water_mm * area_km2 * 1000
-    #pragma omp parallel for num_threads(OpenWQ_wqconfig.num_threads_requested)
-    for (unsigned int hru=0;hru<nhru;hru++){
+    #pragma omp parallel for private (fluxos_nrow, fluxos_ncols) num_threads(OpenWQ_wqconfig.num_threads_requested)
+    for (int ir=0;ir<fluxos_nrow;ir++){
+        for (int ic=0;ic<fluxos_nrow;ic++){
 
-        // SWE
-        (*OpenWQ_hostModelconfig.waterVol_hydromodel)[0](hru,0,0) 
-            = std::fmax(SWE[hru] * 1000 * hru_area[hru] 
-                , 0.0f);
+            // SWE
+            (*OpenWQ_hostModelconfig.waterVol_hydromodel)[0](ic,ir,0) 
+                = std::fmax((*GlobVar_fluxos.h).at(ic,ir) * GlobVar_fluxos.arbase 
+                    , 0.0f);
+
+        }
        
     }
 
@@ -170,6 +177,7 @@ void openwq_hydrolink::run(
             OpenWQ_output,
             simtime);
 
+    /*
     
     // ##############################################
     // Calls all functions required
@@ -318,6 +326,29 @@ void openwq_hydrolink::run(
 
     }
 
+    */
+
+}
+
+// Run time end
+void openwq_hydrolink::openwq_time_end(
+    OpenWQ_couplercalls& OpenWQ_couplercalls,     // Class with all call from coupler
+    OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
+    OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
+    OpenWQ_wqconfig& OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+    OpenWQ_units& OpenWQ_units,                  // functions for unit conversion
+    OpenWQ_utils& OpenWQ_utils,
+    OpenWQ_readjson& OpenWQ_readjson,            // read json files
+    OpenWQ_vars& OpenWQ_vars,
+    OpenWQ_initiate& OpenWQ_initiate,            // initiate modules
+    OpenWQ_watertransp& OpenWQ_watertransp,      // transport modules
+    OpenWQ_chem& OpenWQ_chem,                   // biochemistry modules
+    OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
+    OpenWQ_solver& OpenWQ_solver,
+    OpenWQ_output& OpenWQ_output,
+    std::string openwq_masterfile,
+    time_t simtime)
+{
    // ##############################################
     // Calls all functions required
     // INSIDE the TIME loop
@@ -353,7 +384,7 @@ void openwq_hydrolink::run(
         // water_m3 = (water_mm / 1000) * (area_km2 * 1000000) <=>
         // water_m3 = water_mm * area_km2 * 1000
 
-
+    /*
     #pragma omp parallel for private(Sub_mob) collapse(2) num_threads(OpenWQ_wqconfig.num_threads_requested)
     for(unsigned int hru = 0; hru < nhru; ++hru) {
 
@@ -455,6 +486,14 @@ void openwq_hydrolink::run(
         }
     }
 
+    */
+
 }
 
-*/
+// Convert time str+int to time_t
+time_t openwq_hydrolink::getSimTime(
+    std::string fluxos_sim_start_time_str, 
+    double fluxos_time_secs){
+
+
+}

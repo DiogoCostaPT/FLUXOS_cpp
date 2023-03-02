@@ -92,7 +92,7 @@ public:
         dtfl,tim,                                   // timestep for flow computation
         D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
 
-    std::string output_folder, dem_file,meteo_file,inflow_file,sim_purp;
+    std::string output_folder, sim_start_time, dem_file,meteo_file,inflow_file,sim_purp;
 
     // Discharge location info
     unsigned long inflow_xcoord = NULL, inflow_ycoord = NULL, inflow_ncol, inflow_nrow;

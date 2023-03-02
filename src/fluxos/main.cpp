@@ -61,7 +61,7 @@ OpenWQ_chem OpenWQ_chem;                    // biochemistry modules
 OpenWQ_extwatflux_ss OpenWQ_extwatflux_ss;        // sink and source modules
 OpenWQ_solver OpenWQ_solver;                // solver module
 OpenWQ_output OpenWQ_output;                // output module
-class_openwq class_openwq;
+openwq_hydrolink openwq_hydrolink;
 
 int main(int argc, char* argv[]) 
 {   
@@ -194,34 +194,6 @@ int main(int argc, char* argv[])
     logFLUXOSfile << "\nSoil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = " + std::to_string(ds.soil_conc_bckgrd);
     logFLUXOSfile << "\nSWE max (cm) = " + std::to_string(ds.SWEmax);
     logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd) + "\n";
-    
-    // #######################################################
-    // OpenWQ
-    // #######################################################
-    if (ds.openwq == true){
-
-        // Message that openwq has been activated
-        logFLUXOSfile << "\n > OpenWQ activated";
-
-        // Call openwq_decl
-        class_openwq.openwq_decl(
-            OpenWQ_couplercalls,     // Class with all call from coupler
-            OpenWQ_hostModelconfig,
-            OpenWQ_json,                    // create OpenWQ_json object
-            OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
-            OpenWQ_units,                  // functions for unit conversion
-            OpenWQ_utils,
-            OpenWQ_readjson,            // read json files
-            OpenWQ_vars,
-            OpenWQ_initiate,            // initiate modules
-            OpenWQ_watertransp,      // transport modules
-            OpenWQ_chem,                   // biochemistry modules
-            OpenWQ_extwatflux_ss,        // sink and source modules)
-            OpenWQ_output,
-            ds.NROWS,
-            ds.NCOLS
-        );
-    }
 
     // #######################################################
     // Initiate
@@ -236,14 +208,51 @@ int main(int argc, char* argv[])
 
     std::cout << "-----------------------------------------------\n" << std::endl;
     logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
-        
+    
+    // #######################################################
+    // OpenWQ decl
+    // #######################################################
+    if (ds.openwq == true){
+
+        // Message that openwq has been activated
+        logFLUXOSfile << "\n > OpenWQ activated";
+
+        // Call openwq_decl
+        openwq_hydrolink.openwq_decl(
+            OpenWQ_couplercalls,     // Class with all call from coupler
+            OpenWQ_hostModelconfig,
+            OpenWQ_json,                    // create OpenWQ_json object
+            OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+            OpenWQ_units,                  // functions for unit conversion
+            OpenWQ_utils,
+            OpenWQ_readjson,            // read json files
+            OpenWQ_vars,
+            OpenWQ_initiate,            // initiate modules
+            OpenWQ_watertransp,      // transport modules
+            OpenWQ_chem,                   // biochemistry modules
+            OpenWQ_extwatflux_ss,        // sink and source modules)
+            OpenWQ_output,
+            ds.openwq_masterfile,
+            ds.NROWS,
+            ds.NCOLS
+        );
+    }
+
     // #######################################################
     // Courant Condition: determine maximum time step for numerical stabilitity
     // #######################################################
     while(ds.tim <= ds.ntim) 
-    {              
+    {   
+        // Reset vars
         ds.dtfl=9.e10;
         hpall = 0.0f;
+
+        // #######################################################
+        // OpenWQ run_time_start
+        // #######################################################
+        if (ds.openwq == true){
+
+        }
         
         for(icol=1;icol<=ds.NCOLS;icol++)
         {

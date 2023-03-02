@@ -37,6 +37,7 @@ bool read_modset(
 
         // Compulsory data
         ds.dem_file = ds.master_MODSET["DEM_FILE"];
+        ds.sim_start_time = ds.master_MODSET["SIM_DATETIME_START"];
         ds.output_folder = ds.master_MODSET["OUTPUT"]["OUTPUT_FOLDER"];
         ds.print_step = ds.master_MODSET["OUTPUT"]["PRINT_STEP"];
         ds.h_min_print = ds.master_MODSET["OUTPUT"]["H_MIN_TO_PRINT"];
@@ -62,6 +63,7 @@ bool read_modset(
                 ds.meteo_file = ds.master_MODSET["METEO_FILE"];
 
             if (exist_inflow != ds.master_MODSET.end()){
+
                 ds.inflow_file = ds.master_MODSET["INFLOW_FILE"]["FILENAME"];
 
                 ds.inflow_ycoord = ds.master_MODSET["INFLOW_FILE"]["DISCHARGE_LOCATION"]["Y_COORDINATE"];
