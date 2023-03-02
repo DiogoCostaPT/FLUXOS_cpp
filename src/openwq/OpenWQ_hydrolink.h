@@ -87,8 +87,7 @@ class openwq_hydrolink
         OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
         OpenWQ_solver& OpenWQ_solver,
         OpenWQ_output& OpenWQ_output,
-        std::string openwq_masterfile,
-        time_t simtime);
+        GlobVar& GlobVar_fluxos);
 
     time_t getSimTime(
         OpenWQ_wqconfig& OpenWQ_wqconfig,

@@ -252,6 +252,22 @@ int main(int argc, char* argv[])
         // #######################################################
         if (ds.openwq == true){
 
+            openwq_hydrolink.openwq_time_start(
+                OpenWQ_couplercalls,
+                OpenWQ_hostModelconfig,
+                OpenWQ_json,                    // create OpenWQ_json object
+                OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+                OpenWQ_units,                  // functions for unit conversion
+                OpenWQ_utils,
+                OpenWQ_readjson,            // read json files
+                OpenWQ_vars,
+                OpenWQ_initiate,            // initiate modules
+                OpenWQ_watertransp,      // transport modules
+                OpenWQ_chem,                    // biochemistry modules
+                OpenWQ_extwatflux_ss,        // sink and source modules)
+                OpenWQ_solver,                // solver module
+                OpenWQ_output,                // output modules
+                ds);
         }
         
         for(icol=1;icol<=ds.NCOLS;icol++)
@@ -330,6 +346,30 @@ int main(int argc, char* argv[])
             }
              
          }
+
+         // #######################################################
+        // OpenWQ run_time_end
+        // #######################################################
+        if (ds.openwq == true){
+
+            openwq_hydrolink.openwq_time_end(
+                OpenWQ_couplercalls,     // Class with all call from coupler
+                OpenWQ_hostModelconfig,
+                OpenWQ_json,                    // create OpenWQ_json object
+                OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+                OpenWQ_units,                  // functions for unit conversion
+                OpenWQ_utils,
+                OpenWQ_readjson,            // read json files
+                OpenWQ_vars,
+                OpenWQ_initiate,            // initiate modules
+                OpenWQ_watertransp,      // transport modules
+                OpenWQ_chem,                   // biochemistry modules
+                OpenWQ_extwatflux_ss,        // sink and source modules)
+                OpenWQ_solver,
+                OpenWQ_output,
+                ds);
+        }
+
     }
     
     // #######################################################

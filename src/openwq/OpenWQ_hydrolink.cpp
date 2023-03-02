@@ -350,9 +350,18 @@ void openwq_hydrolink::openwq_time_end(
     OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
     OpenWQ_solver& OpenWQ_solver,
     OpenWQ_output& OpenWQ_output,
-    std::string openwq_masterfile,
-    time_t simtime)
+    GlobVar& GlobVar_fluxos)
 {
+
+    // Retrieve simulation timestamp
+    // convert to OpenWQ time convention: seconds since 00:00 hours, Jan 1, 1900 UTC
+    // this allows the use of a number of funtions of C++
+    time_t simtime = getSimTime(
+        OpenWQ_wqconfig,
+        OpenWQ_units,
+        GlobVar_fluxos.sim_start_time, 
+        GlobVar_fluxos.tim);
+
    // ##############################################
     // Calls all functions required
     // INSIDE the TIME loop
