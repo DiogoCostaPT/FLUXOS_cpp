@@ -91,6 +91,8 @@ class openwq_hydrolink
         time_t simtime);
 
     time_t getSimTime(
+        OpenWQ_wqconfig& OpenWQ_wqconfig,
+        OpenWQ_units& OpenWQ_units,
         std::string fluxos_sim_start_time_str, 
         double fluxos_time_secs);
 

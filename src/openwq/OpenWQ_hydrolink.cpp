@@ -115,7 +115,11 @@ void openwq_hydrolink::openwq_time_start(
     // Retrieve simulation timestamp
     // convert to OpenWQ time convention: seconds since 00:00 hours, Jan 1, 1900 UTC
     // this allows the use of a number of funtions of C++
-    time_t simtime = getSimTime(GlobVar_fluxos.sim_start_time, GlobVar_fluxos.tim);
+    time_t simtime = getSimTime(
+        OpenWQ_wqconfig,
+        OpenWQ_units,
+        GlobVar_fluxos.sim_start_time, 
+        GlobVar_fluxos.tim);
     //int hru = 10;
     // int nhru = 100;
     // int hh = 1;
@@ -492,8 +496,22 @@ void openwq_hydrolink::openwq_time_end(
 
 // Convert time str+int to time_t
 time_t openwq_hydrolink::getSimTime(
+    OpenWQ_wqconfig& OpenWQ_wqconfig,
+    OpenWQ_units& OpenWQ_units,
     std::string fluxos_sim_start_time_str, 
     double fluxos_time_secs){
+    
+    // Local variables
+    time_t fluxos_time_as_time_t;
 
+    // Convert time string to time_t
+    fluxos_time_as_time_t = OpenWQ_units.convertTime_str2time_t(
+            OpenWQ_wqconfig,
+            fluxos_sim_start_time_str);
+
+    // Adding the current sim seconds
+    fluxos_time_as_time_t += fluxos_time_secs;
+
+    return fluxos_time_as_time_t;
 
 }
