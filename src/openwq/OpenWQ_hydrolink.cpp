@@ -18,7 +18,7 @@
 #include "OpenWQ_hydrolink.h"
 
 
-void class_openwq::openwq_decl(
+void openwq_hydrolink::openwq_decl(
     OpenWQ_couplercalls& OpenWQ_couplercalls,     // Class with all call from coupler
     OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
     OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
@@ -32,12 +32,13 @@ void class_openwq::openwq_decl(
     OpenWQ_chem& OpenWQ_chem,                   // biochemistry modules
     OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
     OpenWQ_output& OpenWQ_output,
+    std::string openwq_masterfile,
     unsigned long NROWS,
     unsigned long NCOLS)
 {
     
     // Location of master file
-    OpenWQ_wqconfig.OpenWQ_masterjson = "openWQ_master.json";
+    OpenWQ_wqconfig.OpenWQ_masterjson = openwq_masterfile;
     // Initiate output VTU file name string 
     //STASKED// std::string vtufilename;
 
@@ -88,7 +89,7 @@ void class_openwq::openwq_decl(
 }
 
 /*
-void class_openwq::run(
+void openwq_hydrolink::run(
     OpenWQ_couplercalls& OpenWQ_couplercalls,
     OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
     OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
