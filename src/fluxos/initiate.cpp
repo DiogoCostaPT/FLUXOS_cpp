@@ -138,10 +138,15 @@ unsigned int initiation(
             (*ds.qx).at(irow,icol) = filedata(a,8);
             (*ds.qy).at(irow,icol) = filedata(a,9);
             (*ds.us).at(irow,icol) = filedata(a,10);
-            (*ds.conc_SW).at(irow,icol) = filedata(a,11);
+            if(ds.ade_solver == true){
+                (*ds.conc_SW).at(irow,icol) = std::fmax(filedata(a,11), 0.0f);
+            }else{
+                (*ds.conc_SW).at(irow,icol) = -1.0f;
+            }
             (*ds.soil_mass).at(irow,icol) = filedata(a,12);
             (*ds.twetimetracer).at(irow,icol) = filedata(a,15);
             (*ds.ldry).at(irow,icol) = 0.0f;
+
         }
         msg = "RESTART option TRUE: Successful loading of initial conditions file: " + init_file;
     } else
@@ -163,7 +168,15 @@ unsigned int initiation(
                 (*ds.qx).at(irow,icol) = 0.0f;
                 (*ds.qy).at(irow,icol) = 0.0f;
                 (*ds.us).at(irow,icol) = 0.0f;
+                (*ds.soil_mass).at(irow,icol) = 0.0f;
+                (*ds.twetimetracer).at(irow,icol) = 0.0f;
                 (*ds.ldry).at(irow,icol) = 1.0f;
+
+                if(ds.ade_solver == true){
+                  (*ds.conc_SW).at(irow,icol) = 0.0f;
+                }else{
+                  (*ds.conc_SW).at(irow,icol) = -1.0f;
+                }
             }
         }
     }

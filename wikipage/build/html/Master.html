@@ -188,7 +188,7 @@
 <td><p>Simulation start datetime</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RESTART</span></code></p></td>
-<td><p>Restart option. If <code class="docutils literal notranslate"><span class="pre">true</span></code>, the model will load the last output file and restart from there.</p></td>
+<td><p>Restart option. If <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, the model will load the last output file and restart from there.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PRINT_STEP</span></code></p></td>
 <td><p>temporal resolution of the output files (this is not the model timestep as that is defined by the Courant–Friedrichs–Lewy Condition of numerical stability)</p></td>
@@ -214,11 +214,26 @@
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">INFLOW_FILE</span></code> (optional)</p></td>
 <td><p>full pa/rainfall timeseries</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">ADE_TRANSPORT</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">STATUS</span></code></p></td>
+<td><p>activate 2D advection-dispersion solver</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">ADE_TRANSPORT</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">D_COEF</span></code></p></td>
+<td><p>dispersion coefficient</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">OPENWQ</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">STATUS</span></code></p></td>
-<td><p>activate openwq</p></td>
+<td><p>activate openwq (disabled if <code class="docutils literal notranslate"><span class="pre">ADE_TRANSPORT:STATUS</span></code> is <code class="docutils literal notranslate"><span class="pre">FALSE</span></code>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">OPENWQ</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">MASTERFILE_DIR</span></code></p></td>
 <td><p>path to openwq master file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">WINTRA</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">STATUS</span></code></p></td>
+<td><p>activate wintra (disabled if <code class="docutils literal notranslate"><span class="pre">ADE_TRANSPORT:STATUS</span></code> is <code class="docutils literal notranslate"><span class="pre">FALSE</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">WINTRA</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">SWE_MAX</span></code></p></td>
+<td><p>max snow water equivalent for wintra calculations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">WINTRA</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">SWE_STD</span></code></p></td>
+<td><p>standard-deviation of snow water equivalent for wintra calculations</p></td>
 </tr>
 </tbody>
 </table>
@@ -229,14 +244,25 @@
     <span class="nt">&quot;DEM_FILE&quot;</span><span class="p">:</span> <span class="s2">&quot;Rosa_2m.asc&quot;</span><span class="p">,</span>
     <span class="nt">&quot;SIM_DATETIME_START&quot;</span><span class="p">:</span> <span class="s2">&quot;2017SEP01 12:15:00&quot;</span><span class="p">,</span>
     <span class="nt">&quot;RESTART&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+
     <span class="nt">&quot;INFLOW_FILE&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;FILENAME&quot;</span><span class="p">:</span> <span class="s2">&quot;Flow_forcing.fluxos&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;FILENAME&quot;</span><span class="p">:</span> <span class="s2">&quot;Flow_forcing.csv&quot;</span><span class="p">,</span>
         <span class="nt">&quot;DISCHARGE_LOCATION&quot;</span><span class="p">:{</span>
             <span class="nt">&quot;X_COORDINATE&quot;</span><span class="p">:</span> <span class="mi">425894</span><span class="p">,</span>
             <span class="nt">&quot;Y_COORDINATE&quot;</span><span class="p">:</span> <span class="mi">5785553</span>
         <span class="p">}</span>
     <span class="p">},</span>
+
     <span class="nt">&quot;EXTERNAL_MODULES&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;ADE_TRANSPORT&quot;</span><span class="p">:{</span>
+            <span class="nt">&quot;STATUS&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="nt">&quot;D_COEF&quot;</span><span class="p">:</span> <span class="mf">0.01</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;WINTRA&quot;</span><span class="p">:{</span>
+            <span class="nt">&quot;STATUS&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+            <span class="nt">&quot;SWE_STD&quot;</span><span class="p">:</span> <span class="mf">9.5</span><span class="p">,</span>
+            <span class="nt">&quot;SWE_MAX&quot;</span><span class="p">:</span> <span class="mf">9.5</span>
+        <span class="p">},</span>
         <span class="nt">&quot;OPENWQ&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;STATUS&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nt">&quot;MASTERFILE_DIR&quot;</span><span class="p">:</span> <span class="s2">&quot;../openwq_in/openWQ_master.json&quot;</span>
@@ -250,9 +276,8 @@
     <span class="p">},</span>
     <span class="nt">&quot;ROUGNESS_HEIGHT&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
     <span class="nt">&quot;SOIL_RELEASE_RATE&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="nt">&quot;SOIL_CONC_BACKGROUND&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="nt">&quot;SWE_STD&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="nt">&quot;SWE_MAX&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+    <span class="nt">&quot;SOIL_CONC_BACKGROUND&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+
 <span class="p">}</span>
 </pre></div>
 </div>

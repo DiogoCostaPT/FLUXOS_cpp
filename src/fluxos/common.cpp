@@ -198,7 +198,7 @@ try{
                     (*ds.ldry).at(irow,icol)=0.0f;
                 }
                 (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
-                if (hp!=0.)
+                if (ds.ade_solver == true && hp!=0.0f)
                 {          
                     (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp
                                                + (meteoi * meteo_conci)
@@ -262,7 +262,7 @@ try{
         
         (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
 
-        if (hp!=0.)
+        if (ds.ade_solver == true && hp!=0.0f)
         {          
             (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp
                                         + (inflowi * inflow_conci)

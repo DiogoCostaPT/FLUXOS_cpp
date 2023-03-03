@@ -209,8 +209,18 @@ int main(int argc, char* argv[])
     logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
     
     // #######################################################
-    // OpenWQ decl
+    // Modules 
     // #######################################################
+    // ade_solver
+    if (ds.ade_solver == true){
+        // Message that openwq has been activated
+        logFLUXOSfile << "\n > ADE_solver activated";
+    }else{
+        // otherwise disable wintra and openwq
+        ds.wintra = false;
+        ds.openwq = false;
+    }
+    
     if (ds.openwq == true){
 
         // Message that openwq has been activated
