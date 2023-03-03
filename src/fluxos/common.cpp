@@ -164,7 +164,7 @@ bool get_domain_size(unsigned int *rown,
 bool add_meteo(
     GlobVar& ds){
 
-unsigned int a,irow, icol,meteo_rowi;
+unsigned int a,irow, icol,meteo_rowi, meteo_conci;
 double meteoi,hp;
 bool errflag = false;
 
@@ -182,6 +182,7 @@ try{
     }
         
     meteoi = (*ds.meteo).at(meteo_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
+    meteo_conci = (*ds.meteo).at(meteo_rowi,2);
     
     for(icol=1;icol<=ds.NCOLS;icol++)
     {
@@ -199,7 +200,9 @@ try{
                 (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
                 if (hp!=0.)
                 {          
-                    (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+meteoi*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
+                    (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp
+                                               + (meteoi * meteo_conci)
+                                              )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
                 }
             }
         }
@@ -220,7 +223,7 @@ return errflag;
 bool add_inflow(
     GlobVar& ds){
 
-unsigned int a,irow, icol,inflow_rowi;
+unsigned int a,irow, icol,inflow_rowi, inflow_conci;
 double inflowi,hp;
 bool errflag = false;
 
@@ -240,6 +243,7 @@ try{
     icol = ds.inflow_ncol;
     
     inflowi = (*ds.inflow).at(inflow_rowi,1)*ds.dtfl/(std::pow(ds.dxy,2)); // added as m3/s
+    inflow_conci = (*ds.inflow).at(inflow_rowi,2);
 
     if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
     {
@@ -257,9 +261,12 @@ try{
             (*ds.ldry).at(irow,icol)= 0.0f;
         
         (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
+
         if (hp!=0.)
         {          
-            (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp+inflowi*0)/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
+            (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp
+                                        + (inflowi * inflow_conci)
+                                     )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
         }
     }
     else{

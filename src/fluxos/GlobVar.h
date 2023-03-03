@@ -68,8 +68,8 @@ public:
     h0= std::unique_ptr<arma::Mat<double>>( new  arma::mat(MROWS,MCOLS));
     ldry_prev= std::unique_ptr<arma::Mat<float>>( new  arma::fmat(MROWS,MCOLS));
     
-    meteo = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(2000,2));
-    inflow = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(2000,2));
+    meteo = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(2000,3));
+    inflow = std::unique_ptr<arma::Mat<float>>( new  arma::fmat(2000,3));
   }
     size_t NROWS,NCOLS;
     size_t MROWS,MCOLS,dxy,arbase,

@@ -5,20 +5,14 @@ Forcing input file
     
     Example:
     
-        t (seconds), rain/snowmelt (mm/day)
-	
-	0,0.151
-	
-	900,0.144
-	
-	1800,0.158
-	
-	2700,0.181
-	
-	3600,0.181
-	
-	4500,0.205
-	
-	5400,0.197
-	
+        t (sec), inflow/rain/snowmelt (mm/day), concentration (mg/l)
+
+        0,    0.151, 2
+
+        900,  0.144, 2
+
+        1800, 0.158, 2
+
+        2700, 0.181, 2
+
 	... 

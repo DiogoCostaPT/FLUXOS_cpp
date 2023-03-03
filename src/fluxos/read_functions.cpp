@@ -232,7 +232,7 @@ float read_meteo(
 {
     unsigned int a; 
     unsigned int icol,irow;
-    double tmeteo,vmeteo, tmeteo_bef = 0.0f;
+    double tmeteo,vmeteo, concflow, tmeteo_bef = 0.0f;
     double tim;
     std::string msg;
     
@@ -251,8 +251,11 @@ float read_meteo(
         for(a=1;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
             tmeteo = filedataQ(a,0);  // t melt seconds
             vmeteo = filedataQ(a,1);  // value of melt
+            concflow = filedataQ(a,2);
+
             (*ds.meteo).at(a,0) = tmeteo;  
             (*ds.meteo).at(a,1) = vmeteo;
+            (*ds.meteo).at(a,2) = concflow;
 
             // For WINTRA 
             ds.qmelvtotal += vmeteo /(1000.*3600.*24.) * (tmeteo - tmeteo_bef);  // input in mm/day
@@ -277,7 +280,7 @@ float read_inflow(
 {
     unsigned int a; 
     unsigned int icol,irow;
-    double tinflows,vinflow, tinflows_bef = 0.0f;
+    double tinflows,vinflow, concflow, tinflows_bef = 0.0f;
     double tim;
     std::string msg;
 
@@ -295,9 +298,11 @@ float read_inflow(
 
         for(a=1;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
             tinflows = filedataQ(a,0);  // t melt seconds
-            vinflow = filedataQ(a,1);  // value of melt
+            vinflow = filedataQ(a,1);   // value of melt
+            concflow = filedataQ(a,2);  // concentration
             (*ds.inflow).at(a-1,0) = tinflows;  
             (*ds.inflow).at(a-1,1) = vinflow;
+            (*ds.inflow).at(a-1,2) = concflow;
         
             tinflows_bef = tinflows;
         }
