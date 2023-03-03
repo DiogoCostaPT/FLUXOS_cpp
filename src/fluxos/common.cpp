@@ -187,7 +187,7 @@ try{
     meteoi = (*ds.meteo).at(meteo_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
 
     // Get chem data
-    for (int ichem=0;ichem<=nchem;ichem++){
+    for (int ichem=0;ichem<nchem;ichem++){
         meteo_conci[ichem] = (*ds.meteo).at(meteo_rowi,1+ichem);
     }
     
@@ -209,7 +209,7 @@ try{
                 // Calc mass balance for all chemcicals
                 if (ds.ade_solver == true && hp!=0.0f)
                 {   
-                    for (int ichem=0;ichem<=nchem;ichem++){       
+                    for (int ichem=0;ichem<nchem;ichem++){       
                         (*ds.conc_SW)[ichem](irow,icol)=((*ds.conc_SW)[ichem](irow,icol)*hp
                                                + (meteoi * meteo_conci[ichem])
                                               )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)   
@@ -258,7 +258,7 @@ try{
     inflowi = (*ds.inflow).at(inflow_rowi,1)*ds.dtfl/(std::pow(ds.dxy,2)); // added as m3/s
     
     // Get chem data
-    for (int ichem=0;ichem<=nchem;ichem++){
+    for (int ichem=0;ichem<nchem;ichem++){
         inflow_conci[ichem] = (*ds.inflow).at(inflow_rowi,ichem+1);
     }
 
@@ -282,7 +282,7 @@ try{
         // Calc mass balance for all chemcicals
         if (ds.ade_solver == true && hp!=0.0f)
         {         
-            for (int ichem=0;ichem<=nchem;ichem++){   
+            for (int ichem=0;ichem<nchem;ichem++){   
                 (*ds.conc_SW)[ichem](irow,icol)=((*ds.conc_SW)[ichem](irow,icol)*hp
                                             + (inflowi * inflow_conci[ichem])
                                         )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)  

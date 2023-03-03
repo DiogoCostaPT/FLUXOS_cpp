@@ -124,11 +124,12 @@ unsigned int initiation(
     }
     
     // Allocate memory for conc_SW
-    arma::Mat<double> domain_xy(ds.NROWS,ds.MCOLS);
+    arma::Mat<double> domain_xy(ds.MROWS,ds.MCOLS);
     for(int ichem=0;ichem<nchem;ichem++){
-      (*ds.conc_SW)[ichem] = domain_xy;
+      (*ds.conc_SW).push_back(domain_xy);
     }
 
+    // Load IC
     if(flstatus == true && ds.restart_opt == true) 
     {
         for(a=1;a<filedata.col(1).n_elem;a++)

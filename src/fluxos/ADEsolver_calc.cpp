@@ -48,8 +48,19 @@ void adesolver_calc(
             iy= ((a-1)/ds.NROWS)+1;
             ix=a-ds.NROWS*(iy-1);
 
-            cmaxr(ix,iy)=std::fmax((*ds.conc_SW)[ichem](ix-1,iy),std::fmax((*ds.conc_SW)[ichem](ix+1,iy),std::fmax((*ds.conc_SW)[ichem](ix,iy-1),(*ds.conc_SW)[ichem](ix,iy+1))));
-            cminr(ix,iy)=std::fmin((*ds.conc_SW)[ichem](ix-1,iy),std::fmin((*ds.conc_SW)[ichem](ix+1,iy),std::fmin((*ds.conc_SW)[ichem](ix,iy-1),(*ds.conc_SW)[ichem](ix,iy+1))));
+            cmaxr(ix,iy)=std::fmax(
+                (*ds.conc_SW)[ichem](ix-1,iy),
+                std::fmax(
+                    (*ds.conc_SW)[ichem](ix+1,iy),
+                    std::fmax((*ds.conc_SW)[ichem](ix,iy-1),
+                    (*ds.conc_SW)[ichem](ix,iy+1))));
+
+            cminr(ix,iy)=std::fmin(
+                (*ds.conc_SW)[ichem](ix-1,iy),
+                std::fmin((*ds.conc_SW)[ichem](ix+1,iy),
+                    std::fmin((*ds.conc_SW)[ichem](ix,iy-1),
+                    (*ds.conc_SW)[ichem](ix,iy+1))));
+                    
             hnew=(*ds.h)(ix,iy);
             
             if((*ds.ldry)(ix,iy)==0 && (*ds.ldry_prev)(ix,iy)==0) 

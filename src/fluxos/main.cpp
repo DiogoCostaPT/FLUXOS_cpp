@@ -304,10 +304,12 @@ int main(int argc, char* argv[])
                 // Return OpenWQ conc cubes to Fluxos Mats for transport calculation
                 // OpenWQ express as mass => needs to be converted to FLUXOS conc that is express
                 // as conc
-                for(int ichem=0;ichem<=nchem;ichem++){
-                    (*ds.conc_SW)[ichem].at(irow,icol) 
-                        = (*OpenWQ_vars.chemass)(0)(ichem)(irow,icol,0)
-                            / ((*ds.h).at(irow,icol) * ds.arbase);
+                if (ds.openwq == true){
+                    for(int ichem=0;ichem<nchem;ichem++){
+                        (*ds.conc_SW)[ichem].at(irow,icol) 
+                            = (*OpenWQ_vars.chemass)(0)(ichem)(irow,icol,0)
+                                / ((*ds.h).at(irow,icol) * ds.arbase);
+                    }
                 }
 
                 if(hp>ds.hdry) 
@@ -375,7 +377,7 @@ int main(int argc, char* argv[])
             // as conc
             for(icol=1;icol<=ds.NCOLS;icol++){
                 for(irow=1;irow<=ds.NROWS;irow++){
-                    for(int ichem=0;ichem<=nchem;ichem++){
+                    for(int ichem=0;ichem<nchem;ichem++){
 
                         (*OpenWQ_vars.chemass)(0)(ichem)(irow,icol,0)
                             = (*ds.conc_SW)[ichem].at(irow,icol) 
