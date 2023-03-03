@@ -45,14 +45,22 @@ bool read_modset(
         *ks_input = ds.master_MODSET["ROUGNESS_HEIGHT"];
         ds.soil_release_rate = ds.master_MODSET["SOIL_RELEASE_RATE"];
         ds.soil_conc_bckgrd = ds.master_MODSET["SOIL_CONC_BACKGROUND"];
-        ds.SWEstd = ds.master_MODSET["SWE_STD"];
-        ds.SWEmax = ds.master_MODSET["SWE_MAX"];
+        
 
         // Modules
+        // openwq
         ds.openwq = ds.master_MODSET["EXTERNAL_MODULES"]["OPENWQ"]["STATUS"];
         if (ds.openwq == true){
             ds.openwq_masterfile = ds.master_MODSET["EXTERNAL_MODULES"]["OPENWQ"]["MASTERFILE_DIR"];
         }
+        // wintra
+        ds.wintra = ds.master_MODSET["EXTERNAL_MODULES"]["WINTRA"]["STATUS"];
+        if (ds.openwq == true){
+            ds.SWEstd = ds.master_MODSET["EXTERNAL_MODULES"]["WINTRA"]["SWE_STD"];
+            ds.SWEmax = ds.master_MODSET["EXTERNAL_MODULES"]["WINTRA"]["SWE_MAX"];
+        }
+
+        // Forcing
         // Only requires one of these forcing files to be provided
         auto exist_meteo = ds.master_MODSET.find("METEO_FILE");
         auto exist_inflow = ds.master_MODSET.find("INFLOW_FILE");

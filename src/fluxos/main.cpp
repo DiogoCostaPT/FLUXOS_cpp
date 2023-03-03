@@ -313,9 +313,16 @@ int main(int argc, char* argv[])
         if (hpall!=0) 
         {
             it++;
+
+            // dynamic wave solver
             hydrodynamics_calc(ds);
+
+            // ADE solver (that is used also by openwq)
             adesolver_calc(ds, it);
-            wintrasolver_calc(ds);
+
+            // Wintra module
+            if(ds.wintra==true){wintrasolver_calc(ds);}
+
         }
         
         // #######################################################

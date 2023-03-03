@@ -90,7 +90,7 @@ public:
     std::unique_ptr<arma::Mat<float>> ldry,innerNeumannBCWeir,meteo,inflow,ldry_prev;   
     double hdry,                                    //minimum water depth
         dtfl,tim,                                   // timestep for flow computation
-        D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc, SWEmax, SWEstd;
+        D_coef,soil_release_rate,soil_conc_bckgrd,qmelvtotal, qmelv_inc;
 
     std::string output_folder, sim_start_time, dem_file,meteo_file,inflow_file,sim_purp;
 
@@ -104,8 +104,13 @@ public:
     json master_MODSET;
 
     // Modules
-    bool openwq, restart_opt;
-    std::string openwq_masterfile;
+    bool openwq, wintra;
+    std::string openwq_masterfile; // openwq
+    double SWEmax, SWEstd;         // wintra
+
+    // Restart option
+    bool restart_opt;
+    
     
 };
 
