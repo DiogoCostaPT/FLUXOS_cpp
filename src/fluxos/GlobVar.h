@@ -104,7 +104,7 @@ public:
     json master_MODSET;
 
     // Modules
-    bool openwq;
+    bool openwq, restart_opt;
     std::string openwq_masterfile;
     
 };

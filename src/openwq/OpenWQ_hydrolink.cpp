@@ -109,8 +109,8 @@ void openwq_hydrolink::openwq_time_start(
 
     // Local Variables
     unsigned int Sub_mob;   // interactive species index (for mobile species)
-    unsigned long fluxos_nrow = GlobVar_fluxos.NROWS;
-    unsigned long fluxos_ncol = GlobVar_fluxos.NCOLS;
+    unsigned long fluxos_nrows = GlobVar_fluxos.NROWS;
+    unsigned long fluxos_ncols = GlobVar_fluxos.NCOLS;
 
     // Retrieve simulation timestamp
     // convert to OpenWQ time convention: seconds since 00:00 hours, Jan 1, 1900 UTC
@@ -147,11 +147,11 @@ void openwq_hydrolink::openwq_time_start(
     // So conversion of mm (water) to m3 is calculated as follows:
     // water_m3 = (water_mm / 1000) * (area_km2 * 1000000) <=>
     // water_m3 = water_mm * area_km2 * 1000
-    #pragma omp parallel for private (fluxos_nrow, fluxos_ncols) num_threads(OpenWQ_wqconfig.num_threads_requested)
-    for (int ir=0;ir<fluxos_nrow;ir++){
-        for (int ic=0;ic<fluxos_nrow;ic++){
+    #pragma omp parallel for private (fluxos_nrows, fluxos_ncols) num_threads(OpenWQ_wqconfig.num_threads_requested)
+    for (int ir=0;ir<fluxos_nrows;ir++){
+        for (int ic=0;ic<fluxos_ncols;ic++){
 
-            // SWE
+            // Surface water
             (*OpenWQ_hostModelconfig.waterVol_hydromodel)[0](ic,ir,0) 
                 = std::fmax((*GlobVar_fluxos.h).at(ic,ir) * GlobVar_fluxos.arbase 
                     , 0.0f);

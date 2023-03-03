@@ -105,17 +105,26 @@ unsigned int initiation(
         }
     }
     
-    ds.output_folder = ds.output_folder + "/";
-    timstart = findLastStep(ds.output_folder.c_str()); // list the results files to get the last time step
     
     arma::mat filedata; 
-    std::string init_file, msg;
+    std::string msg;
+    bool flstatus;
+    std::string init_file;
     
-    init_file = ds.output_folder + "/" + std::to_string(timstart) + ".txt";
+    // Restart option
+    if(ds.restart_opt == true){
+      ds.output_folder = ds.output_folder + "/";
+      timstart = findLastStep(ds.output_folder.c_str()); // list the results files to get the last time step
+      init_file = ds.output_folder + "/" + std::to_string(timstart) + ".txt";
+      flstatus = filedata.load(init_file,arma::csv_ascii);
+    }else{
+      timstart = 0;
+      flstatus = false;
+    }
     
-    bool flstatus = filedata.load(init_file,arma::csv_ascii);
+    
 
-    if(flstatus == true) 
+    if(flstatus == true && ds.restart_opt == true) 
     {
         for(a=1;a<filedata.col(1).n_elem;a++)
         {
@@ -134,10 +143,14 @@ unsigned int initiation(
             (*ds.twetimetracer).at(irow,icol) = filedata(a,15);
             (*ds.ldry).at(irow,icol) = 0.0f;
         }
-        msg = "Successful loading of initial conditions file: " + init_file;
+        msg = "RESTART option TRUE: Successful loading of initial conditions file: " + init_file;
     } else
     {
-        msg = "NO INITIAL CONDITIONS FOUND: All variables set to zero";  
+        if(ds.restart_opt==true){
+          msg = "RESTART option TRUE, but NO INITIAL CONDITIONS FOUND: All variables set to zero";
+        }else{
+          msg = "RESTART option FALSE: All variables set to zero";
+        }
 
          for(icol=1;icol<=ds.NCOLS;icol++)
         {
