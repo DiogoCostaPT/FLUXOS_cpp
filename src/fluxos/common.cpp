@@ -188,7 +188,7 @@ try{
 
     // Get chem data
     for (int ichem=0;ichem<nchem;ichem++){
-        meteo_conci[ichem] = (*ds.meteo).at(meteo_rowi,1+ichem);
+        meteo_conci[ichem] = (*ds.meteo).at(meteo_rowi,ichem+2);
     }
     
     for(icol=1;icol<=ds.NCOLS;icol++)
@@ -259,7 +259,7 @@ try{
     
     // Get chem data
     for (int ichem=0;ichem<nchem;ichem++){
-        inflow_conci[ichem] = (*ds.inflow).at(inflow_rowi,ichem+1);
+        inflow_conci[ichem] = (*ds.inflow).at(inflow_rowi,ichem+2);
     }
 
     if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
