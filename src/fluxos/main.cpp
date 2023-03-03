@@ -157,7 +157,6 @@ int main(int argc, char* argv[])
     // #######################################################
     ds.NROWS = ds.MROWS - 2;
     ds.NCOLS = ds.MCOLS - 2;
-    ds.D_coef = 0.01;
     
     // #######################################################
     // Read DEM
@@ -318,7 +317,7 @@ int main(int argc, char* argv[])
             hydrodynamics_calc(ds);
 
             // ADE solver (that is used also by openwq)
-            adesolver_calc(ds, it);
+            if(ds.ade_solver==true){adesolver_calc(ds, it);}
 
             // Wintra module
             if(ds.wintra==true){wintrasolver_calc(ds);}

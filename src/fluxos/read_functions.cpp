@@ -46,8 +46,16 @@ bool read_modset(
         ds.soil_release_rate = ds.master_MODSET["SOIL_RELEASE_RATE"];
         ds.soil_conc_bckgrd = ds.master_MODSET["SOIL_CONC_BACKGROUND"];
         
-
+        ///////////////
         // Modules
+        ///////////////
+        
+        // ADE transport
+        ds.ade_solver = ds.master_MODSET["EXTERNAL_MODULES"]["ADE_TRANSPORT"]["STATUS"];
+        if (ds.ade_solver == true){
+            ds.D_coef = ds.master_MODSET["EXTERNAL_MODULES"]["ADE_TRANSPORT"]["D_COEF"];
+        }
+
         // openwq
         ds.openwq = ds.master_MODSET["EXTERNAL_MODULES"]["OPENWQ"]["STATUS"];
         if (ds.openwq == true){

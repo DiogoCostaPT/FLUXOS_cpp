@@ -104,7 +104,7 @@ public:
     json master_MODSET;
 
     // Modules
-    bool openwq, wintra;
+    bool ade_solver, openwq, wintra;
     std::string openwq_masterfile; // openwq
     double SWEmax, SWEstd;         // wintra
 
