@@ -101,10 +101,10 @@ void openwq_hydrolink::openwq_time_start(
     OpenWQ_initiate& OpenWQ_initiate,            // initiate modules
     OpenWQ_watertransp& OpenWQ_watertransp,      // transport modules
     OpenWQ_chem& OpenWQ_chem,                    // biochemistry modules
-    OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
+    OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,  // sink and source modules)
     OpenWQ_solver& OpenWQ_solver,                // solver module
     OpenWQ_output& OpenWQ_output,                // output modules
-    GlobVar& GlobVar_fluxos)                                     // fluxos h
+    GlobVar& GlobVar_fluxos)                    
 {
 
     // Local Variables
