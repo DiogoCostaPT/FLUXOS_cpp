@@ -46,10 +46,12 @@ bool get_domain_size(unsigned int *rown,
     std::ofstream& logFLUXOSfile);
 
 bool add_meteo(
-    GlobVar& ds);
+    GlobVar& ds,
+    int nchem);
     
 bool add_inflow(
-    GlobVar& ds);
+    GlobVar& ds,
+    int nchem);
 
 void check_mkdir(
     std::string &dirname);

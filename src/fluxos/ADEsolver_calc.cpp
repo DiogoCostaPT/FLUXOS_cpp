@@ -26,7 +26,8 @@
 // ADE solver
 void adesolver_calc(
     GlobVar& ds, 
-    int it)
+    int it,
+    int ichem)
 {
 
     arma::mat qfcds(ds.MROWS*ds.MCOLS,1);  //double qfcds(0:mx);
@@ -47,16 +48,16 @@ void adesolver_calc(
             iy= ((a-1)/ds.NROWS)+1;
             ix=a-ds.NROWS*(iy-1);
 
-            cmaxr(ix,iy)=std::fmax((*ds.conc_SW)(ix-1,iy),std::fmax((*ds.conc_SW)(ix+1,iy),std::fmax((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
-            cminr(ix,iy)=std::fmin((*ds.conc_SW)(ix-1,iy),std::fmin((*ds.conc_SW)(ix+1,iy),std::fmin((*ds.conc_SW)(ix,iy-1),(*ds.conc_SW)(ix,iy+1))));
+            cmaxr(ix,iy)=std::fmax((*ds.conc_SW)[ichem](ix-1,iy),std::fmax((*ds.conc_SW)[ichem](ix+1,iy),std::fmax((*ds.conc_SW)[ichem](ix,iy-1),(*ds.conc_SW)[ichem](ix,iy+1))));
+            cminr(ix,iy)=std::fmin((*ds.conc_SW)[ichem](ix-1,iy),std::fmin((*ds.conc_SW)[ichem](ix+1,iy),std::fmin((*ds.conc_SW)[ichem](ix,iy-1),(*ds.conc_SW)[ichem](ix,iy+1))));
             hnew=(*ds.h)(ix,iy);
             
             if((*ds.ldry)(ix,iy)==0 && (*ds.ldry_prev)(ix,iy)==0) 
             {
-                (*ds.conc_SW)(ix,iy)=(*ds.conc_SW)(ix,iy)*(*ds.h0)(ix,iy)/hnew;
+                (*ds.conc_SW)[ichem](ix,iy)=(*ds.conc_SW)[ichem](ix,iy)*(*ds.h0)(ix,iy)/hnew;
             } else if ((*ds.ldry)(ix,iy)==1) 
             {
-                (*ds.conc_SW)(ix,iy) = 0.0f;
+                (*ds.conc_SW)[ichem](ix,iy) = 0.0f;
             }
         }
     }else
@@ -92,11 +93,11 @@ void adesolver_calc(
                      
         //  BC 
         if (ix==1) {
-            pfce=(*ds.conc_SW)(0,iy)*(*ds.fe_1)(0,iy)*dy;     // convective flux
+            pfce=(*ds.conc_SW)[ichem](0,iy)*(*ds.fe_1)(0,iy)*dy;     // convective flux
             hp=std::fmax((*ds.h)(1,iy),ds.hdry);                  
             he=std::fmax((*ds.h)(2,iy),ds.hdry);
-            fp=(*ds.conc_SW)(0,iy);
-            fe=(*ds.conc_SW)(1,iy);
+            fp=(*ds.conc_SW)[ichem](0,iy);
+            fe=(*ds.conc_SW)[ichem](1,iy);
            
             hne=std::sqrt(hp*nt*he*nt)/sigc/std::fabs(dx)*dy*ds.D_coef;
             pfde=0.;            // no diffusive flux over boundary
@@ -107,7 +108,7 @@ void adesolver_calc(
         if((*ds.ldry)(ix,iy)==1){
             pfe=0.;
             qfcds(ix)=0.;
-            (*ds.conc_SW)(ix,iy)=0.;            
+            (*ds.conc_SW)[ichem](ix,iy)=0.;            
             continue; 
         };
 
@@ -121,13 +122,13 @@ void adesolver_calc(
         hn=(*ds.h)(ix,in);
         qxl=(*ds.fe_1)(ix,iy);
         qyl=(*ds.fn_1)(ix,iy);
-        fw=(*ds.conc_SW)(iw,iy);
-        fp=(*ds.conc_SW)(ix,iy);
-        fe=(*ds.conc_SW)(ie,iy);
-        fee=(*ds.conc_SW)(iee,iy);
-        fs=(*ds.conc_SW)(ix,is);
-        fn=(*ds.conc_SW)(ix,in);
-        fnn=(*ds.conc_SW)(ix,inn);
+        fw=(*ds.conc_SW)[ichem](iw,iy);
+        fp=(*ds.conc_SW)[ichem](ix,iy);
+        fe=(*ds.conc_SW)[ichem](ie,iy);
+        fee=(*ds.conc_SW)[ichem](iee,iy);
+        fs=(*ds.conc_SW)[ichem](ix,is);
+        fn=(*ds.conc_SW)[ichem](ix,in);
+        fnn=(*ds.conc_SW)[ichem](ix,inn);
             
         // FLUXES OVER WEST AND SOUTH FACES (from previous interaction)
         pfw=pfe; 
@@ -162,7 +163,7 @@ void adesolver_calc(
         fem=std::fmax(0.,fem);
 
         if(ix==ds.NROWS){  // if Boundary (overwrite the BC)
-            fem=(*ds.conc_SW)(ds.NROWS+1,iy);
+            fem=(*ds.conc_SW)[ichem](ds.NROWS+1,iy);
         }
 
         //// advective flux - X-direction  - [m3/s]   
@@ -186,7 +187,7 @@ void adesolver_calc(
         if((*ds.ldry)(ix,in)==0)           {
             hnue=std::fmax(.0001,hp*ntp*hn*nt);
             hnn=std::sqrt(hnue)/sigc/dy*dx*ds.D_coef;              // [m3/s]
-            qfdn=-hnn*(fn-fp);                    // diffusive flux
+            qfdn=-hnn*(fn-fp);                                  // diffusive flux
             if(qyl>0.0f)       {
                     if((*ds.ldry)(ix,is)==0) {
                          fnm=-.125*fs+.75*fp+.375*fn; 
@@ -209,7 +210,7 @@ void adesolver_calc(
 
         //// if Boundary (overwrite BC)
         if(iy==ds.NCOLS)    {
-            fnm=(*ds.conc_SW)(ix,ds.NCOLS+1);
+            fnm=(*ds.conc_SW)[ichem](ix,ds.NCOLS+1);
         }
 
         //// advective flux - X-direction  
@@ -267,11 +268,11 @@ void adesolver_calc(
 
         // CALCULATE NEW CONCENTRATION
         dc=(pfw-pfe + qfs-qfn)*ds.dtfl/area;  // [m]  
-        con= (*ds.conc_SW)(ix,iy) +  dc/hp;
+        con= (*ds.conc_SW)[ichem](ix,iy) +  dc/hp;
 
         con=std::fmin(cmaxr(ix,iy),con);
         con=std::fmax(cminr(ix,iy),con);
-        (*ds.conc_SW)(ix,iy) = con;
+        (*ds.conc_SW)[ichem](ix,iy) = con;
 
         qfcds(ix)=qfn;  // convective+diffusive flux
   

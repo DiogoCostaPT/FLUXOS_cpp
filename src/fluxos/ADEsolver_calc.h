@@ -24,6 +24,7 @@
 
 void adesolver_calc(
     GlobVar& ds, 
-    int it);
+    int it,
+    int ichem);
 
 #endif // !SOLVER_DRYDOMAINH_INCLUDED

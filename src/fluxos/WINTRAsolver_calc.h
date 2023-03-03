@@ -23,6 +23,7 @@
 #include "GlobVar.h"
 
 void wintrasolver_calc(
-    GlobVar& ds);
+    GlobVar& ds,
+    int ichem);
 
 #endif // !WINTRASOLVER_CALCH_INCLUDED

@@ -162,10 +162,12 @@ bool get_domain_size(unsigned int *rown,
 
 // Add meteo at instant t
 bool add_meteo(
-    GlobVar& ds){
+    GlobVar& ds,
+    int nchem){
 
-unsigned int a,irow, icol,meteo_rowi, meteo_conci;
+unsigned int a,irow, icol,meteo_rowi;
 double meteoi,hp;
+double meteo_conci[nchem];
 bool errflag = false;
 
 // Return if no METEO_FILE provided
@@ -180,9 +182,14 @@ try{
             break;
         }
     }
-        
+    
+    // Convert to m/s
     meteoi = (*ds.meteo).at(meteo_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
-    meteo_conci = (*ds.meteo).at(meteo_rowi,2);
+
+    // Get chem data
+    for (int ichem=0;ichem<=nchem;ichem++){
+        meteo_conci[ichem] = (*ds.meteo).at(meteo_rowi,1+ichem);
+    }
     
     for(icol=1;icol<=ds.NCOLS;icol++)
     {
@@ -198,11 +205,15 @@ try{
                     (*ds.ldry).at(irow,icol)=0.0f;
                 }
                 (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
+
+                // Calc mass balance for all chemcicals
                 if (ds.ade_solver == true && hp!=0.0f)
-                {          
-                    (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp
-                                               + (meteoi * meteo_conci)
-                                              )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
+                {   
+                    for (int ichem=0;ichem<=nchem;ichem++){       
+                        (*ds.conc_SW)[ichem](irow,icol)=((*ds.conc_SW)[ichem](irow,icol)*hp
+                                               + (meteoi * meteo_conci[ichem])
+                                              )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)   
+                    }    
                 }
             }
         }
@@ -221,9 +232,11 @@ return errflag;
 
 // Add inflow at instant t
 bool add_inflow(
-    GlobVar& ds){
+    GlobVar& ds,
+    int nchem){
 
-unsigned int a,irow, icol,inflow_rowi, inflow_conci;
+unsigned int a,irow, icol,inflow_rowi;
+double inflow_conci[nchem];
 double inflowi,hp;
 bool errflag = false;
 
@@ -243,7 +256,11 @@ try{
     icol = ds.inflow_ncol;
     
     inflowi = (*ds.inflow).at(inflow_rowi,1)*ds.dtfl/(std::pow(ds.dxy,2)); // added as m3/s
-    inflow_conci = (*ds.inflow).at(inflow_rowi,2);
+    
+    // Get chem data
+    for (int ichem=0;ichem<=nchem;ichem++){
+        inflow_conci[ichem] = (*ds.inflow).at(inflow_rowi,ichem+1);
+    }
 
     if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
     {
@@ -262,11 +279,14 @@ try{
         
         (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
 
+        // Calc mass balance for all chemcicals
         if (ds.ade_solver == true && hp!=0.0f)
-        {          
-            (*ds.conc_SW)(irow,icol)=((*ds.conc_SW)(irow,icol)*hp
-                                        + (inflowi * inflow_conci)
-                                     )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)       
+        {         
+            for (int ichem=0;ichem<=nchem;ichem++){   
+                (*ds.conc_SW)[ichem](irow,icol)=((*ds.conc_SW)[ichem](irow,icol)*hp
+                                            + (inflowi * inflow_conci[ichem])
+                                        )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)  
+            }     
         }
     }
     else{

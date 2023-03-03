@@ -70,6 +70,8 @@ int main(int argc, char* argv[])
     int ntim_meteo, ntim_inflow;
     double c0,hp,v0,u0, hpall, ks_input; 
     bool outwritestatus;
+    int nchem;
+    std::vector<unsigned int> chem_mobile;
 
     bool errflag = false;
 
@@ -195,20 +197,6 @@ int main(int argc, char* argv[])
     logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd) + "\n";
 
     // #######################################################
-    // Initiate
-    // #######################################################
-    timstart = initiation(
-        ds,
-        logFLUXOSfile);
-    ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
-    print_next = timstart;  
-    print_next = print_next + ds.print_step;
-    ds.SWEstd = ds.SWEstd/100;
-
-    std::cout << "-----------------------------------------------\n" << std::endl;
-    logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
-    
-    // #######################################################
     // Modules 
     // #######################################################
     // ade_solver
@@ -245,8 +233,34 @@ int main(int argc, char* argv[])
             ds.NROWS,
             ds.NCOLS
         );
+
+        nchem = OpenWQ_wqconfig.BGC_general_num_chem;
+        chem_mobile = OpenWQ_wqconfig.BGC_general_mobile_species;
+
+    }else{
+        nchem = 1;
+        std::vector<unsigned int> vecTemp(1);
+        chem_mobile = vecTemp;
+        chem_mobile[0] = 0;
     }
 
+
+    // #######################################################
+    // Initiate
+    // #######################################################
+    timstart = initiation(
+        ds,
+        nchem,
+        logFLUXOSfile);
+    ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
+    print_next = timstart;  
+    print_next = print_next + ds.print_step;
+    ds.SWEstd = ds.SWEstd/100;
+
+    std::cout << "-----------------------------------------------\n" << std::endl;
+    logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
+    
+    
     // #######################################################
     // Courant Condition: determine maximum time step for numerical stabilitity
     // #######################################################
@@ -287,6 +301,15 @@ int main(int argc, char* argv[])
                 (*ds.h0)(irow,icol) = hp; // adesolver
                 (*ds.ldry_prev).at(irow,icol) = (*ds.ldry).at(irow,icol); // adesolver
 
+                // Return OpenWQ conc cubes to Fluxos Mats for transport calculation
+                // OpenWQ express as mass => needs to be converted to FLUXOS conc that is express
+                // as conc
+                for(int ichem=0;ichem<=nchem;ichem++){
+                    (*ds.conc_SW)[ichem].at(irow,icol) 
+                        = (*OpenWQ_vars.chemass)(0)(ichem)(irow,icol,0)
+                            / ((*ds.h).at(irow,icol) * ds.arbase);
+                }
+
                 if(hp>ds.hdry) 
                 {
                     (*ds.ldry).at(irow,icol)=0.0f;
@@ -309,10 +332,10 @@ int main(int argc, char* argv[])
         // #######################################################
         // Add forcing: meteo and inflow
         // #######################################################
-        errflag = add_meteo(ds);
+        errflag = add_meteo(ds, nchem);
         if (errflag)
             exit(EXIT_FAILURE);
-        errflag = add_inflow(ds);
+        errflag = add_inflow(ds, nchem);
         if (errflag)
             exit(EXIT_FAILURE);
 
@@ -323,15 +346,61 @@ int main(int argc, char* argv[])
         {
             it++;
 
-            // dynamic wave solver
+            // Dynamic wave solver
             hydrodynamics_calc(ds);
 
             // ADE solver (that is used also by openwq)
-            if(ds.ade_solver==true){adesolver_calc(ds, it);}
+            if(ds.ade_solver==true){
+                for(int ichem=0;ichem<=chem_mobile.size();ichem++){
+                    adesolver_calc(ds, it, chem_mobile[ichem]);
+                };  
+            }
 
             // Wintra module
-            if(ds.wintra==true){wintrasolver_calc(ds);}
+            if(ds.wintra==true){
+                for(int ichem=0;ichem<=chem_mobile.size();ichem++){
+                    wintrasolver_calc(ds, chem_mobile[ichem]);
+                };
+            }
 
+        }
+
+        // #######################################################
+        // OpenWQ run_time_end
+        // #######################################################
+        if (ds.openwq == true){
+
+            // Return Fluxos Mats for transport calculation to OpenWQ conc cubes
+            // OpenWQ express as mass => needs to be converted to FLUXOS conc that is express
+            // as conc
+            for(icol=1;icol<=ds.NCOLS;icol++){
+                for(irow=1;irow<=ds.NROWS;irow++){
+                    for(int ichem=0;ichem<=nchem;ichem++){
+
+                        (*OpenWQ_vars.chemass)(0)(ichem)(irow,icol,0)
+                            = (*ds.conc_SW)[ichem].at(irow,icol) 
+                                * ((*ds.h).at(irow,icol) * ds.arbase);
+
+                    }
+                }
+            }
+
+            openwq_hydrolink.openwq_time_end(
+                OpenWQ_couplercalls,     // Class with all call from coupler
+                OpenWQ_hostModelconfig,
+                OpenWQ_json,                    // create OpenWQ_json object
+                OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+                OpenWQ_units,                  // functions for unit conversion
+                OpenWQ_utils,
+                OpenWQ_readjson,            // read json files
+                OpenWQ_vars,
+                OpenWQ_initiate,            // initiate modules
+                OpenWQ_watertransp,      // transport modules
+                OpenWQ_chem,                   // biochemistry modules
+                OpenWQ_extwatflux_ss,        // sink and source modules)
+                OpenWQ_solver,
+                OpenWQ_output,
+                ds);
         }
         
         // #######################################################
@@ -362,29 +431,6 @@ int main(int argc, char* argv[])
             }
              
          }
-
-         // #######################################################
-        // OpenWQ run_time_end
-        // #######################################################
-        if (ds.openwq == true){
-
-            openwq_hydrolink.openwq_time_end(
-                OpenWQ_couplercalls,     // Class with all call from coupler
-                OpenWQ_hostModelconfig,
-                OpenWQ_json,                    // create OpenWQ_json object
-                OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
-                OpenWQ_units,                  // functions for unit conversion
-                OpenWQ_utils,
-                OpenWQ_readjson,            // read json files
-                OpenWQ_vars,
-                OpenWQ_initiate,            // initiate modules
-                OpenWQ_watertransp,      // transport modules
-                OpenWQ_chem,                   // biochemistry modules
-                OpenWQ_extwatflux_ss,        // sink and source modules)
-                OpenWQ_solver,
-                OpenWQ_output,
-                ds);
-        }
 
     }
     

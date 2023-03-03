@@ -26,6 +26,7 @@
 
 unsigned int initiation(
     GlobVar& ds,
+    int nchem,
     std::ofstream& logFLUXOSfile) {
     
     std::unique_ptr<double[]> zbs1(new double[ds.MROWS]);   
@@ -122,7 +123,11 @@ unsigned int initiation(
       flstatus = false;
     }
     
-    
+    // Allocate memory for conc_SW
+    arma::Mat<double> domain_xy(ds.NROWS,ds.MCOLS);
+    for(int ichem=0;ichem<nchem;ichem++){
+      (*ds.conc_SW)[ichem] = domain_xy;
+    }
 
     if(flstatus == true && ds.restart_opt == true) 
     {
@@ -138,10 +143,10 @@ unsigned int initiation(
             (*ds.qx).at(irow,icol) = filedata(a,8);
             (*ds.qy).at(irow,icol) = filedata(a,9);
             (*ds.us).at(irow,icol) = filedata(a,10);
-            if(ds.ade_solver == true){
-                (*ds.conc_SW).at(irow,icol) = std::fmax(filedata(a,11), 0.0f);
+            if(ds.ade_solver == true && ds.openwq == false){
+                (*ds.conc_SW)[0].at(irow,icol) = std::fmax(filedata(a,11), 0.0f);
             }else{
-                (*ds.conc_SW).at(irow,icol) = -1.0f;
+                (*ds.conc_SW)[0].at(irow,icol) = -1.0f;
             }
             (*ds.soil_mass).at(irow,icol) = filedata(a,12);
             (*ds.twetimetracer).at(irow,icol) = filedata(a,15);
@@ -173,9 +178,9 @@ unsigned int initiation(
                 (*ds.ldry).at(irow,icol) = 1.0f;
 
                 if(ds.ade_solver == true){
-                  (*ds.conc_SW).at(irow,icol) = 0.0f;
+                  (*ds.conc_SW)[0].at(irow,icol) = 0.0f;
                 }else{
-                  (*ds.conc_SW).at(irow,icol) = -1.0f;
+                  (*ds.conc_SW)[0].at(irow,icol) = -1.0f;
                 }
             }
         }
