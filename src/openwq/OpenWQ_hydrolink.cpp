@@ -51,7 +51,7 @@ void openwq_hydrolink::openwq_decl(
         // Characterize the Host model domain
         // Host model specific
         // #######################################
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SURFACE_WATER",MCOLS,MROWS,1));
+        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SURFACE_WATER",MROWS,MCOLS,1));
 
         // (add other compartments as needed)...
 
@@ -152,7 +152,7 @@ void openwq_hydrolink::openwq_time_start(
         for (int ic=0;ic<fluxos_ncols;ic++){
 
             // Surface water
-            (*OpenWQ_hostModelconfig.waterVol_hydromodel)[0](ic,ir,0) 
+            (*OpenWQ_hostModelconfig.waterVol_hydromodel)[0](ir,ic,0) 
                 = std::fmax((*GlobVar_fluxos.h).at(ic,ir) * GlobVar_fluxos.arbase 
                     , 0.0f);
 
