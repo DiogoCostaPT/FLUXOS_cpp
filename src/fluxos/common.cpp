@@ -163,69 +163,112 @@ bool get_domain_size(unsigned int *rown,
 // Add meteo at instant t
 bool add_meteo(
     GlobVar& ds,
+    openwq_hydrolink& openwq_hydrolink,
+    OpenWQ_couplercalls& OpenWQ_couplercalls,
+    OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
+    OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
+    OpenWQ_wqconfig& OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+    OpenWQ_units& OpenWQ_units,                  // functions for unit conversion
+    OpenWQ_utils& OpenWQ_utils,
+    OpenWQ_readjson& OpenWQ_readjson,            // read json files
+    OpenWQ_vars& OpenWQ_vars,
+    OpenWQ_initiate& OpenWQ_initiate,            // initiate modules
+    OpenWQ_watertransp& OpenWQ_watertransp,      // transport modules
+    OpenWQ_chem& OpenWQ_chem,                    // biochemistry modules
+    OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
+    OpenWQ_solver& OpenWQ_solver,                // solver module
+    OpenWQ_output& OpenWQ_output,
     int nchem){
 
-unsigned int a,irow, icol,meteo_rowi;
-double meteoi,hp;
-double meteo_conci[nchem];
-bool errflag = false;
+    unsigned int a,irow, icol,meteo_rowi;
+    double meteoi,hp;
+    double meteo_conci[nchem];
+    bool errflag = false;
+    std::string openwq_source_EWF_name = "METEO";
 
-// Return if no METEO_FILE provided
-if (ds.meteo_file.empty())
-    return errflag;
+    // Return if no METEO_FILE provided
+    if (ds.meteo_file.empty())
+        return errflag;
 
 
-try{
-    for (a=0;a<=(*ds.meteo).col(0).n_elem;a++){
-        meteo_rowi = a;
-        if ((*ds.meteo).at(a,0) > ds.tim){       
-            break;
+    try{
+        for (a=0;a<=(*ds.meteo).col(0).n_elem;a++){
+            meteo_rowi = a;
+            if ((*ds.meteo).at(a,0) > ds.tim){       
+                break;
+            }
         }
-    }
-    
-    // Convert to m/s
-    meteoi = (*ds.meteo).at(meteo_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
+        
+        // Convert to m/s
+        meteoi = (*ds.meteo).at(meteo_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
 
-    // Get chem data
-    for (int ichem=0;ichem<nchem;ichem++){
-        meteo_conci[ichem] = (*ds.meteo).at(meteo_rowi,ichem+2);
-    }
-    
-    for(icol=1;icol<=ds.NCOLS;icol++)
-    {
-        for(irow=1;irow<=ds.NROWS;irow++)
+        // Get chem data
+        for (int ichem=0;ichem<nchem;ichem++){
+            meteo_conci[ichem] = (*ds.meteo).at(meteo_rowi,ichem+2);
+        }
+        
+        for(icol=1;icol<=ds.NCOLS;icol++)
         {
-            if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
+            for(irow=1;irow<=ds.NROWS;irow++)
             {
-                hp = std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f); // adesolver hp before adding snowmelt  
-                (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + meteoi;   
-                (*ds.h)(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
-                if ((*ds.h)(irow,icol) <= ds.hdry)
+                if ((*ds.zb).at(irow,icol) != ds.NODATA_VALUE)
                 {
-                    (*ds.ldry).at(irow,icol)=0.0f;
-                }
-                (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
+                    hp = std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f); // adesolver hp before adding snowmelt  
+                    (*ds.z).at(irow,icol) = (*ds.z).at(irow,icol) + meteoi;   
+                    (*ds.h)(irow,icol)=std::fmax((*ds.z).at(irow,icol)-(*ds.zb).at(irow,icol),0.0f);
+                    if ((*ds.h)(irow,icol) <= ds.hdry)
+                    {
+                        (*ds.ldry).at(irow,icol)=0.0f;
+                    }
+                    (*ds.h0)(irow,icol) = (*ds.h)(irow,icol);
 
-                // Calc mass balance for all chemcicals
-                if (ds.ade_solver == true && hp!=0.0f)
-                {   
-                    for (int ichem=0;ichem<nchem;ichem++){       
-                        (*ds.conc_SW)[ichem](irow,icol)=((*ds.conc_SW)[ichem](irow,icol)*hp
-                                               + (meteoi * meteo_conci[ichem])
-                                              )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)   
-                    }    
+                    // Calc mass balance for all chemcicals
+                    if (ds.ade_solver == true && hp!=0.0f)
+                    {   
+                        for (int ichem=0;ichem<nchem;ichem++){       
+                        
+                            if (ds.openwq == false){
+                                (*ds.conc_SW)[ichem](irow,icol)=((*ds.conc_SW)[ichem](irow,icol)*hp
+                                                        + (meteoi * meteo_conci[ichem])
+                                                        )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)   
+                            }else{
+
+                                // call openwq adv_in
+                                openwq_hydrolink.run_space_in(
+                                    ds,
+                                    OpenWQ_couplercalls,
+                                    OpenWQ_hostModelconfig,
+                                    OpenWQ_json,                    // create OpenWQ_json object
+                                    OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+                                    OpenWQ_units,                  // functions for unit conversion
+                                    OpenWQ_utils,
+                                    OpenWQ_readjson,            // read json files
+                                    OpenWQ_vars,
+                                    OpenWQ_initiate,            // initiate modules
+                                    OpenWQ_watertransp,      // transport modules
+                                    OpenWQ_chem,                    // biochemistry modules
+                                    OpenWQ_extwatflux_ss,  // sink and source modules)
+                                    OpenWQ_solver,                // solver module
+                                    OpenWQ_output,
+                                    openwq_source_EWF_name,
+                                    irow, icol,
+                                    meteoi);
+
+                            }
+                        
+                        }    
+                    }
                 }
             }
         }
+        
+    }catch (int e){
+
+        std::cout << "problem in 'add_meteo' module" << std::endl; // err message
+        errflag = true;
     }
-    
-}catch (int e){
 
-    std::cout << "problem in 'add_meteo' module" << std::endl; // err message
-    errflag = true;
-}
-
-return errflag;
+    return errflag;
 
 }
 

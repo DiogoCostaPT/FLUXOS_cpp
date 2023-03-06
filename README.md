@@ -11,6 +11,8 @@
 ## Introduction
 * Soure code for the FLUXOS-OVERLAND model. The original code (named as FLUXOS) was written in Fortran and consisted of the coupling of 2dmb, +QeS2, MODFLOW and MT3DMS.
 
+* [Documentation (ReadTheDocs)](https://fluxos-cpp.readthedocs.io)
+
 * Modifications (from FLUXOS to FLUXOS-OVERLAND):
 	* Converted to C++
 	* Uses: Armadillo template-based C++ library for linear algebra 

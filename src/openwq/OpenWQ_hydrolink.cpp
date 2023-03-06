@@ -58,6 +58,7 @@ void openwq_hydrolink::openwq_decl(
         // External fluxes
         // Make sure to use capital letters for external fluxes
         OpenWQ_hostModelconfig.HydroExtFlux.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"INFLOW", MROWS,MCOLS,1)); // input at just one location
+        OpenWQ_hostModelconfig.HydroExtFlux.push_back(OpenWQ_hostModelconfig::hydroTuple(1,"METEO", MROWS,MCOLS,1)); // input at just one location
 
         // Dependencies
         // to expand BGC modelling options
