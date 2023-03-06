@@ -199,7 +199,7 @@ bool add_meteo(
             }
         }
         
-        // Convert to m/s
+        // Convert mm/day to m/s
         meteoi = (*ds.meteo).at(meteo_rowi,1)/(1000.*3600.*24.)*ds.dtfl;
 
         // Get chem data
