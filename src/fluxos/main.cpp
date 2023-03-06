@@ -255,7 +255,7 @@ int main(int argc, char* argv[])
     ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
     print_next = timstart;  
     print_next = print_next + ds.print_step;
-    ds.SWEstd = ds.SWEstd/100;
+    if(ds.wintra==true){ds.SWEstd = ds.SWEstd/100;}
 
     std::cout << "-----------------------------------------------\n" << std::endl;
     logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
@@ -353,14 +353,14 @@ int main(int argc, char* argv[])
 
             // ADE solver (that is used also by openwq)
             if(ds.ade_solver==true){
-                for(int ichem=0;ichem<=chem_mobile.size();ichem++){
+                for(int ichem=0;ichem<chem_mobile.size();ichem++){
                     adesolver_calc(ds, it, chem_mobile[ichem]);
                 };  
             }
 
             // Wintra module
             if(ds.wintra==true){
-                for(int ichem=0;ichem<=chem_mobile.size();ichem++){
+                for(int ichem=0;ichem<chem_mobile.size();ichem++){
                     wintrasolver_calc(ds, chem_mobile[ichem]);
                 };
             }
