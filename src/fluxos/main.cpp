@@ -63,6 +63,9 @@ OpenWQ_solver OpenWQ_solver;                // solver module
 OpenWQ_output OpenWQ_output;                // output module
 openwq_hydrolink openwq_hydrolink;
 
+// SW id in openwq
+int openwq_cmp_sw_id = 0;
+
 int main(int argc, char* argv[]) 
 {   
     unsigned int NROWSl, NCOLSl, it = 0;
@@ -230,8 +233,8 @@ int main(int argc, char* argv[])
             OpenWQ_extwatflux_ss,        // sink and source modules)
             OpenWQ_output,
             ds.openwq_masterfile,
-            ds.NROWS,
-            ds.NCOLS
+            ds.MROWS,
+            ds.MCOLS
         );
 
         nchem = OpenWQ_wqconfig.BGC_general_num_chem;
@@ -307,7 +310,7 @@ int main(int argc, char* argv[])
                 if (ds.openwq == true){
                     for(int ichem=0;ichem<nchem;ichem++){
                         (*ds.conc_SW)[ichem].at(irow,icol) 
-                            = (*OpenWQ_vars.chemass)(0)(ichem)(irow,icol,0)
+                            = (*OpenWQ_vars.chemass)(openwq_cmp_sw_id)(ichem)(irow,icol,0)
                                 / ((*ds.h).at(irow,icol) * ds.arbase);
                     }
                 }
@@ -379,7 +382,7 @@ int main(int argc, char* argv[])
                 for(irow=1;irow<=ds.NROWS;irow++){
                     for(int ichem=0;ichem<nchem;ichem++){
 
-                        (*OpenWQ_vars.chemass)(0)(ichem)(irow,icol,0)
+                        (*OpenWQ_vars.chemass)(openwq_cmp_sw_id)(ichem)(irow,icol,0)
                             = (*ds.conc_SW)[ichem].at(irow,icol) 
                                 * ((*ds.h).at(irow,icol) * ds.arbase);
 

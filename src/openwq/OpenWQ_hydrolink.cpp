@@ -33,8 +33,8 @@ void openwq_hydrolink::openwq_decl(
     OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
     OpenWQ_output& OpenWQ_output,
     std::string openwq_masterfile,
-    unsigned long NROWS,
-    unsigned long NCOLS)
+    unsigned long MROWS,
+    unsigned long MCOLS)
 {
     
     // Location of master file
@@ -51,7 +51,7 @@ void openwq_hydrolink::openwq_decl(
         // Characterize the Host model domain
         // Host model specific
         // #######################################
-        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SURFACE_WATER",NCOLS,NROWS,1));
+        OpenWQ_hostModelconfig.HydroComp.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SURFACE_WATER",MCOLS,MROWS,1));
 
         // (add other compartments as needed)...
 
@@ -109,8 +109,8 @@ void openwq_hydrolink::openwq_time_start(
 
     // Local Variables
     unsigned int Sub_mob;   // interactive species index (for mobile species)
-    unsigned long fluxos_nrows = GlobVar_fluxos.NROWS;
-    unsigned long fluxos_ncols = GlobVar_fluxos.NCOLS;
+    unsigned long fluxos_nrows = GlobVar_fluxos.MROWS;
+    unsigned long fluxos_ncols = GlobVar_fluxos.MCOLS;
 
     // Retrieve simulation timestamp
     // convert to OpenWQ time convention: seconds since 00:00 hours, Jan 1, 1900 UTC
