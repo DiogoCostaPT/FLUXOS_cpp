@@ -43,6 +43,30 @@ using json = nlohmann::json;
 #include "WINTRAsolver_calc.h"
 #include "write_results.h"
 
+// Openwq objects
+#include "../openwq/OpenWQ_hydrolink.h"
+
+OpenWQ_couplercalls OpenWQ_couplercalls;
+OpenWQ_hostModelconfig OpenWQ_hostModelconfig;
+OpenWQ_json OpenWQ_json;                    // create OpenWQ_json object
+OpenWQ_wqconfig OpenWQ_wqconfig;            // create OpenWQ_wqconfig object
+OpenWQ_units OpenWQ_units;                  // functions for unit conversion
+OpenWQ_utils OpenWQ_utils;
+OpenWQ_readjson OpenWQ_readjson;            // read json files
+int num_HydroComp = 1; // number of compartments to link openWQ (see details in OpenWQ_hydrolink.cpp) 
+int num_EWF = 2;
+OpenWQ_vars OpenWQ_vars(num_HydroComp, num_EWF);
+OpenWQ_initiate OpenWQ_initiate;            // initiate modules
+OpenWQ_watertransp OpenWQ_watertransp;      // transport modules
+OpenWQ_chem OpenWQ_chem;                    // biochemistry modules
+OpenWQ_extwatflux_ss OpenWQ_extwatflux_ss;        // sink and source modules
+OpenWQ_solver OpenWQ_solver;                // solver module
+OpenWQ_output OpenWQ_output;                // output module
+openwq_hydrolink openwq_hydrolink;
+
+// SW id in openwq
+int openwq_cmp_sw_id = 0;
+
 int main(int argc, char* argv[]) 
 {   
     unsigned int NROWSl, NCOLSl, it = 0;
@@ -50,6 +74,8 @@ int main(int argc, char* argv[])
     int ntim_meteo, ntim_inflow;
     double c0,hp,v0,u0, hpall, ks_input; 
     bool outwritestatus;
+    int nchem;
+    std::vector<unsigned int> chem_mobile;
 
     bool errflag = false;
 
@@ -137,7 +163,6 @@ int main(int argc, char* argv[])
     // #######################################################
     ds.NROWS = ds.MROWS - 2;
     ds.NCOLS = ds.MCOLS - 2;
-    ds.D_coef = 0.01;
     
     // #######################################################
     // Read DEM
@@ -151,7 +176,7 @@ int main(int argc, char* argv[])
     ds.arbase = ds.dxy * ds.dxy;
     
     // #######################################################
-    // Read forxing: Meteo and inflow files
+    // Read forcing: Meteo and inflow files
     // #######################################################
     ntim_meteo = read_meteo(
         ds,
@@ -159,6 +184,7 @@ int main(int argc, char* argv[])
     ntim_inflow = read_inflow(
         ds,
         logFLUXOSfile); //  load
+
 
     // #######################################################
     // Provide simulation duraction to console
@@ -173,28 +199,103 @@ int main(int argc, char* argv[])
     logFLUXOSfile << "\nSoil initial background mass available for release to runoff (g) (0.txt points will be overwritten) = " + std::to_string(ds.soil_conc_bckgrd);
     logFLUXOSfile << "\nSWE max (cm) = " + std::to_string(ds.SWEmax);
     logFLUXOSfile << "\nSWE std (cm) = " + std::to_string(ds.SWEstd) + "\n";
+
+    // #######################################################
+    // Modules 
+    // #######################################################
+    // ade_solver
+    if (ds.ade_solver == true){
+        // Message that openwq has been activated
+        logFLUXOSfile << "\n > ADE_solver activated";
+    }else{
+        // otherwise disable wintra and openwq
+        ds.wintra = false;
+        ds.openwq = false;
+    }
     
+    if (ds.openwq == true){
+
+        // Message that openwq has been activated
+        logFLUXOSfile << "\n > OpenWQ activated";
+
+        // Call openwq_decl
+        openwq_hydrolink.openwq_decl(
+            OpenWQ_couplercalls,     // Class with all call from coupler
+            OpenWQ_hostModelconfig,
+            OpenWQ_json,                    // create OpenWQ_json object
+            OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+            OpenWQ_units,                  // functions for unit conversion
+            OpenWQ_utils,
+            OpenWQ_readjson,            // read json files
+            OpenWQ_vars,
+            OpenWQ_initiate,            // initiate modules
+            OpenWQ_watertransp,      // transport modules
+            OpenWQ_chem,                   // biochemistry modules
+            OpenWQ_extwatflux_ss,        // sink and source modules)
+            OpenWQ_output,
+            ds.openwq_masterfile,
+            ds.MROWS,
+            ds.MCOLS
+        );
+
+        nchem = OpenWQ_wqconfig.BGC_general_num_chem;
+        chem_mobile = OpenWQ_wqconfig.BGC_general_mobile_species;
+
+    }else{
+        nchem = 1;
+        std::vector<unsigned int> vecTemp(1);
+        chem_mobile = vecTemp;
+        chem_mobile[0] = 0;
+    }
+
+
     // #######################################################
     // Initiate
     // #######################################################
     timstart = initiation(
         ds,
+        nchem,
         logFLUXOSfile);
     ds.hdry = (*ds.ks).at(1,1);  // temporary but basically saying that nothing will move until it reaches roughness height
     print_next = timstart;  
     print_next = print_next + ds.print_step;
-    ds.SWEstd = ds.SWEstd/100;
+    if(ds.wintra==true){ds.SWEstd = ds.SWEstd/100;}
 
     std::cout << "-----------------------------------------------\n" << std::endl;
     logFLUXOSfile << "\n-----------------------------------------------\n" << std::endl;
-        
+    
+    
     // #######################################################
     // Courant Condition: determine maximum time step for numerical stabilitity
     // #######################################################
     while(ds.tim <= ds.ntim) 
-    {              
+    {   
+        // Reset vars
         ds.dtfl=9.e10;
         hpall = 0.0f;
+
+        // #######################################################
+        // OpenWQ run_time_start
+        // #######################################################
+        if (ds.openwq == true){
+
+            openwq_hydrolink.openwq_time_start(
+                OpenWQ_couplercalls,
+                OpenWQ_hostModelconfig,
+                OpenWQ_json,                    // create OpenWQ_json object
+                OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+                OpenWQ_units,                  // functions for unit conversion
+                OpenWQ_utils,
+                OpenWQ_readjson,            // read json files
+                OpenWQ_vars,
+                OpenWQ_initiate,            // initiate modules
+                OpenWQ_watertransp,      // transport modules
+                OpenWQ_chem,                    // biochemistry modules
+                OpenWQ_extwatflux_ss,        // sink and source modules)
+                OpenWQ_solver,                // solver module
+                OpenWQ_output,                // output modules
+                ds);
+        }
         
         for(icol=1;icol<=ds.NCOLS;icol++)
         {
@@ -226,12 +327,57 @@ int main(int argc, char* argv[])
         // #######################################################
         // Add forcing: meteo and inflow
         // #######################################################
-        errflag = add_meteo(ds);
-        if (errflag)
-            exit(EXIT_FAILURE);
-        errflag = add_inflow(ds);
-        if (errflag)
-            exit(EXIT_FAILURE);
+        errflag = add_meteo(
+            ds,
+            openwq_hydrolink,
+            OpenWQ_couplercalls,
+            OpenWQ_hostModelconfig,
+            OpenWQ_json,                    // create OpenWQ_json object
+            OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+            OpenWQ_units,                  // functions for unit conversion
+            OpenWQ_utils,
+            OpenWQ_readjson,            // read json files
+            OpenWQ_vars,
+            OpenWQ_initiate,            // initiate modules
+            OpenWQ_watertransp,      // transport modules
+            OpenWQ_chem,                    // biochemistry modules
+            OpenWQ_extwatflux_ss,        // sink and source modules)
+            OpenWQ_solver,                // solver module
+            OpenWQ_output,
+            nchem);
+
+        if (errflag) exit(EXIT_FAILURE);
+
+        errflag = add_inflow(
+            ds,
+            openwq_hydrolink,
+            OpenWQ_couplercalls,
+            OpenWQ_hostModelconfig,
+            OpenWQ_json,                    // create OpenWQ_json object
+            OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+            OpenWQ_units,                  // functions for unit conversion
+            OpenWQ_utils,
+            OpenWQ_readjson,            // read json files
+            OpenWQ_vars,
+            OpenWQ_initiate,            // initiate modules
+            OpenWQ_watertransp,      // transport modules
+            OpenWQ_chem,                    // biochemistry modules
+            OpenWQ_extwatflux_ss,        // sink and source modules)
+            OpenWQ_solver,                // solver module
+            OpenWQ_output,
+            nchem);
+
+        if (errflag) exit(EXIT_FAILURE);
+
+        // Return OpenWQ conc cubes to Fluxos Mats for transport calculation
+        // OpenWQ express as mass => needs to be converted to FLUXOS conc that is express
+        // as conc
+        if (ds.openwq == true){
+            for(int ichem=0;ichem<nchem;ichem++){
+                (*ds.conc_SW)[ichem] = (*OpenWQ_vars.chemass)(openwq_cmp_sw_id)(ichem).slice(0)
+                        / (*ds.h * ds.arbase);
+            }
+        }
 
         // #######################################################        
         // CALL FLOW SOLVERS
@@ -239,9 +385,57 @@ int main(int argc, char* argv[])
         if (hpall!=0) 
         {
             it++;
+
+            // Dynamic wave solver
             hydrodynamics_calc(ds);
-            adesolver_calc(ds, it);
-            wintrasolver_calc(ds);
+
+            // ADE solver (that is used also by openwq)
+            if(ds.ade_solver==true){
+                for(int ichem=0;ichem<chem_mobile.size();ichem++){
+                    adesolver_calc(ds, it, chem_mobile[ichem]);
+                };  
+            }
+
+            // Wintra module
+            if(ds.wintra==true){
+                for(int ichem=0;ichem<chem_mobile.size();ichem++){
+                    wintrasolver_calc(ds, chem_mobile[ichem]);
+                };
+            }
+
+        }
+
+        // #######################################################
+        // OpenWQ run_time_end
+        // #######################################################
+        if (ds.openwq == true){
+
+            // Return Fluxos Mats for transport calculation to OpenWQ conc cubes
+            // OpenWQ express as mass => needs to be converted to FLUXOS conc that is express
+            // as conc
+            for(int ichem=0;ichem<nchem;ichem++){
+
+                 (*OpenWQ_vars.chemass)(openwq_cmp_sw_id)(ichem).slice(0) 
+                    =  (*ds.conc_SW)[ichem] % (*ds.h * ds.arbase);
+
+            }
+
+            openwq_hydrolink.openwq_time_end(
+                OpenWQ_couplercalls,     // Class with all call from coupler
+                OpenWQ_hostModelconfig,
+                OpenWQ_json,                    // create OpenWQ_json object
+                OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+                OpenWQ_units,                  // functions for unit conversion
+                OpenWQ_utils,
+                OpenWQ_readjson,            // read json files
+                OpenWQ_vars,
+                OpenWQ_initiate,            // initiate modules
+                OpenWQ_watertransp,      // transport modules
+                OpenWQ_chem,                   // biochemistry modules
+                OpenWQ_extwatflux_ss,        // sink and source modules)
+                OpenWQ_solver,
+                OpenWQ_output,
+                ds);
         }
         
         // #######################################################
@@ -272,6 +466,7 @@ int main(int argc, char* argv[])
             }
              
          }
+
     }
     
     // #######################################################

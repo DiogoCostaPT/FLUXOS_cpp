@@ -37,7 +37,7 @@ bool write_results(
     int a = 0;
     double ux;
     
-    std::string tprint = "Results/" + std::to_string(print_tag); 
+    std::string tprint = ds.output_folder + "/" + std::to_string(print_tag); 
     std::string filext(".txt");
     tprint += filext;
 
@@ -62,7 +62,9 @@ bool write_results(
                 filedataR(a,8) = (*ds.qx).at(irow,icol)*ds.dxy;
                 filedataR(a,9) = (*ds.qy).at(irow,icol)*ds.dxy;
                 filedataR(a,10) = (*ds.us).at(irow,icol); 
-                filedataR(a,11) = (*ds.conc_SW).at(irow,icol); // adesolver
+                // Only prints conc_SW[0]
+                // if using openwq, then all the other concentrations will be in openwq
+                filedataR(a,11) = (*ds.conc_SW)[0].at(irow,icol); // adesolver
                 filedataR(a,12) = (*ds.soil_mass).at(irow,icol); // adesolver
                 filedataR(a,13) = (*ds.fe_1).at(irow,icol);
                 filedataR(a,14) = (*ds.fn_1).at(irow,icol);

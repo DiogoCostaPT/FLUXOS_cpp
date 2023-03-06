@@ -24,6 +24,7 @@
 
 unsigned int initiation(
     GlobVar& ds,
+    int nchem,
     std::ofstream& logFLUXOSfile);
 
 #endif

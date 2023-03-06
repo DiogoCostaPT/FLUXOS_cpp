@@ -24,7 +24,7 @@ IF (UNIX)
 
 	project(fluxos)
 
-	file(GLOB SOURCES "src/*.cpp")
+	file(GLOB SOURCES "src/fluxos/*.cpp")
 
 	set(CMAKE_CXX_STANDARD 17)
 	

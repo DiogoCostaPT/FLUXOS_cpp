@@ -37,14 +37,38 @@ bool read_modset(
 
         // Compulsory data
         ds.dem_file = ds.master_MODSET["DEM_FILE"];
+        ds.sim_start_time = ds.master_MODSET["SIM_DATETIME_START"];
+        ds.restart_opt = ds.master_MODSET["RESTART"];
+        ds.output_folder = ds.master_MODSET["OUTPUT"]["OUTPUT_FOLDER"];
         ds.print_step = ds.master_MODSET["OUTPUT"]["PRINT_STEP"];
         ds.h_min_print = ds.master_MODSET["OUTPUT"]["H_MIN_TO_PRINT"];
         *ks_input = ds.master_MODSET["ROUGNESS_HEIGHT"];
         ds.soil_release_rate = ds.master_MODSET["SOIL_RELEASE_RATE"];
         ds.soil_conc_bckgrd = ds.master_MODSET["SOIL_CONC_BACKGROUND"];
-        ds.SWEstd = ds.master_MODSET["SWE_STD"];
-        ds.SWEmax = ds.master_MODSET["SWE_MAX"];
+        
+        ///////////////
+        // Modules
+        ///////////////
+        
+        // ADE transport
+        ds.ade_solver = ds.master_MODSET["EXTERNAL_MODULES"]["ADE_TRANSPORT"]["STATUS"];
+        if (ds.ade_solver == true){
+            ds.D_coef = ds.master_MODSET["EXTERNAL_MODULES"]["ADE_TRANSPORT"]["D_COEF"];
+        }
 
+        // openwq
+        ds.openwq = ds.master_MODSET["EXTERNAL_MODULES"]["OPENWQ"]["STATUS"];
+        if (ds.openwq == true){
+            ds.openwq_masterfile = ds.master_MODSET["EXTERNAL_MODULES"]["OPENWQ"]["MASTERFILE_DIR"];
+        }
+        // wintra
+        ds.wintra = ds.master_MODSET["EXTERNAL_MODULES"]["WINTRA"]["STATUS"];
+        if (ds.openwq == true){
+            ds.SWEstd = ds.master_MODSET["EXTERNAL_MODULES"]["WINTRA"]["SWE_STD"];
+            ds.SWEmax = ds.master_MODSET["EXTERNAL_MODULES"]["WINTRA"]["SWE_MAX"];
+        }
+
+        // Forcing
         // Only requires one of these forcing files to be provided
         auto exist_meteo = ds.master_MODSET.find("METEO_FILE");
         auto exist_inflow = ds.master_MODSET.find("INFLOW_FILE");
@@ -56,6 +80,7 @@ bool read_modset(
                 ds.meteo_file = ds.master_MODSET["METEO_FILE"];
 
             if (exist_inflow != ds.master_MODSET.end()){
+
                 ds.inflow_file = ds.master_MODSET["INFLOW_FILE"]["FILENAME"];
 
                 ds.inflow_ycoord = ds.master_MODSET["INFLOW_FILE"]["DISCHARGE_LOCATION"]["Y_COORDINATE"];
@@ -215,7 +240,7 @@ float read_meteo(
 {
     unsigned int a; 
     unsigned int icol,irow;
-    double tmeteo,vmeteo, tmeteo_bef = 0.0f;
+    double tmeteo,vmeteo, concflow, tmeteo_bef = 0.0f;
     double tim;
     std::string msg;
     
@@ -234,8 +259,11 @@ float read_meteo(
         for(a=1;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
             tmeteo = filedataQ(a,0);  // t melt seconds
             vmeteo = filedataQ(a,1);  // value of melt
+            concflow = filedataQ(a,2);
+
             (*ds.meteo).at(a,0) = tmeteo;  
             (*ds.meteo).at(a,1) = vmeteo;
+            (*ds.meteo).at(a,2) = concflow;
 
             // For WINTRA 
             ds.qmelvtotal += vmeteo /(1000.*3600.*24.) * (tmeteo - tmeteo_bef);  // input in mm/day
@@ -260,7 +288,7 @@ float read_inflow(
 {
     unsigned int a; 
     unsigned int icol,irow;
-    double tinflows,vinflow, tinflows_bef = 0.0f;
+    double tinflows,vinflow, concflow, tinflows_bef = 0.0f;
     double tim;
     std::string msg;
 
@@ -278,9 +306,11 @@ float read_inflow(
 
         for(a=1;a<filedataQ.col(1).n_elem;a++){ // a == 1 because the first line is the header
             tinflows = filedataQ(a,0);  // t melt seconds
-            vinflow = filedataQ(a,1);  // value of melt
+            vinflow = filedataQ(a,1);   // value of melt
+            concflow = filedataQ(a,2);  // concentration
             (*ds.inflow).at(a-1,0) = tinflows;  
             (*ds.inflow).at(a-1,1) = vinflow;
+            (*ds.inflow).at(a-1,2) = concflow;
         
             tinflows_bef = tinflows;
         }

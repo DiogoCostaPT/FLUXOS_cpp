@@ -181,64 +181,103 @@
 <tr class="row-odd"><td><p>Variable/Keyword</p></td>
 <td><p>any useful descriptive information about the project</p></td>
 </tr>
-<tr class="row-even"><td><p>DEM_FILE</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DEM_FILE</span></code></p></td>
 <td><p>full path to the ASCII-ERSI DEM file</p></td>
 </tr>
-<tr class="row-odd"><td><p>PRINT_STEP</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SIM_DATETIME_START</span></code></p></td>
+<td><p>Simulation start datetime</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RESTART</span></code></p></td>
+<td><p>Restart option. If <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, the model will load the last output file and restart from there.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PRINT_STEP</span></code></p></td>
 <td><p>temporal resolution of the output files (this is not the model timestep as that is defined by the Courant–Friedrichs–Lewy Condition of numerical stability)</p></td>
 </tr>
-<tr class="row-even"><td><p>ROUGNESS_HEIGHT</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ROUGNESS_HEIGHT</span></code></p></td>
 <td><p>average roughness of the terrain measured in height (m), it is used in friction model and water will be retained until this height</p></td>
 </tr>
-<tr class="row-odd"><td><p>SOIL_RELEASE_RATE</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SOIL_RELEASE_RATE</span></code></p></td>
 <td><p>release of soil contaminants (mg/hour)</p></td>
 </tr>
-<tr class="row-even"><td><p>SOIL_CONC_BACKGROUND</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SOIL_CONC_BACKGROUND</span></code></p></td>
 <td><p>initial surficial soil concentration (mg/l)</p></td>
 </tr>
-<tr class="row-odd"><td><p>SWE_STD</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SWE_STD</span></code></p></td>
 <td><p>standard deviation of pre-melt SWE (for calculation of runoff-soil interaction during snowmelt, used the WINTRA model)</p></td>
 </tr>
-<tr class="row-even"><td><p>SWE_MAX</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SWE_MAX</span></code></p></td>
 <td><p>maximum SWE (for calculation of runoff-soil interaction during snowmelt, used the WINTRA model)</p></td>
 </tr>
-<tr class="row-odd"><td><p>METEO_FILE (optional)</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">METEO_FILE</span></code> (optional)</p></td>
 <td><p>full path to the snowmelt/rainfall timeseries</p></td>
 </tr>
-<tr class="row-even"><td><p>INFLOW_FILE (optional)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">INFLOW_FILE</span></code> (optional)</p></td>
 <td><p>full pa/rainfall timeseries</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">ADE_TRANSPORT</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">STATUS</span></code></p></td>
+<td><p>activate 2D advection-dispersion solver</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">ADE_TRANSPORT</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">D_COEF</span></code></p></td>
+<td><p>dispersion coefficient</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">OPENWQ</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">STATUS</span></code></p></td>
+<td><p>activate openwq (disabled if <code class="docutils literal notranslate"><span class="pre">ADE_TRANSPORT:STATUS</span></code> is <code class="docutils literal notranslate"><span class="pre">FALSE</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">OPENWQ</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">MASTERFILE_DIR</span></code></p></td>
+<td><p>path to openwq master file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">WINTRA</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">STATUS</span></code></p></td>
+<td><p>activate wintra (disabled if <code class="docutils literal notranslate"><span class="pre">ADE_TRANSPORT:STATUS</span></code> is <code class="docutils literal notranslate"><span class="pre">FALSE</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">WINTRA</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">SWE_MAX</span></code></p></td>
+<td><p>max snow water equivalent for wintra calculations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXTERNAL_MODULES</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">WINTRA</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">SWE_STD</span></code></p></td>
+<td><p>standard-deviation of snow water equivalent for wintra calculations</p></td>
 </tr>
 </tbody>
 </table>
 <p>The JSON file supports C/C++ syntax for comments: single-line comment (<code class="docutils literal notranslate"><span class="pre">//</span></code>) or comment blocks (<code class="docutils literal notranslate"><span class="pre">/*</span></code> and <code class="docutils literal notranslate"><span class="pre">*/</span></code>).</p>
 <p>Example:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;PROJECT_NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;Test&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;GEOGRAPHICAL_LOCATION&quot;</span><span class="p">:</span> <span class="s2">&quot;Svalbard&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;AUTHORS&quot;</span><span class="p">:</span> <span class="s2">&quot;Diogo Costa&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;DATE&quot;</span><span class="p">:</span> <span class="s2">&quot;May_2020&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;COMMENT&quot;</span><span class="p">:</span> <span class="s2">&quot;Default file for testing purposes&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;OPENWQ_INPUT&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;CONFIG_FILEPATH&quot;</span><span class="p">:</span> <span class="s2">&quot;bin/openWQ_config.json&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;BGC_CYCLES_FILEPATH&quot;</span><span class="p">:</span> <span class="s2">&quot;bin/openWQ_BGC_cycling.json&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;SINKSOURCE_FILES&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="nt">&quot;1&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&quot;LABEL&quot;</span><span class="p">:</span> <span class="s2">&quot;fertilizer_N&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;FILEPATH&quot;</span><span class="p">:</span> <span class="s2">&quot;bin/openWQ_source_fertN.json&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;2&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&quot;LABEL&quot;</span><span class="p">:</span> <span class="s2">&quot;fertilizer_P&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;FILEPATH&quot;</span><span class="p">:</span> <span class="s2">&quot;bin/openWQ_source_fertP.json&quot;</span>
-            <span class="p">}</span>
+    <span class="nt">&quot;COMMNET&quot;</span><span class="p">:</span> <span class="s2">&quot;Batch_1 - additional tests for paper&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;DEM_FILE&quot;</span><span class="p">:</span> <span class="s2">&quot;Rosa_2m.asc&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;SIM_DATETIME_START&quot;</span><span class="p">:</span> <span class="s2">&quot;2017SEP01 12:15:00&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;RESTART&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+
+    <span class="nt">&quot;INFLOW_FILE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;FILENAME&quot;</span><span class="p">:</span> <span class="s2">&quot;Flow_forcing.csv&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;DISCHARGE_LOCATION&quot;</span><span class="p">:{</span>
+            <span class="nt">&quot;X_COORDINATE&quot;</span><span class="p">:</span> <span class="mi">425894</span><span class="p">,</span>
+            <span class="nt">&quot;Y_COORDINATE&quot;</span><span class="p">:</span> <span class="mi">5785553</span>
         <span class="p">}</span>
     <span class="p">},</span>
-    <span class="nt">&quot;openWQ_OUTPUT&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;RESULTS_FOLDERPATH&quot;</span><span class="p">:</span> <span class="s2">&quot;bin/Output_OpenWQ&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;FORMAT&quot;</span><span class="p">:</span> <span class="s2">&quot;HDF5&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;CHEMICAL_SPECIES&quot;</span><span class="p">:[</span><span class="s2">&quot;SOIL_NO3&quot;</span><span class="p">,</span><span class="s2">&quot;SOIL_NO3&quot;</span><span class="p">],</span>
-        <span class="nt">&quot;COMPARTMENTS&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;SNOW&quot;</span><span class="p">,</span><span class="s2">&quot;SOIL&quot;</span><span class="p">],</span>
-        <span class="nt">&quot;TIMESTEP&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;h&quot;</span><span class="p">]</span>
-    <span class="p">}</span>
+
+    <span class="nt">&quot;EXTERNAL_MODULES&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;ADE_TRANSPORT&quot;</span><span class="p">:{</span>
+            <span class="nt">&quot;STATUS&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="nt">&quot;D_COEF&quot;</span><span class="p">:</span> <span class="mf">0.01</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;WINTRA&quot;</span><span class="p">:{</span>
+            <span class="nt">&quot;STATUS&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+            <span class="nt">&quot;SWE_STD&quot;</span><span class="p">:</span> <span class="mf">9.5</span><span class="p">,</span>
+            <span class="nt">&quot;SWE_MAX&quot;</span><span class="p">:</span> <span class="mf">9.5</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;OPENWQ&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;STATUS&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="nt">&quot;MASTERFILE_DIR&quot;</span><span class="p">:</span> <span class="s2">&quot;../openwq_in/openWQ_master.json&quot;</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;METEO_FILE&quot;</span><span class="p">:</span> <span class="s2">&quot;Qmelt_synthetic.fluxos&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;OUTPUT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;OUTPUT_FOLDER&quot;</span><span class="p">:</span> <span class="s2">&quot;../fluxos_out&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;PRINT_STEP&quot;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+        <span class="nt">&quot;H_MIN_TO_PRINT&quot;</span><span class="p">:</span> <span class="mf">0.005</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;ROUGNESS_HEIGHT&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
+    <span class="nt">&quot;SOIL_RELEASE_RATE&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="nt">&quot;SOIL_CONC_BACKGROUND&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+
 <span class="p">}</span>
 </pre></div>
 </div>

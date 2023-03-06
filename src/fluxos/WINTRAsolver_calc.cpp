@@ -24,7 +24,8 @@
 #include "WINTRAsolver_calc.h"
 
 void wintrasolver_calc(
-    GlobVar& ds)
+    GlobVar& ds,
+    int ichem)
 {
     unsigned int icol,irow;
     double deltam,hp,zbp, f,frac, QVolstd;
@@ -49,8 +50,8 @@ void wintrasolver_calc(
                     (*ds.soil_mass).at(irow,icol) * ds.soil_release_rate/3600 * ds.dtfl; // mass release
                 (*ds.soil_mass).at(irow,icol) = 
                     (*ds.soil_mass).at(irow,icol) - deltam;
-                (*ds.conc_SW).at(irow,icol) = 
-                    (*ds.conc_SW).at(irow,icol) + deltam/(hp*ds.arbase);
+                (*ds.conc_SW)[ichem].at(irow,icol) = 
+                    (*ds.conc_SW)[ichem].at(irow,icol) + deltam/(hp*ds.arbase);
             }
         }
     }

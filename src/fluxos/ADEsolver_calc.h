@@ -1,4 +1,5 @@
 
+
 // Copyright 1992: Cornel Beffa and Roland Faeh
 // Copyright 2013: Kashif Shaad and Diogo Costa
 // Copyright 2019, Diogo Costa
@@ -16,38 +17,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef COMMONH_INCLUDED
-#define COMMONH_INCLUDED
+#ifndef ADESOLVER_CALCH_INCLUDED
+#define ADESOLVER_CALCH_INCLUDED
 
 #include "GlobVar.h"
-#include <string.h>
 
-#include "jnlohmann/json.hpp"
-using json = nlohmann::json;
+void adesolver_calc(
+    GlobVar& ds, 
+    int it,
+    int ichem);
 
-
-std::string SplitFilename (
-    const std::string& str);
-
-int getIntNumberFromString(
-    std::string s);
-
-double getFloatNumberFromString(
-    std::string s);
-
-// read file names in Results directory
-int findLastStep(
-    const char *path);
-
-bool get_domain_size(unsigned int *rown, 
-    unsigned int *coln, 
-    json master_MODSET_local,
-    std::ofstream& logFLUXOSfile);
-
-bool add_meteo(
-    GlobVar& ds);
-    
-bool add_inflow(
-    GlobVar& ds);
-
-#endif
+#endif // !SOLVER_DRYDOMAINH_INCLUDED
