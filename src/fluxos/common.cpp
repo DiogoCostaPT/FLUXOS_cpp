@@ -233,12 +233,28 @@ return errflag;
 // Add inflow at instant t
 bool add_inflow(
     GlobVar& ds,
+    openwq_hydrolink& openwq_hydrolink,
+    OpenWQ_couplercalls& OpenWQ_couplercalls,
+    OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
+    OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
+    OpenWQ_wqconfig& OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+    OpenWQ_units& OpenWQ_units,                  // functions for unit conversion
+    OpenWQ_utils& OpenWQ_utils,
+    OpenWQ_readjson& OpenWQ_readjson,            // read json files
+    OpenWQ_vars& OpenWQ_vars,
+    OpenWQ_initiate& OpenWQ_initiate,            // initiate modules
+    OpenWQ_watertransp& OpenWQ_watertransp,      // transport modules
+    OpenWQ_chem& OpenWQ_chem,                    // biochemistry modules
+    OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,        // sink and source modules)
+    OpenWQ_solver& OpenWQ_solver,                // solver module
+    OpenWQ_output& OpenWQ_output,
     int nchem){
 
 unsigned int a,irow, icol,inflow_rowi;
 double inflow_conci[nchem];
 double inflowi,hp;
 bool errflag = false;
+std::string openwq_source_EWF_name = "INFLOW"; // for openwq ewf
 
 // Return if no METEO_FILE provided
 if (ds.inflow_file.empty())
@@ -282,10 +298,36 @@ try{
         // Calc mass balance for all chemcicals
         if (ds.ade_solver == true && hp!=0.0f)
         {         
-            for (int ichem=0;ichem<nchem;ichem++){   
-                (*ds.conc_SW)[ichem](irow,icol)=((*ds.conc_SW)[ichem](irow,icol)*hp
-                                            + (inflowi * inflow_conci[ichem])
-                                        )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)  
+            for (int ichem=0;ichem<nchem;ichem++){  
+
+                if (ds.openwq == false){
+                    (*ds.conc_SW)[ichem](irow,icol)=((*ds.conc_SW)[ichem](irow,icol)*hp
+                                                + (inflowi * inflow_conci[ichem])
+                                            )/((*ds.h)(irow,icol)); //adesolver (adjustment for snowmelt)  
+                }else{
+
+                    // call openwq adv_in
+                    openwq_hydrolink.run_space_in(
+                        ds,
+                        OpenWQ_couplercalls,
+                        OpenWQ_hostModelconfig,
+                        OpenWQ_json,                    // create OpenWQ_json object
+                        OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+                        OpenWQ_units,                  // functions for unit conversion
+                        OpenWQ_utils,
+                        OpenWQ_readjson,            // read json files
+                        OpenWQ_vars,
+                        OpenWQ_initiate,            // initiate modules
+                        OpenWQ_watertransp,      // transport modules
+                        OpenWQ_chem,                    // biochemistry modules
+                        OpenWQ_extwatflux_ss,  // sink and source modules)
+                        OpenWQ_solver,                // solver module
+                        OpenWQ_output,
+                        openwq_source_EWF_name,
+                        irow, icol,
+                        inflowi);
+
+                }
             }     
         }
     }

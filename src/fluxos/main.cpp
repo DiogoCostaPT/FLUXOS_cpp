@@ -304,17 +304,6 @@ int main(int argc, char* argv[])
                 (*ds.h0)(irow,icol) = hp; // adesolver
                 (*ds.ldry_prev).at(irow,icol) = (*ds.ldry).at(irow,icol); // adesolver
 
-                // Return OpenWQ conc cubes to Fluxos Mats for transport calculation
-                // OpenWQ express as mass => needs to be converted to FLUXOS conc that is express
-                // as conc
-                if (ds.openwq == true){
-                    for(int ichem=0;ichem<nchem;ichem++){
-                        (*ds.conc_SW)[ichem].at(irow,icol) 
-                            = (*OpenWQ_vars.chemass)(openwq_cmp_sw_id)(ichem)(irow,icol,0)
-                                / ((*ds.h).at(irow,icol) * ds.arbase);
-                    }
-                }
-
                 if(hp>ds.hdry) 
                 {
                     (*ds.ldry).at(irow,icol)=0.0f;
@@ -337,12 +326,42 @@ int main(int argc, char* argv[])
         // #######################################################
         // Add forcing: meteo and inflow
         // #######################################################
-        errflag = add_meteo(ds, nchem);
-        if (errflag)
-            exit(EXIT_FAILURE);
-        errflag = add_inflow(ds, nchem);
-        if (errflag)
-            exit(EXIT_FAILURE);
+        errflag = add_meteo(
+            ds, 
+            nchem);
+
+        if (errflag) exit(EXIT_FAILURE);
+
+        errflag = add_inflow(
+            ds,
+            openwq_hydrolink,
+            OpenWQ_couplercalls,
+            OpenWQ_hostModelconfig,
+            OpenWQ_json,                    // create OpenWQ_json object
+            OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+            OpenWQ_units,                  // functions for unit conversion
+            OpenWQ_utils,
+            OpenWQ_readjson,            // read json files
+            OpenWQ_vars,
+            OpenWQ_initiate,            // initiate modules
+            OpenWQ_watertransp,      // transport modules
+            OpenWQ_chem,                    // biochemistry modules
+            OpenWQ_extwatflux_ss,        // sink and source modules)
+            OpenWQ_solver,                // solver module
+            OpenWQ_output,
+            nchem);
+
+        if (errflag) exit(EXIT_FAILURE);
+
+        // Return OpenWQ conc cubes to Fluxos Mats for transport calculation
+        // OpenWQ express as mass => needs to be converted to FLUXOS conc that is express
+        // as conc
+        if (ds.openwq == true){
+            for(int ichem=0;ichem<nchem;ichem++){
+                (*ds.conc_SW)[ichem] = (*OpenWQ_vars.chemass)(openwq_cmp_sw_id)(ichem).slice(0)
+                        / (*ds.h * ds.arbase);
+            }
+        }
 
         // #######################################################        
         // CALL FLOW SOLVERS
@@ -378,16 +397,11 @@ int main(int argc, char* argv[])
             // Return Fluxos Mats for transport calculation to OpenWQ conc cubes
             // OpenWQ express as mass => needs to be converted to FLUXOS conc that is express
             // as conc
-            for(icol=1;icol<=ds.NCOLS;icol++){
-                for(irow=1;irow<=ds.NROWS;irow++){
-                    for(int ichem=0;ichem<nchem;ichem++){
+            for(int ichem=0;ichem<nchem;ichem++){
 
-                        (*OpenWQ_vars.chemass)(openwq_cmp_sw_id)(ichem)(irow,icol,0)
-                            = (*ds.conc_SW)[ichem].at(irow,icol) 
-                                * ((*ds.h).at(irow,icol) * ds.arbase);
+                 (*OpenWQ_vars.chemass)(openwq_cmp_sw_id)(ichem).slice(0) 
+                    =  (*ds.conc_SW)[ichem] % (*ds.h * ds.arbase);
 
-                    }
-                }
             }
 
             openwq_hydrolink.openwq_time_end(

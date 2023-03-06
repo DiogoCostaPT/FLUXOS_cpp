@@ -55,6 +55,10 @@ void openwq_hydrolink::openwq_decl(
 
         // (add other compartments as needed)...
 
+        // External fluxes
+        // Make sure to use capital letters for external fluxes
+        OpenWQ_hostModelconfig.HydroExtFlux.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"INFLOW", MROWS,MCOLS,1)); // input at just one location
+
         // Dependencies
         // to expand BGC modelling options
         //OpenWQ_hostModelconfig.HydroDepend.push_back(OpenWQ_hostModelconfig::hydroTuple(0,"SM", nhru,1,1));
@@ -180,6 +184,63 @@ void openwq_hydrolink::openwq_time_start(
             OpenWQ_solver,
             OpenWQ_output,
             simtime);
+
+}
+
+void openwq_hydrolink::run_space_in(
+    GlobVar& GlobVar,
+    OpenWQ_couplercalls& OpenWQ_couplercalls,
+    OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
+    OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
+    OpenWQ_wqconfig& OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+    OpenWQ_units& OpenWQ_units,                  // functions for unit conversion
+    OpenWQ_utils& OpenWQ_utils,
+    OpenWQ_readjson& OpenWQ_readjson,            // read json files
+    OpenWQ_vars& OpenWQ_vars,
+    OpenWQ_initiate& OpenWQ_initiate,            // initiate modules
+    OpenWQ_watertransp& OpenWQ_watertransp,      // transport modules
+    OpenWQ_chem& OpenWQ_chem,                    // biochemistry modules
+    OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,  // sink and source modules)
+    OpenWQ_solver& OpenWQ_solver,                // solver module
+    OpenWQ_output& OpenWQ_output,                // output modules
+    std::string source_EWF_name,
+    int ix_r, int iy_r,
+    double wflux_s2r){
+
+    // Local variables
+    int recipient = 0;
+    int iz_r = 0;
+
+// Retrieve simulation timestamp
+    // convert to OpenWQ time convention: seconds since 00:00 hours, Jan 1, 1900 UTC
+    // this allows the use of a number of funtions of C++
+    time_t simtime = getSimTime(
+        OpenWQ_wqconfig,
+        OpenWQ_units,
+        GlobVar.sim_start_time, 
+        GlobVar.tim);
+
+    // call RunSpaceStep_IN
+    OpenWQ_couplercalls.RunSpaceStep_IN(
+        OpenWQ_hostModelconfig,
+        OpenWQ_json,
+        OpenWQ_wqconfig,
+        OpenWQ_units,
+        OpenWQ_utils,
+        OpenWQ_readjson,
+        OpenWQ_vars,
+        OpenWQ_initiate,
+        OpenWQ_watertransp,
+        OpenWQ_chem,
+        OpenWQ_extwatflux_ss,
+        OpenWQ_solver,
+        OpenWQ_output,
+        simtime,
+        source_EWF_name,
+        recipient, ix_r, iy_r, iz_r,
+        wflux_s2r);
+
+}
 
     /*
     
@@ -332,7 +393,6 @@ void openwq_hydrolink::openwq_time_start(
 
     */
 
-}
 
 // Run time end
 void openwq_hydrolink::openwq_time_end(

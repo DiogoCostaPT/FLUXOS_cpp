@@ -72,6 +72,26 @@ class openwq_hydrolink
         OpenWQ_output& OpenWQ_output,                // output modules
         GlobVar& GlobVar);                                     // fluxos h
 
+    void run_space_in(
+        GlobVar& GlobVar,
+        OpenWQ_couplercalls& OpenWQ_couplercalls,
+        OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
+        OpenWQ_json& OpenWQ_json,                    // create OpenWQ_json object
+        OpenWQ_wqconfig& OpenWQ_wqconfig,            // create OpenWQ_wqconfig object
+        OpenWQ_units& OpenWQ_units,                  // functions for unit conversion
+        OpenWQ_utils& OpenWQ_utils,
+        OpenWQ_readjson& OpenWQ_readjson,            // read json files
+        OpenWQ_vars& OpenWQ_vars,
+        OpenWQ_initiate& OpenWQ_initiate,            // initiate modules
+        OpenWQ_watertransp& OpenWQ_watertransp,      // transport modules
+        OpenWQ_chem& OpenWQ_chem,                    // biochemistry modules
+        OpenWQ_extwatflux_ss& OpenWQ_extwatflux_ss,  // sink and source modules)
+        OpenWQ_solver& OpenWQ_solver,                // solver module
+        OpenWQ_output& OpenWQ_output,                // output modules
+        std::string source_EWF_name,
+        int ix_r, int iy_r,
+        double wflux_s2r);
+
     void openwq_time_end(
         OpenWQ_couplercalls& OpenWQ_couplercalls,     // Class with all call from coupler
         OpenWQ_hostModelconfig& OpenWQ_hostModelconfig,
